@@ -1,0 +1,11 @@
+---
+- name: test infoblox_host_record
+  hosts: all
+
+  tasks:
+
+    - name: add host record
+      infoblox_host_record:
+        host: "{{grid_manager}}"
+        name: "{{server}}"
+        ip_address: "{{ip_address}}"
