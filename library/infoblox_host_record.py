@@ -25,7 +25,7 @@ try:
 except ImportError:
 	raise Exception('infoblox-client is not installed.  Please see details here: https://github.com/infobloxopen/infoblox-client')
 
-def create_host_record(module):
+def ensure(module):
 	try:
 		conn = connector.Connector({'host':module.params['host'],'username':module.params['username'],'password':module.params['password'],
 			'ssl_verify':module.params['validate_certs'],'wapi_version':module.params['wapi_version']})
@@ -33,37 +33,44 @@ def create_host_record(module):
 			ip_addr = objects.IP(ip=module.params['ip_address'], mac=module.params['mac'])
 		else:
 			ip_addr = objects.IP(ip=module.params['ip_address'])
-
-		check_host_record = objects.HostRecord.search(conn, ip=ip_addr, view=module.params['view'])
-		print(check_host_record)
+		host_record = objects.HostRecord.search(conn, ip=ip_addr, view=module.params['view'])
 		if module.params['state'] == 'present':
-			#If host record exists check if there is a difference between what is specified in ansible
-			#and what is in the host record, if their is an update use .create with update_if_exists=True
-			if check_host_record:
-				#_ipv4addrs contains a list (of seeminlg duplicate info) that prevents casting to set
-				del host_record_info['_ipv4addrs']
-				specified_info = set(module.params.values())
-				host_record_info = set(check_host_record.__dict__.values())
-				print(host_record_info)
-				resultant_set = specified_info - host_record_info
-				if len(resultant_set) > 0:
-					host_record = objects.HostRecord.create(conn, ip=ip_addr, view=module.params['view'], name=module.params['name'],
-					configure_for_dns=module.params['configure_for_dns'], comment=module.params['comment'], ttl=module.params['ttl'], update_if_exists=True)
-				else:
-					module.exit_json(changed=False)
-			#If host doesn not exist, create
-			else:
-				host_record = objects.HostRecord.create(conn, ip=ip_addr, view=module.params['view'], name=module.params['name'],
-					configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'])
-			module.exit_json(changed=True)
-		#If absent is speciefed remove if record exists
+			create_host_record(conn, host_record, module)
 		elif module.params['state'] == 'absent':
-			if not check_host_record:
-				module.exit_json(changed=False)
+			delete_host_record(conn, host_record, module)
+	except exceptions.InfobloxException as error:
+		module.fail_json(msg=str(error))
+
+def delete_host_record(conn, host_record, module):
+	try:
+		if host_record:
+			host_record.delete()
+			module.exit_json(changed=True)
+		module.exit_json(changed=False)
+	except exceptions.InfobloxException as error:
+		module.fail_json(msg=str(error))
+
+def create_host_record(conn,host_record, module):
+	try:
+		#If host record exists check if there is a difference between what is specified in ansible
+		#and what is in the host record, if their is an update use .create with update_if_exists=True
+		if check_host_record:
+			#_ipv4addrs contains a list (of seeminlg duplicate info) that prevents casting to set
+			del host_record_info['_ipv4addrs']
+			specified_info = set(module.params.values())
+			host_record_info = set(check_host_record.__dict__.values())
+			print(host_record_info)
+			resultant_set = specified_info - host_record_info
+		if len(resultant_set) > 0:
+				host_record = objects.HostRecord.create(conn, ip=ip_addr, view=module.params['view'], name=module.params['name'],
+				configure_for_dns=module.params['configure_for_dns'], comment=module.params['comment'], ttl=module.params['ttl'], update_if_exists=True)
 			else:
-				host_record = objects.HostRecord.search(conn, ip=ip_addr, view=module.params['view'])
-				host_record.delete()
-				module.exit_json(changed=True)
+				module.exit_json(changed=False)
+		#If host doesn not exist, create
+		else:
+			host_record = objects.HostRecord.create(conn, ip=ip_addr, view=module.params['view'], name=module.params['name'],
+				configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'])
+		module.exit_json(changed=True)
 	except exceptions.InfobloxException as error:
 		module.fail_json(msg=str(error))
 
@@ -88,7 +95,7 @@ def main():
 		)
 
 	)
-	create_host_record(module)
+	ensure(module)
 
 
 if __name__ == '__main__':
