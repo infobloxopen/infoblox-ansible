@@ -1,11 +1,40 @@
 ---
 - name: test infoblox_host_record
   hosts: all
+  gather_facts: false
+
+  vars_prompt:
+
+    - name: domain_user
+      prompt: user
+      private: no
+
+    - name: domain_password
+      prompt: password
+      private: yes
+
+    - name: ip_address
+      prompt: ip
+      private: no
+
+
+
 
   tasks:
 
     - name: add host record
       infoblox_host_record:
-        host: "{{grid_manager}}"
-        name: "{{server}}"
-        ip_address: "{{ip_address}}"
+        host: 
+        name: 
+        dns_view: Public View (PNS)
+        next_avail_ip: yes
+        username: "{{domain_user}}"
+        password: "{{domain_password}}"
+        validate_certs: no
+        wapi_version: 1.7
+        state: absent
+      register: host_info
+      delegate_to: localhost
+
+    - debug:
+        var: host_info
