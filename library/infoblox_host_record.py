@@ -88,7 +88,7 @@ def main():
 			#required if not using next_avail_ip
 			ip_address = dict(type='str'),
 			username = dict(type='str', required=True),
-			password = dict(type='str', required=True),
+			password = dict(type='str', required=True, no_log=True),
 			validate_certs = dict(type='bool', default=True,choices=[True,False]),
 			dns_view = dict(type='str', required=True),
 			network_view = dict(type='str'),
@@ -109,6 +109,7 @@ def main():
 		if not module.params['cidr'] or not module.params['network_view']:
 			module.fail_json(msg='"cidr" is required when using "next_avail_ip"')
 	else:
+		
 		if not module.params['ip_address']:
 			module.fail_json(msg='"ip_address" is required when not using "next_avail_ip"')
 
