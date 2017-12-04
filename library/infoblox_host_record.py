@@ -51,7 +51,6 @@ def create_host_record(conn,host_record, module, ip_addr):
 		#If host record exists check if there is a difference between what is specified in ansible
 		#and what is in the host record, if their is an update use .create with update_if_exists=True
 		if host_record:
-			#_ipv4addrs contains a list (of seeming;y duplicate info) that prevents casting to set
 			if module.params['ip_address'] != host_record.ipv4addr:
 				host_record.delete()
 			else:
