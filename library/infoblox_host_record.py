@@ -49,7 +49,8 @@ def delete_host_record(conn, host_record, module):
 def create_host_record(conn,host_record, module, ip_addr):
 	try:
 		#If host record exists check if there is a difference between what is specified in ansible
-		#and what is in the host record, if their is an update use .create with update_if_exists=True
+		#update_if_exists=True seems to no actually do anything and just errors with (record already exists)
+		#using a delete/create method to "update"
 		if host_record:
 			if module.params['ip_address'] != host_record.ipv4addr:
 				host_record.delete()
