@@ -24,6 +24,21 @@ try:
 except ImportError:
 	raise Exception('infoblox-client is not installed.  Please see details here: https://github.com/infobloxopen/infoblox-client')
 
+def is_different(module, host_record):
+	#using sets for easy checking
+	host_record_info = host_record.__dict__.values()
+	del host_record_info['ipv4addrs']
+	host_record_info = set(host_record_info)
+	specified_info = set(module.params.values())
+	if len(specified_info - host_record_info) > 0:
+		return True
+	return False
+
+
+def parse_ext_attrs(host_record):
+	pass
+
+
 def ensure(module):
 	try:
 		conn = connector.Connector({'host':module.params['host'],'username':module.params['username'],'password':module.params['password'],
@@ -52,14 +67,15 @@ def create_host_record(conn,host_record, module, ip_addr):
 		#update_if_exists=True seems to no actually do anything and just errors with (record already exists)
 		#using a delete/create method to "update"
 		if host_record:
-			if module.params['ip_address'] != host_record.ipv4addr:
-				host_record.delete()
+			if is_different(module, host_record):
+				host_record.create()
 			else:
 				module.exit_json(changed=False, ip_addr=host_record.ipv4addr)
 		#If host doesn not exist, create
 	
 		host_record = objects.HostRecord.create(conn, ip=ip_addr, view=module.params['dns_view'], name=module.params['name'],
-			configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'])
+			configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'],
+			extattrs=module.params['extattrs'])
 		module.exit_json(changed=True, ip_addr=host_record.ipv4addr, ref=host_record.ref)
 	except exceptions.InfobloxException as error:
 		module.fail_json(msg=str(error))
@@ -84,23 +100,24 @@ def main():
 		argument_spec = dict(
 			host = dict(type='str' ,required=True),
 			name = dict(type='str', required=True),
-			mac = dict(type='str', default=None),
+			mac = dict(type='str', default=None, required=False),
 			#required if not using next_avail_ip
-			ip_address = dict(type='str'),
+			ip_address = dict(type='str',required=False),
 			username = dict(type='str', required=True),
 			password = dict(type='str', required=True, no_log=True),
-			validate_certs = dict(type='bool', default=True,choices=[True,False]),
+			validate_certs = dict(type='bool', default=True,choices=[True,False],required=False),
 			dns_view = dict(type='str', required=True),
-			network_view = dict(type='str'),
-			wapi_version = dict(type='str', default='2.2'),
-			state = dict(type='str', default='present',choices = ['present','absent']),
-			comment = dict(type='str', default=''),
-			ttl = dict(default=None),
-			configure_for_dns = dict(type='bool', default=True, choices=[True,False]),
-			configure_for_dhcp = dict(type='bool',default=False, choices=[True,False]),
-			next_avail_ip = dict(type='bool',default=False, choices=[True,False]),
+			network_view = dict(type='str',required=False),
+			wapi_version = dict(type='str', default='2.2',required=False),
+			state = dict(type='str', default='present',choices = ['present','absent'],required=True),
+			comment = dict(type='str', default='',required=False),
+			ttl = dict(default=None, required=False),
+			configure_for_dns = dict(type='bool', default=True, choices=[True,False],required=False),
+			configure_for_dhcp = dict(type='bool',default=False, choices=[True,False],required=False),
+			next_avail_ip = dict(type='bool',default=False, choices=[True,False],required=False),
 			#required if using next_avail_ip
-			cidr = dict(type='str')
+			cidr = dict(type='str',required=False),
+			extattrs = dict(type='dict',required=False)
 		),
 		supports_check_mode=False
 
