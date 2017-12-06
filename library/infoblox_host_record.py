@@ -21,8 +21,9 @@ from ansible.module_utils.basic import *
 
 try:
 	from infoblox_client import objects, connector, exceptions
+	HAS_INFOBLOX_CLIENT = True
 except ImportError:
-	raise Exception('infoblox-client is not installed.  Please see details here: https://github.com/infobloxopen/infoblox-client')
+	HAS_INFOBLOX_CLIENT = False
 
 def is_different(module, host_record):
 	#using sets for easy checking
@@ -33,10 +34,6 @@ def is_different(module, host_record):
 	if len(specified_info - host_record_info) > 0:
 		return True
 	return False
-
-
-def parse_ext_attrs(host_record):
-	pass
 
 
 def ensure(module):
@@ -63,19 +60,32 @@ def delete_host_record(conn, host_record, module):
 
 def create_host_record(conn,host_record, module, ip_addr):
 	try:
+		if module.params['extattrs']:
+			extattrs = objects.EA(module.params['extattrs'])
+		else:
+			extattrs = None
 		#If host record exists check if there is a difference between what is specified in ansible
 		#update_if_exists=True seems to no actually do anything and just errors with (record already exists)
 		#using a delete/create method to "update"
 		if host_record:
 			if is_different(module, host_record):
-				host_record.create()
+				#This was failing through to the create before, that was the issue
+				host_record.create(conn, ip=ip_addr, view=module.params['dns_view'], name=module.params['name'],
+			configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'],
+			extattrs=extattrs, update_if_exists=True)
+
+				module.exit_json(changed=True, ip_addr=host_record.ipv4addr,
+					mac=host_record.mac,ttl=host_record.ttl,comment=host_record.comment, extattrs=host_record.extattrs,
+					configure_for_dns=host_record.configure_for_dns, configure_for_dhcp=host_record.configure_for_dhcp)
 			else:
-				module.exit_json(changed=False, ip_addr=host_record.ipv4addr)
+				module.exit_json(changed=False, ip_addr=host_record.ipv4addr,
+					mac=host_record.mac,ttl=host_record.ttl,comment=host_record.comment, extattrs=host_record.extattrs,
+					configure_for_dns=host_record.configure_for_dns, configure_for_dhcp=host_record.configure_for_dhcp)
 		#If host doesn not exist, create
 	
 		host_record = objects.HostRecord.create(conn, ip=ip_addr, view=module.params['dns_view'], name=module.params['name'],
 			configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'],
-			extattrs=module.params['extattrs'])
+			extattrs=extattrs)
 		module.exit_json(changed=True, ip_addr=host_record.ipv4addr, ref=host_record.ref)
 	except exceptions.InfobloxException as error:
 		module.fail_json(msg=str(error))
@@ -110,25 +120,26 @@ def main():
 			network_view = dict(type='str',required=False),
 			wapi_version = dict(type='str', default='2.2',required=False),
 			state = dict(type='str', default='present',choices = ['present','absent'],required=True),
-			comment = dict(type='str', default='',required=False),
-			ttl = dict(default=None, required=False),
+			comment = dict(type='str', default=None,required=False),
+			ttl = dict(default=None, required=False,type='str'),
 			configure_for_dns = dict(type='bool', default=True, choices=[True,False],required=False),
 			configure_for_dhcp = dict(type='bool',default=False, choices=[True,False],required=False),
 			next_avail_ip = dict(type='bool',default=False, choices=[True,False],required=False),
 			#required if using next_avail_ip
-			cidr = dict(type='str',required=False),
-			extattrs = dict(type='dict',required=False)
+			cidr = dict(type='str',required=False, default=None),
+			extattrs = dict(type='dict',required=False,default=None)
 		),
-		supports_check_mode=False
+		supports_check_mode=False,
+		required_on_of=['ip_address','next_avail_ip']
 
 	)
+
+	if not HAS_INFOBLOX_CLIENT:
+		module.fail_json(msg='infoblox-client is not installed.  Please see details here: https://github.com/infobloxopen/infoblox-client')
+
 	if module.params['next_avail_ip']:
 		if not module.params['cidr'] or not module.params['network_view']:
 			module.fail_json(msg='"cidr" is required when using "next_avail_ip"')
-	else:
-		
-		if not module.params['ip_address']:
-			module.fail_json(msg='"ip_address" is required when not using "next_avail_ip"')
 
 	ensure(module)
 
