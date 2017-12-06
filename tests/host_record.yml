@@ -13,14 +13,19 @@
       prompt: password
       private: yes
 
+  vars:
+    host_name: 
+    infoblox_server: 
+    network_view: 
+
   tasks:
 
     - name: add host record
       infoblox_host_record:
-        host: infoblox_server
-        name: test.
+        host: "{{infoblox_server}}"
+        name: "{{host_name }}"
         dns_view: Public View (PNS)
-        network_view: 
+        network_view: "{{network_view}}"
         cidr: 10.64.33.0/24
         next_avail_ip: yes
         username: "{{domain_user}}"
@@ -36,8 +41,8 @@
 
     - name: ensure host record
       infoblox_host_record:
-        host: infoblox
-        name: test
+        host: "{{infoblox_server}}"
+        name: "{{host_name }}"
         dns_view: Public View (PNS)
         ip_address: "{{host_info.ip_addr}}"
         username: "{{domain_user}}"
@@ -53,8 +58,8 @@
 
     - name: update host record
       infoblox_host_record:
-        host: infoblox
-        name: test
+        host: "{{infoblox_server}}"
+        name: "{{host_name}}"
         dns_view: Public View (PNS)
         ip_address: 8.8.8.8
         username: "{{domain_user}}"
@@ -70,8 +75,8 @@
 
     - name: remove host record
       infoblox_host_record:
-        host: infoblox
-        name: test
+        host: "{{infoblox_server}}"
+        name: "{{host_name}}"
         ip_address: "{{host_info3.ip_addr}}"
         dns_view: Public View (PNS)
         username: "{{domain_user}}"
@@ -90,10 +95,10 @@
 
     - name: add host record
       infoblox_host_record:
-        host: infoblox
-        name: test
-        dns_view: ublic View (PNS)
-        network_view: 
+        host: "{{infoblox_server}}"
+        name: "{{host_name}}"
+        dns_view: Public View (PNS)
+        network_view: "{{network_view}}"
         mac: F9:AA:49:FD:47:14
         cidr: 10.64.33.0/24
         next_avail_ip: yes
@@ -110,8 +115,8 @@
 
     - name: remove host record
       infoblox_host_record:
-        host: infoblox
-        name: test
+        host: "{{infoblox_server}}"
+        name: "{{host_name}}"
         ip_address: "{{host_info5.ip_addr}}"
         dns_view: Public View (PNS)
         username: "{{domain_user}}"

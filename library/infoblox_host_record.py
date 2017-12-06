@@ -26,14 +26,20 @@ except ImportError:
 	HAS_INFOBLOX_CLIENT = False
 
 def is_different(module, host_record):
-	#using sets for easy checking
-	host_record_info = host_record.__dict__.values()
-	del host_record_info['ipv4addrs']
-	host_record_info = set(host_record_info)
-	specified_info = set(module.params.values())
-	if len(specified_info - host_record_info) > 0:
+	#checking easiest flags
+	host_record_info = host_record.__dict__
+	if  'ipv4addr' in host_record_info and host_record_info['ipv4addr'] != module.params['ip_address']:
 		return True
-	return False
+	elif 'ipv6addr' in host_record_info and host_record_info['ipv6addr'] != module.params['ip_address']: 
+		return True
+	elif host_record_info['comment'] != module.params['comment']:
+		return	True
+	elif host_record_info['extattrs'] != host_record_info['extattrs']:
+		return True
+	elif host_record_info['ttl'] != module.params['ttl']:
+		return True
+	else:
+		return False
 
 
 def ensure(module):
@@ -64,25 +70,22 @@ def create_host_record(conn,host_record, module, ip_addr):
 			extattrs = objects.EA(module.params['extattrs'])
 		else:
 			extattrs = None
-		#If host record exists check if there is a difference between what is specified in ansible
-		#update_if_exists=True seems to no actually do anything and just errors with (record already exists)
-		#using a delete/create method to "update"
 		if host_record:
 			if is_different(module, host_record):
-				#This was failing through to the create before, that was the issue
+				#uncomment to verify that this is indeed making it's way to this
+				#module.fail_json(msg='updating...')
 				host_record.create(conn, ip=ip_addr, view=module.params['dns_view'], name=module.params['name'],
 			configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'],
 			extattrs=extattrs, update_if_exists=True)
 
 				module.exit_json(changed=True, ip_addr=host_record.ipv4addr,
 					mac=host_record.mac,ttl=host_record.ttl,comment=host_record.comment, extattrs=host_record.extattrs,
-					configure_for_dns=host_record.configure_for_dns, configure_for_dhcp=host_record.configure_for_dhcp)
+					configure_for_dns=host_record.configure_for_dns)
 			else:
 				module.exit_json(changed=False, ip_addr=host_record.ipv4addr,
 					mac=host_record.mac,ttl=host_record.ttl,comment=host_record.comment, extattrs=host_record.extattrs,
-					configure_for_dns=host_record.configure_for_dns, configure_for_dhcp=host_record.configure_for_dhcp)
+					configure_for_dns=host_record.configure_for_dns)
 		#If host doesn not exist, create
-	
 		host_record = objects.HostRecord.create(conn, ip=ip_addr, view=module.params['dns_view'], name=module.params['name'],
 			configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'],
 			extattrs=extattrs)
@@ -110,27 +113,27 @@ def main():
 		argument_spec = dict(
 			host = dict(type='str' ,required=True),
 			name = dict(type='str', required=True),
-			mac = dict(type='str', default=None, required=False),
+			mac = dict(type='str', default=None),
 			#required if not using next_avail_ip
 			ip_address = dict(type='str',required=False),
 			username = dict(type='str', required=True),
 			password = dict(type='str', required=True, no_log=True),
-			validate_certs = dict(type='bool', default=True,choices=[True,False],required=False),
+			validate_certs = dict(type='bool', default=True,choices=[True,False]),
 			dns_view = dict(type='str', required=True),
 			network_view = dict(type='str',required=False),
-			wapi_version = dict(type='str', default='2.2',required=False),
-			state = dict(type='str', default='present',choices = ['present','absent'],required=True),
+			wapi_version = dict(type='str', default='2.2'),
+			state = dict(type='str', default='present',choices = ['present','absent']),
 			comment = dict(type='str', default=None,required=False),
 			ttl = dict(default=None, required=False,type='str'),
-			configure_for_dns = dict(type='bool', default=True, choices=[True,False],required=False),
-			configure_for_dhcp = dict(type='bool',default=False, choices=[True,False],required=False),
-			next_avail_ip = dict(type='bool',default=False, choices=[True,False],required=False),
+			configure_for_dns = dict(type='bool', default=True, choices=[True,False]),
+			configure_for_dhcp = dict(type='bool',default=False, choices=[True,False]),
+			next_avail_ip = dict(type='bool',default=False, choices=[True,False]),
 			#required if using next_avail_ip
-			cidr = dict(type='str',required=False, default=None),
-			extattrs = dict(type='dict',required=False,default=None)
+			cidr = dict(type='str', default=None),
+			extattrs = dict(type='dict',default=None)
 		),
 		supports_check_mode=False,
-		required_on_of=['ip_address','next_avail_ip']
+		required_one_of=(['ip_address','next_avail_ip'],)
 
 	)
 
