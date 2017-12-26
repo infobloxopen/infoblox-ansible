@@ -14,10 +14,10 @@
       private: yes
 
   vars:
-    host_name:
-    infoblox_server: 
-    network_view:
-    dns_view:
+    host_name: test.southernonthegreen.net
+    infoblox_server: infoblox.scsu.southernct.edu
+    network_view: SCSU
+    dns_view: Public View (PNS)
 
   tasks:
 
@@ -48,7 +48,7 @@
         password: "{{domain_password}}"
         validate_certs: no
         extattrs:
-          Site: Site
+          Site: SCSU
         wapi_version: 1.7
         state: present
       register: host_info
