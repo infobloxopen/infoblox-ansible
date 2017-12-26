@@ -25,18 +25,28 @@ try:
 except ImportError:
 	HAS_INFOBLOX_CLIENT = False
 
-def is_different(module, host_record):
-	#checking easiest flags
-	host_record_info = host_record.__dict__
-	if  'ipv4addr' in host_record_info and host_record_info['ipv4addr'] != module.params['ip_address']:
-		return True
-	elif 'ipv6addr' in host_record_info and host_record_info['ipv6addr'] != module.params['ip_address']: 
-		return True
-	elif host_record_info['comment'] != module.params['comment']:
+#determins if address is v4 or v6
+def ipv4_or_v6(host_record):
+	if hasattr(host_record,'ipv4addr'):
+		return host_record.ipv4addr
+	else:
+		return host_record.ipv6addr
+
+def is_different(module, host_record, extattrs):
+	#if ip address different, fail and inform user
+	if module.params['ip_address']:
+		if  hasattr(host_record,'ipv4addr') and host_record.ipv4addr != module.params['ip_address']:
+			module.fail_json(msg='IP address of a Host Record object cannot be changed')
+		elif hasattr(host_record,'ipv6addr') and host_record.ipv6addr != module.params['ip_address']: 
+			module.fail_json(msg='IP address of a Host Record object cannot be changed')
+	elif module.params['next_avail_ip']:
+		module.fail_json(msg='IP address of a Host Record object cannot be changed')
+	#if these are different then update
+	if host_record.comment != module.params['comment']:
 		return	True
-	elif host_record_info['extattrs'] != host_record_info['extattrs']:
+	elif extattrs and host_record.extattrs != extattrs:
 		return True
-	elif host_record_info['ttl'] != module.params['ttl']:
+	elif host_record.ttl != module.params['ttl']:
 		return True
 	else:
 		return False
@@ -59,7 +69,8 @@ def delete_host_record(conn, host_record, module):
 	try:
 		if host_record:
 			host_record.delete()
-			module.exit_json(changed=True)
+			module.exit_json(changed=True,ip_addr=ipv4_or_v6(host_record),
+					mac=host_record.mac,ttl=host_record.ttl,comment=host_record.comment, extattrs=objects.EA(host_record.extattrs).to_dict())
 		module.exit_json(changed=False)
 	except exceptions.InfobloxException as error:
 		module.fail_json(msg=str(error))
@@ -71,25 +82,21 @@ def create_host_record(conn,host_record, module, ip_addr):
 		else:
 			extattrs = None
 		if host_record:
-			if is_different(module, host_record):
+			if is_different(module, host_record, extattrs):
 				#uncomment to verify that this is indeed making it's way to this
 				#module.fail_json(msg='updating...')
 				host_record.create(conn, ip=ip_addr, view=module.params['dns_view'], name=module.params['name'],
 			configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'],
 			extattrs=extattrs, update_if_exists=True)
 
-				module.exit_json(changed=True, ip_addr=host_record.ipv4addr,
-					mac=host_record.mac,ttl=host_record.ttl,comment=host_record.comment, extattrs=host_record.extattrs,
-					configure_for_dns=host_record.configure_for_dns)
+				module.exit_json(changed=True, ip_addr=ipv4_or_v6(host_record),extattrs=objects.EA(host_record.extattrs).to_dict())
 			else:
-				module.exit_json(changed=False, ip_addr=host_record.ipv4addr,
-					mac=host_record.mac,ttl=host_record.ttl,comment=host_record.comment, extattrs=host_record.extattrs,
-					configure_for_dns=host_record.configure_for_dns)
+				module.exit_json(changed=False, ip_addr=ipv4_or_v6(host_record),extattrs=objects.EA(host_record.extattrs).to_dict())
 		#If host doesn not exist, create
 		host_record = objects.HostRecord.create(conn, ip=ip_addr, view=module.params['dns_view'], name=module.params['name'],
 			configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'],
 			extattrs=extattrs)
-		module.exit_json(changed=True, ip_addr=host_record.ipv4addr, ref=host_record.ref)
+		module.exit_json(changed=True, ip_addr=ipv4_or_v6(host_record),extattrs=objects.EA(host_record.extattrs).to_dict())
 	except exceptions.InfobloxException as error:
 		module.fail_json(msg=str(error))
 
