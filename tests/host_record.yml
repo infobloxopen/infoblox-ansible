@@ -13,32 +13,58 @@
       prompt: password
       private: yes
 
+  vars:
+    host_name: test.southernonthegreen.net
+    infoblox_server: infoblox.scsu.southernct.edu
+    network_view: SCSU
+    dns_view: Public View (PNS)
+
   tasks:
 
-    - name: add host record
+    - name: ensure nothing is here
       infoblox_host_record:
-        host: infoblox_server
-        name: test.
-        dns_view: Public View (PNS)
-        network_view: 
+        host: "{{infoblox_server}}"
+        name: "{{host_name }}"
+        dns_view: "{{dns_view}}"
+        network_view: "{{network_view}}"
         cidr: 10.64.33.0/24
         next_avail_ip: yes
         username: "{{domain_user}}"
         password: "{{domain_password}}"
         validate_certs: no
         wapi_version: 1.7
+        state: absent
+      delegate_to: localhost
+
+    - name: add host record
+      infoblox_host_record:
+        host: "{{infoblox_server}}"
+        name: "{{host_name }}"
+        dns_view: "{{dns_view}}"
+        network_view: "{{network_view}}"
+        cidr: 10.64.33.0/24
+        next_avail_ip: yes
+        username: "{{domain_user}}"
+        password: "{{domain_password}}"
+        validate_certs: no
+        extattrs:
+          Site: SCSU
+        wapi_version: 1.7
         state: present
       register: host_info
       delegate_to: localhost
+
+    - debug:
+        var: host_info
 
     - fail:
       when: "'10.64.33' not in host_info.ip_addr"
 
     - name: ensure host record
       infoblox_host_record:
-        host: infoblox
-        name: test
-        dns_view: Public View (PNS)
+        host: "{{infoblox_server}}"
+        name: "{{host_name }}"
+        dns_view: "{{dns_view}}"
         ip_address: "{{host_info.ip_addr}}"
         username: "{{domain_user}}"
         password: "{{domain_password}}"
@@ -51,49 +77,32 @@
     - fail:
       when: host_info2.changed
 
-    - name: update host record
-      infoblox_host_record:
-        host: infoblox
-        name: test
-        dns_view: Public View (PNS)
-        ip_address: 8.8.8.8
-        username: "{{domain_user}}"
-        password: "{{domain_password}}"
-        validate_certs: no
-        wapi_version: 1.7
-        state: present
-      register: host_info3
-      delegate_to: localhost
-
-    - fail:
-      when: host_info3.ip_addr != "8.8.8.8"
-
     - name: remove host record
       infoblox_host_record:
-        host: infoblox
-        name: test
-        ip_address: "{{host_info3.ip_addr}}"
-        dns_view: Public View (PNS)
+        host: "{{infoblox_server}}"
+        name: "{{host_name}}"
+        ip_address: "{{host_info2.ip_addr}}"
+        dns_view: "{{dns_view}}"
         username: "{{domain_user}}"
         password: "{{domain_password}}"
         validate_certs: no
         wapi_version: 1.7
         state: absent
-      register: host_info4
+      register: host_info3
       delegate_to: localhost
 
     - fail:
-      when: host_info4.changed != True
+      when: host_info3.changed != True
 
     - debug:
-        var: host_info4
+        var: host_info3
 
     - name: add host record
       infoblox_host_record:
-        host: infoblox
-        name: test
-        dns_view: ublic View (PNS)
-        network_view: 
+        host: "{{infoblox_server}}"
+        name: "{{host_name}}"
+        dns_view: "{{dns_view}}"
+        network_view: "{{network_view}}"
         mac: F9:AA:49:FD:47:14
         cidr: 10.64.33.0/24
         next_avail_ip: yes
@@ -102,27 +111,66 @@
         validate_certs: no
         wapi_version: 1.7
         state: present
-      register: host_info5
+      register: host_info4
       delegate_to: localhost
 
     - fail:
-      when: "'10.64.33' not in host_info5.ip_addr"
+      when: "'10.64.33' not in host_info4.ip_addr"
 
     - name: remove host record
       infoblox_host_record:
-        host: infoblox
-        name: test
-        ip_address: "{{host_info5.ip_addr}}"
-        dns_view: Public View (PNS)
+        host: "{{infoblox_server}}"
+        name: "{{host_name}}"
+        ip_address: "{{host_info4.ip_addr}}"
+        dns_view: "{{dns_view}}"
         username: "{{domain_user}}"
         password: "{{domain_password}}"
         validate_certs: no
         wapi_version: 1.7
         state: absent
-      register: host_info6
+      register: host_info5
       delegate_to: localhost
 
     - fail:
-      when: host_info6.changed != True
+      when: host_info5.changed != True
 
 
+    - name: with ip address
+      infoblox_host_record:
+        host: "{{infoblox_server}}"
+        name: "{{host_name}}"
+        dns_view: "{{dns_view}}"
+        network_view: "{{network_view}}"
+        ip_address: 8.8.8.8
+        username: "{{domain_user}}"
+        password: "{{domain_password}}"
+        comment: "test"
+        validate_certs: no
+        wapi_version: 1.7
+        state: present
+      register: host_info6
+      delegate_to: localhost
+
+
+    - fail:
+      when: host_info6.ip_addr != '8.8.8.8'
+
+
+    - name: cleanup
+      infoblox_host_record:
+        host: "{{infoblox_server}}"
+        name: "{{host_name}}"
+        dns_view: "{{dns_view}}"
+        network_view: "{{network_view}}"
+        ip_address: 8.8.8.8
+        username: "{{domain_user}}"
+        password: "{{domain_password}}"
+        comment: "test2"
+        validate_certs: no
+        wapi_version: 1.7
+        state: absent
+      register: host_info7
+      delegate_to: localhost
+
+    - fail:
+      when: "host_info7.changed != True"

@@ -152,6 +152,7 @@ def build_extattrs(module, conn, extattrs):
         return None
     if isinstance(extattrs, dict):
         for key, value in extattrs.items():
+            #is one of these supposed to be "key"?
             if isinstance(value, str) and isinstance(value, str):
                 out_extattrs[key] = {"value": value}
             else:
