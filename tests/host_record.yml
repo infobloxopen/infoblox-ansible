@@ -15,7 +15,7 @@
 
   vars:
     host_name:
-    infoblox_server:
+    infoblox_server: 
     network_view:
     dns_view:
 
@@ -48,7 +48,7 @@
         password: "{{domain_password}}"
         validate_certs: no
         extattrs:
-          Site: SCSU
+          Site: Site
         wapi_version: 1.7
         state: present
       register: host_info
@@ -155,24 +155,6 @@
     - fail:
       when: host_info6.ip_addr != '8.8.8.8'
 
-    - name: update comment
-      infoblox_host_record:
-        host: "{{infoblox_server}}"
-        name: "{{host_name}}"
-        dns_view: "{{dns_view}}"
-        network_view: "{{network_view}}"
-        ip_address: 8.8.8.8
-        username: "{{domain_user}}"
-        password: "{{domain_password}}"
-        comment: "test2"
-        validate_certs: no
-        wapi_version: 1.7
-        state: present
-      register: host_info7
-      delegate_to: localhost
-
-    - fail:
-      when: "host_info7.changed != True"
 
     - name: cleanup
       infoblox_host_record:
@@ -187,8 +169,8 @@
         validate_certs: no
         wapi_version: 1.7
         state: absent
-      register: host_info8
+      register: host_info7
       delegate_to: localhost
 
     - fail:
-      when: "host_info8.changed != True"
+      when: "host_info7.changed != True"

@@ -153,11 +153,7 @@ def is_different(module, host_record, extattrs):
 	elif module.params['next_avail_ip']:
 		module.fail_json(msg='IP address of a Host Record object cannot be changed')
 	#if these are different then update
-	if host_record.comment != module.params['comment']:
-		return	True
 	elif extattrs and host_record.extattrs != extattrs:
-		return True
-	elif host_record.ttl != module.params['ttl']:
 		return True
 	else:
 		return False
@@ -180,8 +176,7 @@ def delete_host_record(conn, host_record, module):
 	try:
 		if host_record:
 			host_record.delete()
-			module.exit_json(changed=True,ip_addr=ipv4_or_v6(host_record),
-					mac=host_record.mac,ttl=host_record.ttl,comment=host_record.comment, extattrs=ea_to_dict(host_record.extattrs))
+			module.exit_json(changed=True,ip_addr=ipv4_or_v6(host_record), extattrs=ea_to_dict(host_record.extattrs))
 		module.exit_json(changed=False)
 	except exceptions.InfobloxException as error:
 		module.fail_json(msg=str(error))
