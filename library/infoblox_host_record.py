@@ -2,7 +2,7 @@
 # Copyright (c) 2017 Philip Bove
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-DOCUMENTATION = """
+"""
 module: infoblox_host_record
 description: manage infoblox host records with infoblox-client
 version_added: "2.4"
@@ -31,6 +31,12 @@ def ipv4_or_v6(host_record):
 		return host_record.ipv4addr
 	else:
 		return host_record.ipv6addr
+
+def ea_to_dict(extattrs):
+	if extattrs:
+		return extattrs.__dict__['_ea_dict']
+	else:
+		return {}
 
 def is_different(module, host_record, extattrs):
 	#if ip address different, fail and inform user
@@ -70,7 +76,7 @@ def delete_host_record(conn, host_record, module):
 		if host_record:
 			host_record.delete()
 			module.exit_json(changed=True,ip_addr=ipv4_or_v6(host_record),
-					mac=host_record.mac,ttl=host_record.ttl,comment=host_record.comment, extattrs=objects.EA(host_record.extattrs).to_dict())
+					mac=host_record.mac,ttl=host_record.ttl,comment=host_record.comment, extattrs=ea_to_dict(host_record.extattrs))
 		module.exit_json(changed=False)
 	except exceptions.InfobloxException as error:
 		module.fail_json(msg=str(error))
@@ -89,14 +95,14 @@ def create_host_record(conn,host_record, module, ip_addr):
 			configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'],
 			extattrs=extattrs, update_if_exists=True)
 
-				module.exit_json(changed=True, ip_addr=ipv4_or_v6(host_record),extattrs=objects.EA(host_record.extattrs).to_dict())
+				module.exit_json(changed=True, ip_addr=ipv4_or_v6(host_record),extattrs=ea_to_dict(host_record.extattrs))
 			else:
-				module.exit_json(changed=False, ip_addr=ipv4_or_v6(host_record),extattrs=objects.EA(host_record.extattrs).to_dict())
+				module.exit_json(changed=False, ip_addr=ipv4_or_v6(host_record),extattrs=ea_to_dict(host_record.extattrs))
 		#If host doesn not exist, create
 		host_record = objects.HostRecord.create(conn, ip=ip_addr, view=module.params['dns_view'], name=module.params['name'],
 			configure_for_dns=module.params['configure_for_dns'], ttl=module.params['ttl'], comment=module.params['comment'],
 			extattrs=extattrs)
-		module.exit_json(changed=True, ip_addr=ipv4_or_v6(host_record),extattrs=objects.EA(host_record.extattrs).to_dict())
+		module.exit_json(changed=True, ip_addr=ipv4_or_v6(host_record),extattrs=ea_to_dict(host_record.extattrs))
 	except exceptions.InfobloxException as error:
 		module.fail_json(msg=str(error))
 

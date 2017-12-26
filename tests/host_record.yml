@@ -15,9 +15,9 @@
 
   vars:
     host_name:
-    infoblox_server: 
-    network_view: 
-    dns_view: 
+    infoblox_server:
+    network_view:
+    dns_view:
 
   tasks:
 
@@ -47,10 +47,15 @@
         username: "{{domain_user}}"
         password: "{{domain_password}}"
         validate_certs: no
+        extattrs:
+          Site: SCSU
         wapi_version: 1.7
         state: present
       register: host_info
       delegate_to: localhost
+
+    - debug:
+        var: host_info
 
     - fail:
       when: "'10.64.33' not in host_info.ip_addr"
