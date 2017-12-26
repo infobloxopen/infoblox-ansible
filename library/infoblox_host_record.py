@@ -1,19 +1,124 @@
 #!/usr/bin/env python
-# Copyright (c) 2017 Philip Bove
+# Copyright (c) 2017 Philip Bove <pgbson@gmail.com>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-"""
+DOCUMENTATION = """
+---
 module: infoblox_host_record
-description: manage infoblox host records with infoblox-client
+description: 
+	- Manage Infoblox Host Records with infoblox-client
 version_added: "2.4"
+author: "Philip Bove (https://github.com/bandit145)"
+options:
+	host:
+		description:
+			- FQDN of Infoblox gridmanager
+		required: true
+	username:
+		description:
+			- Username to use for API access
+		required: true
+	password:
+		description:
+			- Password to use for API access
+		required: true
+	validate_certs:
+		description:
+			- Attempt to validate SSL certs on API endpoint
+		required: false
+		default: yes
+		choices: ['yes','no']
+	wapi_version:
+		description:
+			- WAPI version for NIOS
+		required: false
+		default: '2.2'
+	name:
+		description:
+			- FQDN of Host Record
+		required: true
+	mac:
+		description:
+			- MAC Addresses to use when assigning an IP Address to the Host Record
+		required: false
+	ip_address:
+		description:
+			- IP Address to assign to Host Record. Only required if next_avail_ip is not being used Note: IP Addresses can not be updated in place
+		required: false
+	dns_view:
+		description:
+			- NIOS DNS view
+		required: true
+	network_view:
+		description:
+			- NIOS network view, only required if using next_avail_ip
+		required: false
+	state:
+		description:
+			- Desired state of Host Object
+		required: false
+		choices: ['present','absent']
+		default: 'present'
+	comment:
+		description:
+			- Comment of Host Record
+		required: false
+	ttl:
+		description:
+			- TTL of Host Record
+		required: false
+	configure_for_dns:
+		description:
+			- Configure Host Record for DNS
+		required: false
+		choices: ['yes','no']
+		default: yes
+	configure_for_dhcp:
+		description:
+			- Configure Host Record IP Address for DHCP
+		required: false
+		choices: ['yes','no']
+		default: no
+	next_avail_ip:
+		description:
+			- Use next available IP in a subnet. Note: Requires cidr to be used with
+		required: false
+	cidr:
+		description:
+			- CIDR notation of subnet to use next available IP from
+		required: false
+	extattrs:
+		description
+			- Extra Attributes for the Host Record (A dict of key value pairs)
+			- Example: {"Site":"MySite"}
+		required: false
 """
 
 EXAMPLES = """
 - name: create host_record
   host: "{{grid_manager}}"
   name: server.test.com
-  mac: macaddr
+  dns_view: Public
   ip_address: 10.1.10.50
+  state: present
+  username: test
+  password: test
+- name: create host_record with next available IP
+  host: "{{grid_manager}}"
+  name: server.test.com
+  next_avail_ip: yes
+  cidr: 10.1.10.0/24
+  network_view: My_org
+  state: present
+  username: test
+  password: test
+- name: remove host_record
+  host: "{{grid_manager}}"
+  name: server.test.com
+  next_avail_ip: yes
+  cidr: 10.1.10.0/24
+  network_view: My_org
+  state: absent
   username: test
   password: test
 """
@@ -134,7 +239,7 @@ def main():
 			validate_certs = dict(type='bool', default=True,choices=[True,False],required=False),
 			dns_view = dict(type='str', required=True),
 			network_view = dict(type='str',required=False),
-			wapi_version = dict(type='str', default='2.2'),
+			wapi_version = dict(type='str', default='2.2', required=False),
 			state = dict(type='str', default='present',choices = ['present','absent'],required=False),
 			comment = dict(type='str', default=None,required=False),
 			ttl = dict(default=None, required=False,type='str'),
