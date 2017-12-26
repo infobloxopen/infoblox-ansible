@@ -120,24 +120,24 @@ def main():
 		argument_spec = dict(
 			host = dict(type='str' ,required=True),
 			name = dict(type='str', required=True),
-			mac = dict(type='str', default=None),
+			mac = dict(type='str', default=None, required=False),
 			#required if not using next_avail_ip
 			ip_address = dict(type='str',required=False),
 			username = dict(type='str', required=True),
 			password = dict(type='str', required=True, no_log=True),
-			validate_certs = dict(type='bool', default=True,choices=[True,False]),
+			validate_certs = dict(type='bool', default=True,choices=[True,False],required=False),
 			dns_view = dict(type='str', required=True),
 			network_view = dict(type='str',required=False),
 			wapi_version = dict(type='str', default='2.2'),
-			state = dict(type='str', default='present',choices = ['present','absent']),
+			state = dict(type='str', default='present',choices = ['present','absent'],required=False),
 			comment = dict(type='str', default=None,required=False),
 			ttl = dict(default=None, required=False,type='str'),
-			configure_for_dns = dict(type='bool', default=True, choices=[True,False]),
-			configure_for_dhcp = dict(type='bool',default=False, choices=[True,False]),
-			next_avail_ip = dict(type='bool',default=False, choices=[True,False]),
+			configure_for_dns = dict(type='bool', default=True, choices=[True,False],required=False),
+			configure_for_dhcp = dict(type='bool',default=False, choices=[True,False], required=False),
+			next_avail_ip = dict(type='bool',default=False, choices=[True,False], required=False),
 			#required if using next_avail_ip
-			cidr = dict(type='str', default=None),
-			extattrs = dict(type='dict',default=None)
+			cidr = dict(type='str', default=None, required=False),
+			extattrs = dict(type='dict',default=None,required=False)
 		),
 		supports_check_mode=False,
 		required_one_of=(['ip_address','next_avail_ip'],)
@@ -149,7 +149,7 @@ def main():
 
 	if module.params['next_avail_ip']:
 		if not module.params['cidr'] or not module.params['network_view']:
-			module.fail_json(msg='"cidr" is required when using "next_avail_ip"')
+			module.fail_json(msg='"cidr" and "network_view" are required when using "next_avail_ip"')
 
 	ensure(module)
 
