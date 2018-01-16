@@ -159,19 +159,6 @@ def is_different(module, host_record, extattrs):
 		return False
 
 
-def ensure(module):
-	try:
-		conn = connector.Connector({'host':module.params['host'],'username':module.params['username'],'password':module.params['password'],
-			'ssl_verify':module.params['validate_certs'],'wapi_version':module.params['wapi_version']})
-		ip_addr = ip_gen(module)
-		host_record = objects.HostRecord.search(conn, name=module.params['name'], view=module.params['dns_view'])
-		if module.params['state'] == 'present':
-			create_host_record(conn, host_record, module, ip_addr)
-		elif module.params['state'] == 'absent':
-			delete_host_record(conn, host_record, module)
-	except exceptions.InfobloxException as error:
-		module.fail_json(msg=str(error))
-
 def delete_host_record(conn, host_record, module):
 	try:
 		if host_record:
@@ -257,7 +244,17 @@ def main():
 		if not module.params['cidr'] or not module.params['network_view']:
 			module.fail_json(msg='"cidr" and "network_view" are required when using "next_avail_ip"')
 
-	ensure(module)
+	try:
+		conn = connector.Connector({'host':module.params['host'],'username':module.params['username'],'password':module.params['password'],
+			'ssl_verify':module.params['validate_certs'],'wapi_version':module.params['wapi_version']})
+		ip_addr = ip_gen(module)
+		host_record = objects.HostRecord.search(conn, name=module.params['name'], view=module.params['dns_view'])
+		if module.params['state'] == 'present':
+			create_host_record(conn, host_record, module, ip_addr)
+		elif module.params['state'] == 'absent':
+			delete_host_record(conn, host_record, module)
+	except exceptions.InfobloxException as error:
+		module.fail_json(msg=str(error))
 
 
 if __name__ == '__main__':
