@@ -14,9 +14,9 @@
       private: yes
 
   vars:
-    host_name: test.southernonthegreen.net
-    infoblox_server: infoblox.scsu.southernct.edu
-    network_view: SCSU
+    host_name: 
+    infoblox_server: 
+    network_view: 
     dns_view: Public View (PNS)
 
   tasks:
