@@ -1,0 +1,229 @@
+{
+ "files": [
+  {
+   "format": 1, 
+   "ftype": "dir", 
+   "chksum_sha256": null, 
+   "name": ".", 
+   "chksum_type": null
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "8ada753252c3fd7900d8820acb6144094601e1fba5f6c84ec75a7e0e9c341b0f", 
+   "name": ".DS_Store", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "dir", 
+   "chksum_sha256": null, 
+   "name": "plugins", 
+   "chksum_type": null, 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "687d09b41bd8712b517d4e6b278cbbe954ae0f66707059d3db54caecf59e0645", 
+   "name": "plugins/.DS_Store", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "c82ee692702ec1dd604cdbc38ff252114e5204e1b0627045a66c9451e7a918ac", 
+   "name": "plugins/README.md", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "dir", 
+   "chksum_sha256": null, 
+   "name": "plugins/inventory", 
+   "chksum_type": null, 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "aa1cc0ef2071c6079780ef447c1eff45304075ad23335863276715fd5e268aa2", 
+   "name": "plugins/inventory/infoblox.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "dir", 
+   "chksum_sha256": null, 
+   "name": "plugins/module_utils", 
+   "chksum_type": null, 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "cbd9784621d41b9afe7d7b0c28f3d711eda66a7081ac70aa0e4466f64c3b5c3e", 
+   "name": "plugins/module_utils/api.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "3e2541c9133d05066d423e5e7d47f13be401e32c408094253cbb2af6145b893f", 
+   "name": "plugins/module_utils/network.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "dir", 
+   "chksum_sha256": null, 
+   "name": "plugins/modules", 
+   "chksum_type": null, 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "e19ded58520a71f06a1a21219c07b05d48808a72ff14159de2e9e2f0eac37725", 
+   "name": "plugins/modules/nios_member.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "1ef134e64c6928106fc50760ff05b173521bed40f949ef28a3abd4a47c6491fb", 
+   "name": "plugins/modules/nios_dns_view.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "f429c36f717b190d8aee1c7c62ae8e14a725befc5f44c02e5c931cd14b1c0f25", 
+   "name": "plugins/modules/nios_zone.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "d3fdb4387b36024c743980184c460db20faf729c6581ff79c5243e95a57016eb", 
+   "name": "plugins/modules/nios_network.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "af9fd610f5246d2c5ddd9df9186c3b1a3bc361ea6844c9a2b084f5b93ef37632", 
+   "name": "plugins/modules/nios_txt_record.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "b01638bfbc68c55e83c5f505fddeb9f8716915f2778ccb7fe507ee74826ef9bd", 
+   "name": "plugins/modules/nios_naptr_record.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "ead0de2ec7919d68ff4173a99e4856dfa73eadbe1b681c8e6b762711471cc370", 
+   "name": "plugins/modules/nios_ptr_record.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "8ecca1f0cde4ede9e22b81456ab04cde122e5fd1fed00b43965dbd1d33d08886", 
+   "name": "plugins/modules/nios_host_record.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "fda470b78fa215c45baea103a8a9d8c67e72a763ab318cbfd22263a2f03ac8e3", 
+   "name": "plugins/modules/nios_network_view.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "9acc08473879c5c1bbe95f7c18ccf4bdc7707197db59bdc60214aa2a3449b3b0", 
+   "name": "plugins/modules/nios_srv_record.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "d72a6ea0ae1ef43ca5fdabcb47afeb3e328e2dcf739d940f251d267f49f3076a", 
+   "name": "plugins/modules/nios_nsgroup.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "b032cb37f5585dd91aa7230fb2934d4a694c16c092c31d686629db548708be36", 
+   "name": "plugins/modules/nios_mx_record.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "1a7aec4203e8a8796c063fcbeb6fb604923942514c382d0fc2b840fe0f882364", 
+   "name": "plugins/modules/nios_cname_record.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "ba57142a2e1d165ff97fcfd08ee1b6b96bb8ee9b37e6d7d03bfd384905299d7f", 
+   "name": "plugins/modules/nios_a_record.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "59523a212a8db0e93b77bea32a564644fea6b54b5cd0fc6043adced85f8fd7dc", 
+   "name": "plugins/modules/nios_aaaa_record.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "d17581768d84c51cc7fea6a2a33acfdbe2d785ea3463df1428f07d483f8c6821", 
+   "name": "plugins/modules/nios_fixed_address.py", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "dir", 
+   "chksum_sha256": null, 
+   "name": "roles", 
+   "chksum_type": null, 
+   "format": 1
+  }, 
+  {
+   "ftype": "dir", 
+   "chksum_sha256": null, 
+   "name": "playbooks", 
+   "chksum_type": null, 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "05aefaf2a5992992b761b4d597db5b2600f35da049ced36e3fa493fc0badbb23", 
+   "name": "playbooks/create_a_record.yaml", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }, 
+  {
+   "ftype": "dir", 
+   "chksum_sha256": null, 
+   "name": "docs", 
+   "chksum_type": null, 
+   "format": 1
+  }, 
+  {
+   "ftype": "file", 
+   "chksum_sha256": "1fb31b94ac5ad94ea4bbd28b53b9eca317d86a0e2b4abd633e83c2d654183789", 
+   "name": "README.md", 
+   "chksum_type": "sha256", 
+   "format": 1
+  }
+ ], 
+ "format": 1
+}
