@@ -5,7 +5,7 @@
     nios_provider:
       host: 10.34.34.175
       username: cloudadmin
-      password: infoblox
+      password: admin
 
   connection: local
   tasks:
