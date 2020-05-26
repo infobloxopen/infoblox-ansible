@@ -1,5 +1,5 @@
 #
-#  Copyright 2018 Red Hat | Ansible
+#  Copyright © 2020 Infoblox Inc
 #
 # This file is part of Ansible
 #
