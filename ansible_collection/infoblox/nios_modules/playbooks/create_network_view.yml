@@ -10,7 +10,7 @@
   connection: local
   tasks:
    - name: create network view
-     nios_network_view:
+     infoblox.nios_modules.nios_network_view:
        name: ansibleCollectionsView
        extattrs:
          Site: Test Site

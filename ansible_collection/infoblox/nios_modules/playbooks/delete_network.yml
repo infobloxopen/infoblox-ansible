@@ -10,7 +10,7 @@
   connection: local
   tasks:
    - name: delete network
-     nios_network:
+     infoblox.nios_modules.nios_network:
        network: 10.0.0.0/24
        network_view: ansibleNetView
        state: absent

@@ -10,7 +10,7 @@
   connection: local
   tasks:
    - name: delete network view
-     nios_network_view:
+     infoblox.nios_modules.nios_network_view:
        name: ansibleNetView
        state: absent
        provider: "{{ nios_provider }}"

@@ -11,7 +11,7 @@
   connection: local
   tasks:
    - name: create zone
-     nios_zone:
+     infoblox.nios_modules.nios_zone:
        name: ansibletestzone.com
        view: ansibleDnsView
        extattrs:

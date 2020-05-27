@@ -10,7 +10,7 @@
   connection: local
   tasks:
    - name: Update Nios A record
-     nios_a_record:
+     infoblox.nios_modules.nios_a_record:
        name: {new_name: v7.testzone.com, old_name: v7.testzone.com}
        view: testDnsView
        ipv4: 1.1.11.2

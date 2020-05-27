@@ -10,7 +10,7 @@
   connection: local
   tasks:
    - name: Create Nios TXT record
-     nios_txt_record:
+     infoblox.nios_modules.nios_txt_record:
        name: fqdn.txt.ansible.com
        text: example_text
        view: default

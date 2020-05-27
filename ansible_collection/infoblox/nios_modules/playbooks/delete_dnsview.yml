@@ -10,7 +10,7 @@
   connection: local
   tasks:
    - name: delete DNS view
-     nios_dns_view:
+     infoblox.nios_modules.nios_dns_view:
        name: ansibleDnsView
        network_view: ansibleNetView
        state: absent

@@ -10,7 +10,7 @@
   connection: local
   tasks:
    - name: delete zone
-     nios_zone:
+     infoblox.nios_modules.nios_zone:
        name: ansiblezone.com
        view: ansibleDnsView
        state: absent

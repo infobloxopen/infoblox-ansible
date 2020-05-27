@@ -10,7 +10,7 @@
   connection: local
   tasks:
    - name: Create Nios A record Test
-     nios_a_record:
+     infoblox.nios_modules.nios_a_record:
        name: v55.ansibletestzone.com
        view: ansibleDnsView
        ipv4: 192.168.11.251
