@@ -1,7 +1,7 @@
 **Infoblox Ansible Collections for vNIOS**
 
-About
-=====
+About 
+======
 
 Infoblox Ansible Collection for vNIOS allows managing your NIOS objects
 through APIs.\
@@ -54,9 +54,14 @@ Modules:
 Plugins:
 --------
 
--   infoblox: List all the hosts with records created in NIOS
+-   nios\_inventory: List all the hosts with records created in NIOS
 
--   lookup: Look up queries for NIOS database objects
+-   nios\_lookup: Look up queries for NIOS database objects
+
+-   nios\_next\_ip: Returns the next available IP address for a network
+
+-   nios\_next\_network: Returns the next available network addresses
+    for a given network CIDR
 
 Installation 
 =============
@@ -70,12 +75,23 @@ Dependencies
 
 -   NIOS 8.2.4 and above
 
-You can install the nios\_modules collection either from Ansible Galaxy
-or directly from Git. It is recommended to install collection from
-Ansible Galaxy are those are more stable than the git branch.
+Prerequisites
+-------------
 
-Installation from Ansible Galaxy
---------------------------------
+You need to install the infoblox-client package. To install
+infoblox-client WAPI package, run the following command:
+
+\$ pip install infoblox-client
+
+Installation of nios\_modules Collection
+----------------------------------------
+
+The nios\_modules collection can be installed either from Ansible Galaxy
+or directly from git. It is recommended to install collections from
+Ansible Galaxy are those are more stable than the ones in the git
+branch.
+
+### Installation from Ansible Galaxy
 
 To directly install the nios\_modules collection from Ansible Galaxy,
 run the following command:
@@ -85,8 +101,7 @@ run the following command:
 The collection folder would be installed at
 \~/.ansible/collections/ansible\_collections/infoblox/nios\_modules
 
-Installation from Git
----------------------
+### Installation from Git
 
 To git clone and install from this repo, follow these steps:
 
@@ -106,8 +121,12 @@ This creates a tarball of the built collection in the current directory.
 
 -   **Install the collection:**
 
-> \$ ansible-galaxy collection install &lt;collection-name&gt;.tar.gz -p
-> ./collections
+\$ ansible-galaxy collection install &lt;collection-name&gt;.tar.gz -p
+./collections
+
+Please refer to our Ansible [deployment
+guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
+for more details.
 
 Resources
 =========
@@ -125,8 +144,9 @@ Resources
 License
 =======
 
-This code is published under [Apache
-License](https://github.com/infobloxopen/infoblox-ansible/blob/master/LICENSE)
+This code is published under GPL v3.0
+
+[COPYING](https://github.com/infobloxopen/infoblox-ansible/blob/master/COPYING)
 
 Support
 =======
