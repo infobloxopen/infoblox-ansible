@@ -50,6 +50,12 @@ options:
     default: true
     aliases:
       - dns
+  ddns_protected:
+    description:
+      - Protect your DNS record from being overwritten by a dynamic dns update
+      type: bool
+      required: false
+      default: false
   ipv4addrs:
     description:
       - Configures the IPv4 addresses for this host record.  This argument
@@ -131,6 +137,20 @@ options:
 '''
 
 EXAMPLES = '''
+- name: configure an ipv4 host record
+  nios_host_record:
+   name: host.ansible.com
+   ipv4:
+       - address: 192.168.10.1
+    aliases:
+       - cname.ansible.com
+    state: present
+    ddns_protected: True
+    provider:
+       host: "{{ inventory_hostname_short }}"
+       username: admin
+       password: admin
+  connection: local
 - name: configure an ipv4 host record
   nios_host_record:
     name: host.ansible.com
@@ -271,6 +291,7 @@ def main():
         ipv6addrs=dict(type='list', aliases=['ipv6'], elements='dict', options=ipv6addr_spec, transform=ipv6addrs),
         configure_for_dns=dict(type='bool', default=True, required=False, aliases=['dns'], ib_req=True),
         aliases=dict(type='list'),
+        ddns_protected=dict(type='bool', default=False, required=False),
 
         ttl=dict(type='int'),
 
