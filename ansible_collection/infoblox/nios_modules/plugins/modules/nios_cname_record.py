@@ -71,7 +71,7 @@ options:
 
 EXAMPLES = '''
 - name: configure a CNAME record
-  nios_cname_record:
+  infoblox.nios_modules.nios_cname_record:
     name: cname.ansible.com
     canonical: realhost.ansible.com
     state: present
@@ -82,7 +82,7 @@ EXAMPLES = '''
   connection: local
 
 - name: add a comment to an existing CNAME record
-  nios_cname_record:
+  infoblox.nios_modules.nios_cname_record:
     name: cname.ansible.com
     canonical: realhost.ansible.com
     comment: this is a test comment
@@ -94,7 +94,7 @@ EXAMPLES = '''
   connection: local
 
 - name: remove a CNAME record from the system
-  nios_cname_record:
+  infoblox.nios_modules.nios_cname_record:
     name: cname.ansible.com
     canonical: realhost.ansible.com
     state: absent

@@ -303,7 +303,7 @@ options:
 
 EXAMPLES = '''
 - name: add a member to the grid with IPv4 address
-  nios_member:
+  infoblox.nios_modules.nios_member:
     host_name: member01.localdomain
     vip_setting:
       - address: 192.168.1.100
@@ -319,7 +319,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: add a HA member to the grid
-  nios_member:
+  infoblox.nios_modules.nios_member:
     host_name: memberha.localdomain
     vip_setting:
       - address: 192.168.1.100
@@ -344,7 +344,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: update the member with pre-provisioning details specified
-  nios_member:
+  infoblox.nios_modules.nios_member:
     name: member01.localdomain
     pre_provisioning:
       - hardware_info:
@@ -363,7 +363,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: remove the member
-  nios_member:
+  infoblox.nios_modules.nios_member:
     name: member01.localdomain
     state: absent
     provider:

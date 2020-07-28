@@ -58,7 +58,7 @@ options:
 
 EXAMPLES = '''
 - name: configure a new network view
-  nios_network_view:
+  infoblox.nios_modules.nios_network_view:
     name: ansible
     state: present
     provider:
@@ -67,7 +67,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: update the comment for network view
-  nios_network_view:
+  infoblox.nios_modules.nios_network_view:
     name: ansible
     comment: this is an example comment
     state: present
@@ -77,7 +77,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: remove the network view
-  nios_network_view:
+  infoblox.nios_modules.nios_network_view:
     name: ansible
     state: absent
     provider:
@@ -86,7 +86,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: update a existing network view
-  nios_network_view:
+  infoblox.nios_modules.nios_network_view:
     name: {new_name: ansible-new, old_name: ansible}
     state: present
     provider:

@@ -73,7 +73,7 @@ options:
 
 EXAMPLES = '''
 - name: configure an A record
-  nios_a_record:
+  infoblox.nios_modules.nios_a_record:
     name: a.ansible.com
     ipv4: 192.168.10.1
     state: present
@@ -84,7 +84,7 @@ EXAMPLES = '''
   connection: local
 
 - name: add a comment to an existing A record
-  nios_a_record:
+  infoblox.nios_modules.nios_a_record:
     name: a.ansible.com
     ipv4: 192.168.10.1
     comment: this is a test comment
@@ -96,7 +96,7 @@ EXAMPLES = '''
   connection: local
 
 - name: remove an A record from the system
-  nios_a_record:
+  infoblox.nios_modules.nios_a_record:
     name: a.ansible.com
     ipv4: 192.168.10.1
     state: absent
@@ -107,7 +107,7 @@ EXAMPLES = '''
   connection: local
 
 - name: update an A record name
-  nios_a_record:
+  infoblox.nios_modules.nios_a_record:
     name: {new_name: a_new.ansible.com, old_name: a.ansible.com}
     ipv4: 192.168.10.1
     state: present
@@ -118,7 +118,7 @@ EXAMPLES = '''
   connection: local
 
 - name: dynamically add a record to next available ip
-  nios_a_record:
+  infoblox.nios_modules.nios_a_record:
     name: a.ansible.com
     ipv4: {nios_next_ip: 192.168.10.0/24}
     state: present

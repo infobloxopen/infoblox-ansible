@@ -154,7 +154,7 @@ options:
 
 EXAMPLES = '''
 - name: configure an ipv4 host record
-  nios_host_record:
+  infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
       - address: 192.168.10.1
@@ -167,7 +167,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: add a comment to an existing host record
-  nios_host_record:
+  infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
       - address: 192.168.10.1
@@ -179,7 +179,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: remove a host record from the system
-  nios_host_record:
+  infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     state: absent
     provider:
@@ -188,7 +188,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: update an ipv4 host record
-  nios_host_record:
+  infoblox.nios_modules.nios_host_record:
     name: {new_name: host-new.ansible.com, old_name: host.ansible.com}
     ipv4:
       - address: 192.168.10.1
@@ -199,7 +199,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: create an ipv4 host record bypassing DNS
-  nios_host_record:
+  infoblox.nios_modules.nios_host_record:
     name: new_host
     ipv4:
       - address: 192.168.10.1
@@ -211,7 +211,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: create an ipv4 host record over DHCP
-  nios_host_record:
+  infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
       - address: 192.168.10.1
@@ -224,7 +224,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: dynamically add host record to next available ip
-  nios_host_record:
+  infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
       - address: {nios_next_ip: 192.168.10.0/24}
@@ -236,7 +236,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: add ip to host record
-  nios_host_record:
+  infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
       - address: 192.168.10.2
@@ -248,7 +248,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: remove ip to host record
-  nios_host_record:
+  infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
       - address: 192.168.10.1

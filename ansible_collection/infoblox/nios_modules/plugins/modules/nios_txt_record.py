@@ -71,7 +71,7 @@ options:
 
 EXAMPLES = '''
     - name: Ensure a text Record Exists
-      nios_txt_record:
+      infoblox.nios_modules.nios_txt_record:
         name: fqdn.txt.record.com
         text: mytext
         state: present
@@ -82,7 +82,7 @@ EXAMPLES = '''
           password: admin
 
     - name: Ensure a text Record does not exist
-      nios_txt_record:
+      infoblox.nios_modules.nios_txt_record:
         name: fqdn.txt.record.com
         text: mytext
         state: absent
