@@ -81,7 +81,7 @@ options:
 
 EXAMPLES = '''
 - name: configure an SRV record
-  nios_srv_record:
+  infoblox.nios_modules.nios_srv_record:
     name: _sip._tcp.service.ansible.com
     port: 5080
     priority: 10
@@ -95,7 +95,7 @@ EXAMPLES = '''
   connection: local
 
 - name: add a comment to an existing SRV record
-  nios_srv_record:
+  infoblox.nios_modules.nios_srv_record:
     name: _sip._tcp.service.ansible.com
     port: 5080
     priority: 10
@@ -110,7 +110,7 @@ EXAMPLES = '''
   connection: local
 
 - name: remove an SRV record from the system
-  nios_srv_record:
+  infoblox.nios_modules.nios_srv_record:
     name: _sip._tcp.service.ansible.com
     port: 5080
     priority: 10

@@ -68,7 +68,7 @@ options:
 
 EXAMPLES = '''
 - name: configure a new dns view instance
-  nios_dns_view:
+  infoblox.nios_modules.nios_dns_view:
     name: ansible-dns
     state: present
     provider:
@@ -77,7 +77,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: update the comment for dns view
-  nios_dns_view:
+  infoblox.nios_modules.nios_dns_view:
     name: ansible-dns
     comment: this is an example comment
     state: present
@@ -87,7 +87,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: remove the dns view instance
-  nios_dns_view:
+  infoblox.nios_modules.nios_dns_view:
     name: ansible-dns
     state: absent
     provider:
@@ -96,7 +96,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: update the dns view instance
-  nios_dns_view:
+  infoblox.nios_modules.nios_dns_view:
     name: {new_name: ansible-dns-new, old_name: ansible-dns}
     state: present
     provider:

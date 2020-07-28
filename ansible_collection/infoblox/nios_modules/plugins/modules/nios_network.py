@@ -99,7 +99,7 @@ options:
 
 EXAMPLES = '''
 - name: configure a network ipv4
-  nios_network:
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
     state: present
@@ -109,7 +109,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: configure a network ipv6
-  nios_network:
+  infoblox.nios_modules.nios_network:
     network: fe80::/64
     comment: this is a test comment
     state: present
@@ -119,7 +119,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: set dhcp options for a network ipv4
-  nios_network:
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
     options:
@@ -132,7 +132,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: remove a network ipv4
-  nios_network:
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     state: absent
     provider:
@@ -141,7 +141,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: configure a ipv4 network container
-  nios_network:
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     container: true
     comment: test network container
@@ -152,7 +152,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: configure a ipv6 network container
-  nios_network:
+  infoblox.nios_modules.nios_network:
     network: fe80::/64
     container: true
     comment: test network container
@@ -163,7 +163,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 - name: remove a ipv4 network container
-  nios_network:
+  infoblox.nios_modules.nios_network:
     networkr: 192.168.10.0/24
     container: true
     comment: test network container
