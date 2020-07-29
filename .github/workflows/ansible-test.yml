@@ -48,4 +48,4 @@ jobs:
       # Explicity specify the version of Python we want to test
       - name: Run sanity tests
         run: ansible-test sanity --docker -v --color --python ${{ matrix.python }}
-        
+        working-directory: ./ansible_collections/infoblox/nios_modules
