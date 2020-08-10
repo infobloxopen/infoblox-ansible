@@ -342,7 +342,6 @@ class WapiModule(WapiBase):
                 if 'ipv4addrs' in proposed_object:
                     if ('add' not in proposed_object['ipv4addrs'][0]) and ('remove' not in proposed_object['ipv4addrs'][0]):
                         self.check_if_recordname_exists(obj_filter, ib_obj_ref, ib_obj_type, current_object, proposed_object)
- 
 
                 if (ib_obj_type in (NIOS_HOST_RECORD, NIOS_NETWORK_VIEW, NIOS_DNS_VIEW)):
                     run_update = True
@@ -454,7 +453,6 @@ class WapiModule(WapiBase):
             else:
                 del proposed_object['ipv4addrs'][0]['remove']
         return update, proposed_object
-
 
     def issubset(self, item, objects):
         ''' Checks if item is a subset of objects

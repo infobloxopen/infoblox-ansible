@@ -74,8 +74,7 @@ class InventoryModule(BaseInventoryPlugin):
 
         print(host_filter)
 
-        hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs,
-                                 return_fields=return_fields)
+        hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs, return_fields=return_fields)
 
         for host in hosts:
             group_name = self.inventory.add_group(host['view'])
