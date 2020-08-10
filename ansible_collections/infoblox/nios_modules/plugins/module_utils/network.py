@@ -9,6 +9,7 @@ def validate_ip_address(address):
         return False
     return address.count('.') == 3
 
+
 def validate_ip_v6_address(address):
     try:
         socket.inet_pton(socket.AF_INET6, address)
