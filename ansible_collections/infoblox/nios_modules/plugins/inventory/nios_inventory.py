@@ -20,7 +20,7 @@ DOCUMENTATION = r'''
             env:
                 - name: INFOBLOX_HOST
         username:
-            description: username 
+            description: username
             type: string
             required: True
             env:
@@ -62,9 +62,9 @@ class InventoryModule(BaseInventoryPlugin):
         super(InventoryModule, self).parse(inventory, loader, path)
         self._read_config_data(path)
 
-        provider = { 'host': self.get_option('host'),
-                        'username': self.get_option('username'),
-                        'password': self.get_option('password')}
+        provider = {'host': self.get_option('host'),
+                    'username': self.get_option('username'),
+                    'password': self.get_option('password')}
 
         wapi = WapiInventory(provider)
 
@@ -75,9 +75,9 @@ class InventoryModule(BaseInventoryPlugin):
         print(host_filter)
 
         hosts = wapi.get_object('record:host',
-                            host_filter,
-                            extattrs=extattrs,
-                            return_fields=return_fields)
+                                 host_filter,
+                                 extattrs=extattrs,
+                                 return_fields=return_fields)
 
         for host in hosts:
             group_name = self.inventory.add_group(host['view'])
