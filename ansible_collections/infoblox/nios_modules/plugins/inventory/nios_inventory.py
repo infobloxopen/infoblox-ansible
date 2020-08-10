@@ -47,6 +47,7 @@ host: blox.example.com
 username: admin
 '''
 
+from __future__ import
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ..module_utils.api import WapiInventory
 from ..module_utils.api import normalize_extattrs, flatten_extattrs
@@ -54,7 +55,7 @@ from ansible.module_utils.six import iteritems
 
 
 class InventoryModule(BaseInventoryPlugin):
-
+    __metaclass__ = type
     NAME = 'infoblox'
 
     def parse(self, inventory, loader, path, cache=True):  # Plugin interface (2)
