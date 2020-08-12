@@ -1,6 +1,5 @@
-
-import socket
 from __future__ import print_function
+import socket
 
 
 def validate_ip_address(address):

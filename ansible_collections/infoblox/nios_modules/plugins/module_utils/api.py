@@ -26,8 +26,8 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+from __future__ import print_function
 import os
-from __future__ import print_function 
 from functools import partial
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
