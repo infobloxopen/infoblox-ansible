@@ -72,7 +72,7 @@ class InventoryModule(BaseInventoryPlugin):
         extattrs = normalize_extattrs(self.get_option('extattrs'))
         return_fields = ['name', 'view', 'extattrs', 'ipv4addrs']
 
-        print host_filter
+        print(host_filter)
 
         hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs, return_fields=return_fields)
 
