@@ -173,7 +173,7 @@ def member_normalize(member_spec):
     return member_spec
 
 
-class WapiBase(object, metaclass=type):
+class WapiBase(object):
     ''' Base class for implementing Infoblox WAPI API '''
     provider_spec = {'provider': dict(type='dict', options=NIOS_PROVIDER_SPEC)}
 
@@ -199,7 +199,7 @@ class WapiBase(object, metaclass=type):
                 raise
 
 
-class WapiLookup(WapiBase, metaclass=type):
+class WapiLookup(WapiBase):
     ''' Implements WapiBase for lookup plugins '''
     def handle_exception(self, method_name, exc):
         if ('text' in exc.response):
@@ -208,12 +208,12 @@ class WapiLookup(WapiBase, metaclass=type):
             raise Exception(exc)
 
 
-class WapiInventory(WapiBase, metaclass=type):
+class WapiInventory(WapiBase):
     ''' Implements WapiBase for dynamic inventory script '''
     pass
 
 
-class WapiModule(WapiBase, metaclass=type):
+class WapiModule(WapiBase):
     ''' Implements WapiBase for executing a NIOS module '''
     def __init__(self, module):
         self.module = module
