@@ -47,7 +47,7 @@ host: blox.example.com
 username: admin
 '''
 
-from __future__ import
+
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ..module_utils.api import WapiInventory
 from ..module_utils.api import normalize_extattrs, flatten_extattrs
