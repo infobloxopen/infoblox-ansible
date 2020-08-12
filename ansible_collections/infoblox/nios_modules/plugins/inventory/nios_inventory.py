@@ -1,3 +1,4 @@
+__metaclass__ = type
 from __future__ import (absolute_import, division, print_function)
 # Copyright (c) 2018-2019 Red Hat, Inc.
 # Copyright (c) 2020 Infoblox, Inc.
@@ -55,7 +56,7 @@ from ..module_utils.api import normalize_extattrs, flatten_extattrs
 from ansible.module_utils.six import iteritems
 
 
-class InventoryModule(BaseInventoryPlugin): 
+class InventoryModule(BaseInventoryPlugin):
     NAME = 'infoblox'
 
     def parse(self, inventory, loader, path, cache=True):  # Plugin interface (2)
