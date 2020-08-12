@@ -27,7 +27,7 @@
 #
 
 import os
-from __future__ import
+from __future__ import *
 from functools import partial
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
@@ -173,9 +173,8 @@ def member_normalize(member_spec):
     return member_spec
 
 
-class WapiBase(object):
+class WapiBase(object, metaclass=type):
     ''' Base class for implementing Infoblox WAPI API '''
-    __metaclass__ = type
     provider_spec = {'provider': dict(type='dict', options=NIOS_PROVIDER_SPEC)}
 
     def __init__(self, provider):
@@ -200,9 +199,8 @@ class WapiBase(object):
                 raise
 
 
-class WapiLookup(WapiBase):
+class WapiLookup(WapiBase, metaclass=type):
     ''' Implements WapiBase for lookup plugins '''
-    __metaclass__ = type
     def handle_exception(self, method_name, exc):
         if ('text' in exc.response):
             raise Exception(exc.response['text'])
@@ -210,15 +208,13 @@ class WapiLookup(WapiBase):
             raise Exception(exc)
 
 
-class WapiInventory(WapiBase):
+class WapiInventory(WapiBase, metaclass=type):
     ''' Implements WapiBase for dynamic inventory script '''
-    __metaclass__ = type
     pass
 
 
-class WapiModule(WapiBase):
+class WapiModule(WapiBase, metaclass=type):
     ''' Implements WapiBase for executing a NIOS module '''
-    __metaclass__ = type
     def __init__(self, module):
         self.module = module
         provider = module.params['provider']
