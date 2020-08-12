@@ -48,7 +48,7 @@ username: admin
 '''
 
 
-from __future__ import *
+from __future__ import absolute_import, division, print_function
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ..module_utils.api import WapiInventory
 from ..module_utils.api import normalize_extattrs, flatten_extattrs
