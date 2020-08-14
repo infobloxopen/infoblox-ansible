@@ -184,6 +184,7 @@ from ..module_utils.api import NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK
 from ..module_utils.api import NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER
 from ..module_utils.network import validate_ip_address, validate_ip_v6_address
 
+
 def options(module):
     ''' Transforms the module argument into a valid WAPI struct
     This function will transform the options argument into a structure that

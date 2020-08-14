@@ -123,6 +123,7 @@ from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_AAAA_RECORD
 
+
 def main():
     ''' Main entry point for module execution
     '''

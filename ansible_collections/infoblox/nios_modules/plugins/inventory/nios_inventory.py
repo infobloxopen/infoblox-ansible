@@ -1,4 +1,5 @@
-#!/usr/bin/python
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
 # Copyright (c) 2018-2019 Red Hat, Inc.
 # Copyright (c) 2020 Infoblox, Inc.
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
@@ -20,7 +21,7 @@ DOCUMENTATION = r'''
             env:
                 - name: INFOBLOX_HOST
         username:
-            description: username 
+            description: username
             type: string
             required: True
             env:
@@ -48,6 +49,7 @@ host: blox.example.com
 username: admin
 '''
 
+
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ..module_utils.api import WapiInventory
 from ..module_utils.api import normalize_extattrs, flatten_extattrs
@@ -55,16 +57,15 @@ from ansible.module_utils.six import iteritems
 
 
 class InventoryModule(BaseInventoryPlugin):
-
     NAME = 'infoblox'
 
     def parse(self, inventory, loader, path, cache=True):  # Plugin interface (2)
         super(InventoryModule, self).parse(inventory, loader, path)
         self._read_config_data(path)
 
-        provider = { 'host': self.get_option('host'),
-                        'username': self.get_option('username'),
-                        'password': self.get_option('password')}
+        provider = {'host': self.get_option('host'),
+                    'username': self.get_option('username'),
+                    'password': self.get_option('password')}
 
         wapi = WapiInventory(provider)
 
@@ -74,10 +75,7 @@ class InventoryModule(BaseInventoryPlugin):
 
         print(host_filter)
 
-        hosts = wapi.get_object('record:host',
-                            host_filter,
-                            extattrs=extattrs,
-                            return_fields=return_fields)
+        hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs, return_fields=return_fields)
 
         for host in hosts:
             group_name = self.inventory.add_group(host['view'])

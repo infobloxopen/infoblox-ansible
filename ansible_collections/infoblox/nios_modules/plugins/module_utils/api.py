@@ -1,3 +1,5 @@
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
 # This code is part of Ansible, but is an independent component.
 # This particular file snippet, and this file snippet only, is BSD licensed.
 # Modules you write using this snippet, which is embedded dynamically by Ansible
@@ -25,6 +27,7 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
 
 import os
 from functools import partial
@@ -342,7 +345,6 @@ class WapiModule(WapiBase):
                 if 'ipv4addrs' in proposed_object:
                     if ('add' not in proposed_object['ipv4addrs'][0]) and ('remove' not in proposed_object['ipv4addrs'][0]):
                         self.check_if_recordname_exists(obj_filter, ib_obj_ref, ib_obj_type, current_object, proposed_object)
- 
 
                 if (ib_obj_type in (NIOS_HOST_RECORD, NIOS_NETWORK_VIEW, NIOS_DNS_VIEW)):
                     run_update = True
@@ -454,7 +456,6 @@ class WapiModule(WapiBase):
             else:
                 del proposed_object['ipv4addrs'][0]['remove']
         return update, proposed_object
-
 
     def issubset(self, item, objects):
         ''' Checks if item is a subset of objects

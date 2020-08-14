@@ -132,8 +132,6 @@ from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_SRV_RECORD
 
 
-
-
 def main():
     ''' Main entry point for module execution
     '''

@@ -150,7 +150,6 @@ from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 
 
-
 def main():
     ''' Main entry point for module execution
     '''
