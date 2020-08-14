@@ -1,3 +1,4 @@
+from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 # This code is part of Ansible, but is an independent component.
 # This particular file snippet, and this file snippet only, is BSD licensed.
@@ -27,7 +28,7 @@ __metaclass__ = type
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from __future__ import (absolute_import, division, print_function)
+
 import os
 from functools import partial
 from ansible.module_utils._text import to_native
