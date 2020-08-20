@@ -16,8 +16,6 @@ description:
     a given network CIDR
 requirements:
   - infoblox_client
-extends_documentation_fragment:
-- community.general.nios
 
 options:
     _terms:
