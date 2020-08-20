@@ -72,6 +72,7 @@ obj_type:
   type: complex
   contains:
     obj_field:
+      description:
       - One or more obj_type fields as specified by return_fields argument or
         the default set of fields as per the object type
 """
