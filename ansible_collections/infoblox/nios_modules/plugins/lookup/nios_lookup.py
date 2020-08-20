@@ -18,7 +18,7 @@ description:
 requirements:
   - infoblox-client
 extends_documentation_fragment:
-- infoblox-ansible.nios
+- infoblox-ansible.nios_modules.nios
 
 options:
     _terms:
