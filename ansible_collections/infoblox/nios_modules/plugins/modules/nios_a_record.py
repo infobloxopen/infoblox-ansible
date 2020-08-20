@@ -23,7 +23,7 @@ description:
     using the Infoblox WAPI interface over REST.
 requirements:
   - infoblox-client
-extends_documentation_fragment: nios
+
 options:
   name:
     description:

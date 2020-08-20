@@ -24,7 +24,7 @@ description:
   - Updates instances of DNS view object from Infoblox NIOS servers.
 requirements:
   - infoblox-client
-extends_documentation_fragment: nios
+
 options:
   name:
     description:
