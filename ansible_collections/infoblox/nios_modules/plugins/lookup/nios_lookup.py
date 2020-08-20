@@ -17,8 +17,6 @@ description:
     the desired set of returned fields.
 requirements:
   - infoblox-client
-extends_documentation_fragment:
-- infoblox-ansible.nios_modules.nios
 
 options:
     _terms:
