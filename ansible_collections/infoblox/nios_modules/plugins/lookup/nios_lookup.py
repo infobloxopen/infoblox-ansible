@@ -18,7 +18,7 @@ description:
 requirements:
   - infoblox-client
 extends_documentation_fragment:
-- community.general.nios
+- infoblox.nios_modules.nios
 
 options:
     _terms:
