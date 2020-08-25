@@ -23,13 +23,14 @@ description:
     using the Infoblox WAPI interface over REST.
 requirements:
   - infoblox-client
-
+extends_documentation_fragment: infoblox.nios_modules.nios
 options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
         the system
     required: true
+    type: str
   view:
     description:
       - Sets the DNS view to associate this a record with.  The DNS
@@ -38,35 +39,43 @@ options:
     default: default
     aliases:
       - dns_view
+    type: str
   port:
     description:
       - Configures the port (0-65535) of this SRV record.
     required: true
+    type: int
   priority:
     description:
       - Configures the priority (0-65535) for this SRV record.
     required: true
+    type: int
   target:
     description:
       - Configures the target FQDN for this SRV record.
     required: true
+    type: str
   weight:
     description:
       - Configures the weight (0-65535) for this SRV record.
     required: true
+    type: int
   ttl:
     description:
       - Configures the TTL to be associated with this host record
+    type: int
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
         instance of the object.  This argument accepts a set of key / value
         pairs for configuration.
+    type: dict
   comment:
     description:
       - Configures a text string comment to be associated with the instance
         of this object.  The provided text string will be configured on the
         object instance.
+    type: str
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -77,6 +86,7 @@ options:
     choices:
       - present
       - absent
+    type: str
 '''
 
 EXAMPLES = '''
