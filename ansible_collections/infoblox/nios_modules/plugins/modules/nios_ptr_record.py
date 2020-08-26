@@ -23,7 +23,7 @@ description:
     using the Infoblox WAPI interface over REST.
 requirements:
   - infoblox_client
-
+extends_documentation_fragment: infoblox.nios_modules.nios
 options:
   name:
     description:
@@ -31,17 +31,20 @@ options:
         the system.
         The field is required only for an PTR object in Forward Mapping Zone.
     required: false
+    type: str
   view:
     description:
       - Sets the DNS view to associate this a record with. The DNS
         view must already be configured on the system
     required: false
+    type: str
     aliases:
       - dns_view
   ipv4addr:
     description:
       - The IPv4 Address of the record. Mutually exclusive with the ipv6addr.
     required: true
+    type: str
     aliases:
       - ipv4
   ipv6addr:
@@ -50,25 +53,30 @@ options:
     required: true
     aliases:
       - ipv6
+    type: str
   ptrdname:
     description:
       - The domain name of the DNS PTR record in FQDN format.
     required: true
+    type: str
   ttl:
     description:
       - Time To Live (TTL) value for the record.
         A 32-bit unsigned integer that represents the duration, in seconds, that the record is valid (cached).
         Zero indicates that the record should not be cached.
+    type: int
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
         instance of the object.  This argument accepts a set of key / value
         pairs for configuration.
+    type: dict
   comment:
     description:
       - Configures a text string comment to be associated with the instance
         of this object.  The provided text string will be configured on the
         object instance. Maximum 256 characters.
+    type: str
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -79,6 +87,7 @@ options:
     choices:
       - present
       - absent
+    type: str
 '''
 
 EXAMPLES = '''

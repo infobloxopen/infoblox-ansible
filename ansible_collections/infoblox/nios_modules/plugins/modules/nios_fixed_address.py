@@ -24,7 +24,7 @@ description:
   - Supports both IPV4 and IPV6 internet protocols
 requirements:
   - infoblox-client
-
+extends_documentation_fragment: infoblox.nios_modules.nios
 options:
   name:
     description:

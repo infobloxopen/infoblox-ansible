@@ -24,7 +24,7 @@ description:
   - Updates instances of host record object from Infoblox NIOS servers.
 requirements:
   - infoblox-client
-
+extends_documentation_fragment: infoblox.nios_modules.nios
 options:
   name:
     description:
