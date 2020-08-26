@@ -550,3 +550,9 @@ test/units/utils/test_shlex.py future-import-boilerplate
 test/units/utils/test_shlex.py metaclass-boilerplate
 test/utils/shippable/check_matrix.py replace-urlopen
 test/utils/shippable/timing.py shebang
+plugins/modules/nios_a_record.py:0:0: doc-required-mismatch: Argument 'host' in argument_spec found in provider is not required, but is documented as being required
+plugins/modules/nios_a_record.py:0:0: doc-required-mismatch: Argument 'ipv4addr' in argument_spec is not required, but is documented as being required
+plugins/modules/nios_a_record.py:0:0: doc-required-mismatch: Argument 'view' in argument_spec is not required, but is documented as being required
+plugins/modules/nios_a_record.py:0:0: invalid-ansiblemodule-schema: AnsibleModule.argument_spec.ipv4addr.ib_req: extra keys not allowed @ data['argument_spec']['ipv4addr']['ib_req']. Got True
+plugins/modules/nios_a_record.py:0:0: invalid-ansiblemodule-schema: AnsibleModule.argument_spec.name.ib_req: extra keys not allowed @ data['argument_spec']['name']['ib_req']. Got True
+
