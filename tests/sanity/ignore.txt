@@ -550,11 +550,3 @@ test/units/utils/test_shlex.py future-import-boilerplate
 test/units/utils/test_shlex.py metaclass-boilerplate
 test/utils/shippable/check_matrix.py replace-urlopen
 test/utils/shippable/timing.py shebang
-plugins/modules/nios_a_record.py:0:0: doc-required-mismatch
-plugins/modules/nios_aaaa_record.py:0:0: doc-required-mismatch
-plugins/modules/nios_a_record.py:0:0: module-invalid-version-added
-plugins/modules/nios_a_record.py:0:0: invalid-ansiblemodule-schema
-plugins/modules/nios_aaaa_record.py:0:0: doc-required-mismatch
-plugins/modules/nios_aaaa_record.py:0:0: invalid-ansiblemodule-schema
-plugins/modules/nios_aaaa_record.py:0:0: module-invalid-version-added
-
