@@ -42,6 +42,7 @@ options:
   network:
     description:
       - Specifies the network range in which ipaddr exists.
+    type: str
     required: true
     aliases:
       - network
