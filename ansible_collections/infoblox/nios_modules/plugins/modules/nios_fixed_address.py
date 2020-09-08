@@ -30,6 +30,7 @@ options:
     description:
       - Specifies the hostname with which fixed DHCP ip-address is stored
         for respective mac.
+    type: str
     required: false
   ipaddr:
     description:
