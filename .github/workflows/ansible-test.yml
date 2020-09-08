@@ -22,7 +22,7 @@ jobs:
             #- stable-2.10
 #         - devel
         python:
-#         - 2.7
+          - 2.7
           - 3.7
           - 3.8
         exclude:
