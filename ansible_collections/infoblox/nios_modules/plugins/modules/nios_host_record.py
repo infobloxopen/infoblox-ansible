@@ -140,6 +140,7 @@ options:
       - Configures a text string comment to be associated with the instance
         of this object.  The provided text string will be configured on the
         object instance.
+    type: str
   state:
     description:
       - Configures the intended state of the instance of the object on
