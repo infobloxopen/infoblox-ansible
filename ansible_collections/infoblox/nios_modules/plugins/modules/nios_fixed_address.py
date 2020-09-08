@@ -87,6 +87,7 @@ options:
       - Configures a text string comment to be associated with the instance
         of this object.  The provided text string will be configured on the
         object instance.
+    type: str
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -237,15 +238,15 @@ def main():
 
     ib_spec = dict(
         name=dict(required=True),
-        ipaddr=dict(required=True, aliases=['ipaddr'], ib_req=True),
-        mac=dict(required=True, aliases=['mac'], ib_req=True),
+        ipaddr=dict(required=True, aliases=['ipaddr'], ib_req=True, type='str'),
+        mac=dict(required=True, aliases=['mac'], ib_req=True, type='str'),
         network=dict(required=True, aliases=['network'], ib_req=True),
         network_view=dict(default='default', aliases=['network_view']),
 
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
 
         extattrs=dict(type='dict'),
-        comment=dict()
+        comment=dict(type='str')
     )
 
     argument_spec = dict(
