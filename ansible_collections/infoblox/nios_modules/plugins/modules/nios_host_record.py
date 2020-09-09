@@ -181,6 +181,7 @@ EXAMPLES = '''
     ipv4:
       - address: 192.168.10.1
     aliases:
+      - cname.ansible.com
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
