@@ -50,18 +50,18 @@ options:
   preference:
     description:
       - Configures the preference (0-65535) for this MX record.
-    type: str
+    type: int
     required: true
   ttl:
     description:
       - Configures the TTL to be associated with this host record
-    type: str
+    type: int
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
         instance of the object.  This argument accepts a set of key / value
         pairs for configuration.
-    type: str
+    type: dict
   comment:
     description:
       - Configures a text string comment to be associated with the instance
