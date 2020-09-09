@@ -128,8 +128,6 @@ options:
             changes it to true, user need to mention MAC address to configure
         type: bool
         required: false
-        aliases:
-          - dhcp
       mac:
         description:
           - Configures the hardware MAC address for the host record. If user makes
