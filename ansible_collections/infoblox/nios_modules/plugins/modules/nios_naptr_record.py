@@ -29,6 +29,7 @@ options:
     description:
       - Specifies the fully qualified hostname to add or remove from
         the system
+    type: str
     required: true
   view:
     description:
