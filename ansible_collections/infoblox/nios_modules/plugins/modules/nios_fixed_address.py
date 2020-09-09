@@ -24,24 +24,28 @@ description:
   - Supports both IPV4 and IPV6 internet protocols
 requirements:
   - infoblox-client
-extends_documentation_fragment: nios
+extends_documentation_fragment: infoblox.nios_modules.nios
 options:
   name:
     description:
       - Specifies the hostname with which fixed DHCP ip-address is stored
         for respective mac.
+    type: str
     required: false
   ipaddr:
     description:
       - IPV4/V6 address of the fixed address.
+    type: str
     required: true
   mac:
     description:
       - The MAC address of the interface.
+    type: str
     required: true
   network:
     description:
       - Specifies the network range in which ipaddr exists.
+    type: str
     required: true
     aliases:
       - network
@@ -49,6 +53,7 @@ options:
     description:
       - Configures the name of the network view to associate with this
         configured instance.
+    type: str
     required: false
     default: default
   options:
@@ -57,16 +62,20 @@ options:
         the configured network instance.  This argument accepts a list
         of values (see suboptions).  When configuring suboptions at
         least one of C(name) or C(num) must be specified.
+    type: list
     suboptions:
       name:
         description:
           - The name of the DHCP option to configure
+        type: str
       num:
         description:
           - The number of the DHCP option to configure
+        type: int
       value:
         description:
           - The value of the DHCP option specified by C(name)
+        type: str
         required: true
       use_option:
         description:
@@ -76,23 +85,27 @@ options:
       vendor_class:
         description:
           - The name of the space this DHCP option is associated to
+        type: str
         default: DHCP
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
         instance of the object.  This argument accepts a set of key / value
         pairs for configuration.
+    type: dict
   comment:
     description:
       - Configures a text string comment to be associated with the instance
         of this object.  The provided text string will be configured on the
         object instance.
+    type: str
   state:
     description:
       - Configures the intended state of the instance of the object on
         the NIOS server.  When this value is set to C(present), the object
         is configured on the device and when this value is set to C(absent)
         the value is removed (if necessary) from the device.
+    type: str
     default: present
     choices:
       - present
@@ -237,15 +250,15 @@ def main():
 
     ib_spec = dict(
         name=dict(required=True),
-        ipaddr=dict(required=True, aliases=['ipaddr'], ib_req=True),
-        mac=dict(required=True, aliases=['mac'], ib_req=True),
+        ipaddr=dict(required=True, aliases=['ipaddr'], ib_req=True, type='str'),
+        mac=dict(required=True, aliases=['mac'], ib_req=True, type='str'),
         network=dict(required=True, aliases=['network'], ib_req=True),
         network_view=dict(default='default', aliases=['network_view']),
 
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
 
         extattrs=dict(type='dict'),
-        comment=dict()
+        comment=dict(type='str')
     )
 
     argument_spec = dict(

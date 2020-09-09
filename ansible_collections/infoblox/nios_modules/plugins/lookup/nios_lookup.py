@@ -17,8 +17,6 @@ description:
     the desired set of returned fields.
 requirements:
   - infoblox-client
-extends_documentation_fragment:
-- community.general.nios
 
 options:
     _terms:
@@ -72,6 +70,7 @@ obj_type:
   type: complex
   contains:
     obj_field:
+      description:
       - One or more obj_type fields as specified by return_fields argument or
         the default set of fields as per the object type
 """

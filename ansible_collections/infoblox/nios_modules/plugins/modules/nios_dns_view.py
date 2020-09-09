@@ -24,7 +24,7 @@ description:
   - Updates instances of DNS view object from Infoblox NIOS servers.
 requirements:
   - infoblox-client
-extends_documentation_fragment: nios
+extends_documentation_fragment: infoblox.nios_modules.nios
 options:
   name:
     description:
@@ -34,6 +34,7 @@ options:
     required: true
     aliases:
       - view
+    type: str
   network_view:
     description:
       - Specifies the name of the network view to assign the configured
@@ -41,18 +42,21 @@ options:
         target system.
     required: true
     default: default
+    type: str
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
         instance of the object.  This argument accepts a set of key / value
         pairs for configuration.
     required: false
+    type: dict
   comment:
     description:
       - Configures a text string comment to be associated with the instance
         of this object.  The provided text string will be configured on the
         object instance.
     required: false
+    type: str
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -64,6 +68,8 @@ options:
     choices:
       - present
       - absent
+    type: str
+
 '''
 
 EXAMPLES = '''

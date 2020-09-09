@@ -24,12 +24,13 @@ description:
   - Supports both IPV4 and IPV6 internet protocols
 requirements:
   - infoblox-client
-extends_documentation_fragment: nios
+extends_documentation_fragment: infoblox.nios_modules.nios
 options:
   network:
     description:
       - Specifies the network to add or remove from the system.  The value
         should use CIDR notation.
+    type: str
     required: true
     aliases:
       - name
@@ -38,6 +39,7 @@ options:
     description:
       - Configures the name of the network view to associate with this
         configured instance.
+    type: str
     required: true
     default: default
   options:
@@ -46,6 +48,7 @@ options:
         the configured network instance.  This argument accepts a list
         of values (see suboptions).  When configuring suboptions at
         least one of C(name) or C(num) must be specified.
+    type: list
     suboptions:
       name:
         description:
@@ -53,12 +56,15 @@ options:
             C(router), C(router-templates), C(domain-name-servers), C(domain-name),
             C(broadcast-address), C(broadcast-address-offset), C(dhcp-lease-time),
             and C(dhcp6.name-servers).
+        type: str
       num:
         description:
           - The number of the DHCP option to configure
+        type: int
       value:
         description:
           - The value of the DHCP option specified by C(name)
+        type: str
         required: true
       use_option:
         description:
@@ -68,17 +74,20 @@ options:
       vendor_class:
         description:
           - The name of the space this DHCP option is associated to
+        type: str
         default: DHCP
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
         instance of the object.  This argument accepts a set of key / value
         pairs for configuration.
+    type: dict
   comment:
     description:
       - Configures a text string comment to be associated with the instance
         of this object.  The provided text string will be configured on the
         object instance.
+    type: str
   container:
     description:
       - If set to true it'll create the network container to be added or removed
@@ -91,6 +100,7 @@ options:
         the NIOS server.  When this value is set to C(present), the object
         is configured on the device and when this value is set to C(absent)
         the value is removed (if necessary) from the device.
+    type: str
     default: present
     choices:
       - present

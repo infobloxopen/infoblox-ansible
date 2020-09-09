@@ -18,11 +18,11 @@ jobs:
         ansible:
           # It's important that Sanity is tested against all stable-X.Y branches
           # Testing against `devel` may fail as new tests are added.
-        # - stable-2.9 # Only if your collection supports Ansible 2.9
-          - stable-2.10
+          - stable-2.9 # Only if your collection supports Ansible 2.9
+            #- stable-2.10
 #         - devel
         python:
-#         - 2.7
+          - 2.7
           - 3.7
           - 3.8
         exclude:

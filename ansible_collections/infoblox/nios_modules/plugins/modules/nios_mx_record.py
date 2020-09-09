@@ -23,17 +23,19 @@ description:
     using the Infoblox WAPI interface over REST.
 requirements:
   - infoblox-client
-extends_documentation_fragment: nios
+extends_documentation_fragment: infoblox.nios_modules.nios
 options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
         the system
+    type: str
     required: true
   view:
     description:
       - Sets the DNS view to associate this a record with.  The DNS
         view must already be configured on the system
+    type: str
     required: true
     default: default
     aliases:
@@ -41,32 +43,38 @@ options:
   mail_exchanger:
     description:
       - Configures the mail exchanger FQDN for this MX record.
+    type: str
     required: true
     aliases:
       - mx
   preference:
     description:
       - Configures the preference (0-65535) for this MX record.
+    type: int
     required: true
   ttl:
     description:
       - Configures the TTL to be associated with this host record
+    type: int
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
         instance of the object.  This argument accepts a set of key / value
         pairs for configuration.
+    type: dict
   comment:
     description:
       - Configures a text string comment to be associated with the instance
         of this object.  The provided text string will be configured on the
         object instance.
+    type: str
   state:
     description:
       - Configures the intended state of the instance of the object on
         the NIOS server.  When this value is set to C(present), the object
         is configured on the device and when this value is set to C(absent)
         the value is removed (if necessary) from the device.
+    type: str
     default: present
     choices:
       - present
