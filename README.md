@@ -116,7 +116,7 @@ $ git clone
 https://github.com/infobloxopen/infoblox-ansible.git
 ```
 
--   **Build the collection: **
+-   **Build the collection:**
 
     To build a collection, run the following command from inside the
     root directory of the collection:
@@ -130,8 +130,7 @@ This creates a tarball of the built collection in the current directory.
 -   **Install the collection:**
 
 ```shell
-$ ansible-galaxy collection install &lt;collection-name&gt;.tar.gz -p
-./collections
+$ ansible-galaxy collection install <collection-name>.tar.gz -p ./collections
 ```
 
 Please refer to our Ansible [deployment
