@@ -32,7 +32,6 @@ options:
       - Sets the DNS view to associate this host record with.  The DNS
         view must already be configured on the system
     type: str
-    required: true
     default: default
     aliases:
       - dns_view
@@ -50,6 +49,7 @@ options:
       - Configures the IPv4 addresses for this host record.  This argument
         accepts a list of values (see suboptions)
     type: list
+    elements: dict
     aliases:
       - ipv4
     suboptions:
@@ -105,6 +105,7 @@ options:
       - Configures the IPv6 addresses for the host record.  This argument
         accepts a list of values (see options)
     type: list
+    elements: dict
     aliases:
       - ipv6
     suboptions:
@@ -313,15 +314,15 @@ def main():
     ipv4addr_spec = dict(
         ipv4addr=dict(required=True, aliases=['address'], ib_req=True),
         configure_for_dhcp=dict(type='bool', required=False, aliases=['dhcp'], ib_req=True),
-        mac=dict(required=False, aliases=['mac'], ib_req=True),
-        add=dict(type='bool', aliases=['add'], required=False),
-        remove=dict(type='bool', aliases=['remove'], required=False)
+        mac=dict(required=False, ib_req=True),
+        add=dict(type='bool', required=False),
+        remove=dict(type='bool', required=False)
     )
 
     ipv6addr_spec = dict(
         ipv6addr=dict(required=True, aliases=['address'], ib_req=True),
-        configure_for_dhcp=dict(type='bool', required=False, aliases=['configure_for_dhcp'], ib_req=True),
-        mac=dict(required=False, aliases=['mac'], ib_req=True)
+        configure_for_dhcp=dict(type='bool', required=False, ib_req=True),
+        mac=dict(required=False, ib_req=True)
     )
 
     ib_spec = dict(

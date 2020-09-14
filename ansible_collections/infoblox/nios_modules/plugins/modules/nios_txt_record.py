@@ -29,7 +29,6 @@ options:
     description:
       - Sets the DNS view to associate this tst record with.  The DNS
         view must already be configured on the system
-    required: true
     default: default
     aliases:
       - dns_view

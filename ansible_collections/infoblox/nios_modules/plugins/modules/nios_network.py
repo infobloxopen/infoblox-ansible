@@ -34,7 +34,6 @@ options:
       - Configures the name of the network view to associate with this
         configured instance.
     type: str
-    required: true
     default: default
   options:
     description:
@@ -43,6 +42,7 @@ options:
         of values (see suboptions).  When configuring suboptions at
         least one of C(name) or C(num) must be specified.
     type: list
+    elements: dict
     suboptions:
       name:
         description:

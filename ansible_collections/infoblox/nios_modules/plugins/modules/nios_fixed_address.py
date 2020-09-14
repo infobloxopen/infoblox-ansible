@@ -25,7 +25,7 @@ options:
       - Specifies the hostname with which fixed DHCP ip-address is stored
         for respective mac.
     type: str
-    required: false
+    required: true
   ipaddr:
     description:
       - IPV4/V6 address of the fixed address.
@@ -57,6 +57,7 @@ options:
         of values (see suboptions).  When configuring suboptions at
         least one of C(name) or C(num) must be specified.
     type: list
+    elements: dict
     suboptions:
       name:
         description:
@@ -244,10 +245,10 @@ def main():
 
     ib_spec = dict(
         name=dict(required=True),
-        ipaddr=dict(required=True, aliases=['ipaddr'], ib_req=True, type='str'),
-        mac=dict(required=True, aliases=['mac'], ib_req=True, type='str'),
-        network=dict(required=True, aliases=['network'], ib_req=True),
-        network_view=dict(default='default', aliases=['network_view']),
+        ipaddr=dict(required=True, ib_req=True, type='str'),
+        mac=dict(required=True, ib_req=True, type='str'),
+        network=dict(required=True, ib_req=True),
+        network_view=dict(default='default'),
 
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
 

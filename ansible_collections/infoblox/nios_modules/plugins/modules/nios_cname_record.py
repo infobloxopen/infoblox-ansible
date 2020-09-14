@@ -29,7 +29,6 @@ options:
     description:
       - Sets the DNS view to associate this CNAME record with.  The DNS
         view must already be configured on the system
-    required: true
     default: default
     aliases:
       - dns_view
@@ -37,7 +36,6 @@ options:
   canonical:
     description:
       - Configures the canonical name for this CNAME record.
-    required: true
     aliases:
       - cname
     type: str

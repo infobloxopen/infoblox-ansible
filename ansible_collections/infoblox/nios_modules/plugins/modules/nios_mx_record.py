@@ -30,7 +30,6 @@ options:
       - Sets the DNS view to associate this a record with.  The DNS
         view must already be configured on the system
     type: str
-    required: true
     default: default
     aliases:
       - dns_view
@@ -38,14 +37,12 @@ options:
     description:
       - Configures the mail exchanger FQDN for this MX record.
     type: str
-    required: true
     aliases:
       - mx
   preference:
     description:
       - Configures the preference (0-65535) for this MX record.
     type: int
-    required: true
   ttl:
     description:
       - Configures the TTL to be associated with this host record
