@@ -4,12 +4,12 @@ About
 ======
 
 Infoblox Ansible Collection for vNIOS allows managing your NIOS objects
-through APIs.\
+through APIs.
 It, thus, enables the DNS and IPAM automation of VM workloads that are
-deployed across multiple platforms. The `nios\_modules` collection
+deployed across multiple platforms. The `nios_modules` collection
 provides modules and plugins for managing the networks, IP addresses,
 and DNS records in NIOS. This collection is hosted on Ansible Galaxy
-under `infoblox.nios\_modules`.
+under `infoblox.nios_modules`.
 
 Modules Overview:
 =================
@@ -99,11 +99,11 @@ To directly install the `nios_modules` collection from Ansible Galaxy,
 run the following command:
 
 ```shell
-$ ansible-galaxy collection install infoblox.nios\_modules
+$ ansible-galaxy collection install infoblox.nios_modules
 ```
 
 The collection folder would be installed at
-`\~/.ansible/collections/ansible\_collections/infoblox/nios\_modules`
+`~/.ansible/collections/ansible\_collections/infoblox/nios_modules`
 
 ### Installation from Git
 
@@ -154,13 +154,11 @@ Resources
 License
 =======
 
-This code is published under GPL v3.0
+This code is published under `GPL v3.0`
 
 [COPYING](https://github.com/infobloxopen/infoblox-ansible/blob/master/COPYING)
 
-Support
-=======
-
-Infoblox supports the existing modules in the collections. You can open
-an issue or request for enhancement
+Issues or RFEs
+===============
+You can open an issue or request for enhancement
 [here](https://github.com/infobloxopen/infoblox-ansible/issues)
