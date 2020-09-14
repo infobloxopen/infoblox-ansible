@@ -14,7 +14,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: nios_network
-version_added: "2.5"
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS network object
 description:
@@ -93,7 +92,6 @@ options:
       - If set to true it'll create the network container to be added or removed
         from the system.
     type: bool
-    version_added: '2.8'
   state:
     description:
       - Configures the intended state of the instance of the object on

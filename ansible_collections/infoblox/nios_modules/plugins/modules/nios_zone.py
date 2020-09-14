@@ -14,7 +14,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: nios_zone
-version_added: "2.5"
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS DNS zones
 description:
@@ -62,19 +61,16 @@ options:
         type: str
     type: list
   ns_group:
-    version_added: "2.6"
     description:
       - Configures the name server group for this zone. Name server group is
         mutually exclusive with grid primary and grid secondaries.
     type: str
   restart_if_needed:
-    version_added: "2.6"
     description:
       - If set to true, causes the NIOS DNS service to restart and load the
         new zone configuration
     type: bool
   zone_format:
-    version_added: "2.7"
     description:
       - Create an authorative Reverse-Mapping Zone which is an area of network
         space for which one or more name servers-primary and secondary-have the

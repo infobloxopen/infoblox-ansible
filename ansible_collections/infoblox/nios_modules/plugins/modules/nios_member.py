@@ -13,7 +13,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: nios_member
-version_added: "2.8"
 author: "Krishna Vasudevan (@krisvasudevan)"
 short_description: Configure Infoblox NIOS members
 description:

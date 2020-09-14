@@ -14,7 +14,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: nios_txt_record
-version_added: "2.7"
 author: "Corey Wanless (@coreywan)"
 short_description: Configure Infoblox NIOS txt records
 description:

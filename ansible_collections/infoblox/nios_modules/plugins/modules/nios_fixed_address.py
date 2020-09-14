@@ -14,7 +14,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: nios_fixed_address
-version_added: "2.8"
 author: "Sumit Jaiswal (@sjaiswal)"
 short_description: Configure Infoblox NIOS DHCP Fixed Address
 description:

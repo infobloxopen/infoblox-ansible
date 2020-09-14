@@ -14,7 +14,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: nios_host_record
-version_added: "2.5"
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS host records
 description:
@@ -43,7 +42,6 @@ options:
     aliases:
       - dns_view
   configure_for_dns:
-    version_added: "2.7"
     description:
       - Sets the DNS to particular parent. If user needs to bypass DNS
         user can make the value to false.
@@ -88,7 +86,7 @@ options:
         aliases:
           - mac
       add:
-        version_added: "2.10"
+        version_added: "1.0.0"
         description:
           - If user wants to add the ipv4 address to an existing host record.
             Note that with I(add) user will have to keep the I(state) as I(present),
@@ -98,7 +96,7 @@ options:
         aliases:
           - add
       remove:
-        version_added: "2.10"
+        version_added: "1.0.0"
         description:
           - If user wants to remove the ipv4 address from an existing host record.
             Note that with I(remove) user will have to change the I(state) to I(absent),
@@ -137,7 +135,6 @@ options:
         aliases:
           - mac
   aliases:
-    version_added: "2.6"
     description:
       - Configures an optional list of additional aliases to add to the host
         record. These are equivalent to CNAMEs but held within a host

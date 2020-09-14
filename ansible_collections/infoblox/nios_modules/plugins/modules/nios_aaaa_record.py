@@ -14,7 +14,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: nios_aaaa_record
-version_added: "2.6"
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS AAAA records
 description:

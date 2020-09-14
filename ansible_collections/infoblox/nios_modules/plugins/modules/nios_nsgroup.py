@@ -22,7 +22,6 @@ extends_documentation_fragment: infoblox.nios_modules.nios
 author:
   - Erich Birngruber (@ebirn)
   - Sumit Jaiswal (@sjaiswal)
-version_added: "2.8"
 description:
   - Adds and/or removes nameserver groups form Infoblox NIOS servers.
     This module manages NIOS C(nsgroup) objects using the Infoblox. WAPI interface over REST.
