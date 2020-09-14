@@ -14,53 +14,53 @@ under `infoblox.nios\_modules`.
 Modules Overview:
 =================
 
-The `infoblox.nios\_modules` collection has the following content:
+The `infoblox.nios_modules` collection has the following content:
 
 Modules:
 --------
 
--   `nios\_a\_record` – Configure Infoblox NIOS A records
+-   `nios_a_record` – Configure Infoblox NIOS A records
 
--   `nios\_aaaa\_record` – Configure Infoblox NIOS AAAA records
+-   `nios_aaaa_record` – Configure Infoblox NIOS AAAA records
 
--   `nios\_cname\_record` – Configure Infoblox NIOS CNAME records
+-   `nios_cname_record` – Configure Infoblox NIOS CNAME records
 
--   `nios\_dns\_view` – Configure Infoblox NIOS DNS views
+-   `nios_dns_view` – Configure Infoblox NIOS DNS views
 
--   `nios\_fixed\_address` – Configure Infoblox NIOS DHCP Fixed Address
+-   `nios_fixed_address` – Configure Infoblox NIOS DHCP Fixed Address
 
--   `nios\_host\_record` – Configure Infoblox NIOS host records
+-   `nios_host_record` – Configure Infoblox NIOS host records
 
--   `nios\_member` – Configure Infoblox NIOS members
+-   `nios_member` – Configure Infoblox NIOS members
 
--   `nios\_mx\_record` – Configure Infoblox NIOS MX records
+-   `nios_mx_record` – Configure Infoblox NIOS MX records
 
--   `nios\_naptr\_record` – Configure Infoblox NIOS NAPTR records
+-   `nios_naptr_record` – Configure Infoblox NIOS NAPTR records
 
--   `nios\_network` – Configure Infoblox NIOS network object
+-   `nios_network` – Configure Infoblox NIOS network object
 
--   `nios\_network\_view` – Configure Infoblox NIOS network views
+-   `nios_network_view` – Configure Infoblox NIOS network views
 
--   `nios\_nsgroup` – Configure Infoblox DNS Nameserver Groups
+-   `nios_nsgroup` – Configure Infoblox DNS Nameserver Groups
 
--   `nios\_ptr\_record` – Configure Infoblox NIOS PTR records
+-   `nios_ptr_record` – Configure Infoblox NIOS PTR records
 
--   `nios\_srv\_record` – Configure Infoblox NIOS SRV records
+-   `nios_srv_record` – Configure Infoblox NIOS SRV records
 
--   `nios\_txt\_record` – Configure Infoblox NIOS txt records
+-   `nios_txt_record` – Configure Infoblox NIOS txt records
 
--   `nios\_zone` – Configure Infoblox NIOS DNS zones
+-   `nios_zone` – Configure Infoblox NIOS DNS zones
 
 Plugins:
 --------
 
--   `nios\_inventory`: List all the hosts with records created in NIOS
+-   `nios_inventory`: List all the hosts with records created in NIOS
 
--   `nios\_lookup`: Look up queries for NIOS database objects
+-   `nios_lookup`: Look up queries for NIOS database objects
 
--   `nios\_next\_ip`: Returns the next available IP address for a network
+-   `nios_next_ip`: Returns the next available IP address for a network
 
--   `nios\_next\_network`: Returns the next available network addresses
+-   `nios_next_network`: Returns the next available network addresses
     for a given network CIDR
 
 Installation 
@@ -88,14 +88,14 @@ $ pip install infoblox-client
 Installation of nios\_modules Collection
 ----------------------------------------
 
-The `nios\_modules` collection can be installed either from Ansible Galaxy
+The `nios_modules` collection can be installed either from Ansible Galaxy
 or directly from git. It is recommended to install collections from
 Ansible Galaxy are those are more stable than the ones in the git
 branch.
 
 ### Installation from Ansible Galaxy
 
-To directly install the `nios\_modules` collection from Ansible Galaxy,
+To directly install the `nios_modules` collection from Ansible Galaxy,
 run the following command:
 
 ```shell
