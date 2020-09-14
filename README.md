@@ -112,8 +112,7 @@ To git clone and install from this repo, follow these steps:
 -   **Clone the repo:**
 
 ```shell
-$ git clone
-https://github.com/infobloxopen/infoblox-ansible.git
+$ git clone https://github.com/infobloxopen/infoblox-ansible.git
 ```
 
 -   **Build the collection:**
