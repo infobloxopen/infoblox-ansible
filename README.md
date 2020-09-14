@@ -1,4 +1,4 @@
-**Infoblox Ansible Collections for vNIOS**
+##Infoblox Ansible Collections for vNIOS##
 
 About 
 ======
@@ -108,7 +108,7 @@ To git clone and install from this repo, follow these steps:
 -   **Clone the repo:**
 
 \$ git clone
-https://github.com/infobloxopen/infoblox-ansible/nios\_modules.git
+https://github.com/infobloxopen/infoblox-ansible.git
 
 -   **Build the collection: **
 
