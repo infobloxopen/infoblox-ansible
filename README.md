@@ -103,7 +103,7 @@ $ ansible-galaxy collection install infoblox.nios_modules
 ```
 
 The collection folder would be installed at
-`~/.ansible/collections/ansible\_collections/infoblox/nios_modules`
+`~/.ansible/collections/ansible_collections/infoblox/nios_modules`
 
 ### Installation from Git
 
