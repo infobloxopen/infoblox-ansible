@@ -90,7 +90,7 @@ Installation of nios\_modules Collection
 
 The `nios_modules` collection can be installed either from Ansible Galaxy
 or directly from git. It is recommended to install collections from
-Ansible Galaxy are those are more stable than the ones in the git
+Ansible Galaxy as those are more stable than the ones in the git
 branch.
 
 ### Installation from Ansible Galaxy
