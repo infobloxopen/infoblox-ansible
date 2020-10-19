@@ -6,15 +6,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
-
 DOCUMENTATION = '''
 ---
 module: nios_srv_record
-version_added: "2.7"
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS SRV records
 description:
@@ -35,7 +29,6 @@ options:
     description:
       - Sets the DNS view to associate this a record with.  The DNS
         view must already be configured on the system
-    required: true
     default: default
     aliases:
       - dns_view
@@ -43,22 +36,18 @@ options:
   port:
     description:
       - Configures the port (0-65535) of this SRV record.
-    required: true
     type: int
   priority:
     description:
       - Configures the priority (0-65535) for this SRV record.
-    required: true
     type: int
   target:
     description:
       - Configures the target FQDN for this SRV record.
-    required: true
     type: str
   weight:
     description:
       - Configures the weight (0-65535) for this SRV record.
-    required: true
     type: int
   ttl:
     description:

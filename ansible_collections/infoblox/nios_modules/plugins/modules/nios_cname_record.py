@@ -6,15 +6,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
-
 DOCUMENTATION = '''
 ---
 module: nios_cname_record
-version_added: "2.7"
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS CNAME records
 description:
@@ -35,7 +29,6 @@ options:
     description:
       - Sets the DNS view to associate this CNAME record with.  The DNS
         view must already be configured on the system
-    required: true
     default: default
     aliases:
       - dns_view
@@ -43,7 +36,6 @@ options:
   canonical:
     description:
       - Configures the canonical name for this CNAME record.
-    required: true
     aliases:
       - cname
     type: str

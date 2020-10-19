@@ -5,14 +5,8 @@
 # Copyright (c) 2020 Infoblox, Inc.
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-
 from __future__ import absolute_import, division, print_function
-
 __metaclass__ = type
-
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
 
 DOCUMENTATION = '''
 ---
@@ -22,7 +16,6 @@ extends_documentation_fragment: infoblox.nios_modules.nios
 author:
   - Erich Birngruber (@ebirn)
   - Sumit Jaiswal (@sjaiswal)
-version_added: "2.8"
 description:
   - Adds and/or removes nameserver groups form Infoblox NIOS servers.
     This module manages NIOS C(nsgroup) objects using the Infoblox. WAPI interface over REST.
@@ -37,6 +30,8 @@ options:
     description:
       - This host is to be used as primary server in this nameserver group. It must be a grid member.
         This option is required when setting I(use_external_primaries) to C(false).
+    type: list
+    elements: dict
     suboptions:
       name:
         description:
@@ -66,6 +61,8 @@ options:
     description:
      - Configures the list of grid member hosts that act as secondary nameservers.
        This option is required when setting I(use_external_primaries) to C(true).
+    type: list
+    elements: dict
     suboptions:
       name:
         description:
@@ -111,6 +108,8 @@ options:
     description:
       - Configures a list of external nameservers (non-members of the grid).
         This option is required when setting I(use_external_primaries) to C(true).
+    type: list
+    elements: dict
     suboptions:
       address:
         description:
@@ -140,6 +139,8 @@ options:
   external_secondaries:
     description:
       - Allows to provide a list of external secondary nameservers, that are not members of the grid.
+    type: list
+    elements: dict
     suboptions:
       address:
         description:

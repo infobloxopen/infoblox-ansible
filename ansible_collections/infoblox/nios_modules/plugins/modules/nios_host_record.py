@@ -6,15 +6,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
-
 DOCUMENTATION = '''
 ---
 module: nios_host_record
-version_added: "2.5"
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS host records
 description:
@@ -38,12 +32,10 @@ options:
       - Sets the DNS view to associate this host record with.  The DNS
         view must already be configured on the system
     type: str
-    required: true
     default: default
     aliases:
       - dns_view
   configure_for_dns:
-    version_added: "2.7"
     description:
       - Sets the DNS to particular parent. If user needs to bypass DNS
         user can make the value to false.
@@ -57,6 +49,7 @@ options:
       - Configures the IPv4 addresses for this host record.  This argument
         accepts a list of values (see suboptions)
     type: list
+    elements: dict
     aliases:
       - ipv4
     suboptions:
@@ -88,7 +81,7 @@ options:
         aliases:
           - mac
       add:
-        version_added: "2.10"
+        version_added: "1.0.0"
         description:
           - If user wants to add the ipv4 address to an existing host record.
             Note that with I(add) user will have to keep the I(state) as I(present),
@@ -98,7 +91,7 @@ options:
         aliases:
           - add
       remove:
-        version_added: "2.10"
+        version_added: "1.0.0"
         description:
           - If user wants to remove the ipv4 address from an existing host record.
             Note that with I(remove) user will have to change the I(state) to I(absent),
@@ -112,6 +105,7 @@ options:
       - Configures the IPv6 addresses for the host record.  This argument
         accepts a list of values (see options)
     type: list
+    elements: dict
     aliases:
       - ipv6
     suboptions:
@@ -137,7 +131,6 @@ options:
         aliases:
           - mac
   aliases:
-    version_added: "2.6"
     description:
       - Configures an optional list of additional aliases to add to the host
         record. These are equivalent to CNAMEs but held within a host
@@ -321,15 +314,15 @@ def main():
     ipv4addr_spec = dict(
         ipv4addr=dict(required=True, aliases=['address'], ib_req=True),
         configure_for_dhcp=dict(type='bool', required=False, aliases=['dhcp'], ib_req=True),
-        mac=dict(required=False, aliases=['mac'], ib_req=True),
-        add=dict(type='bool', aliases=['add'], required=False),
-        remove=dict(type='bool', aliases=['remove'], required=False)
+        mac=dict(required=False, ib_req=True),
+        add=dict(type='bool', required=False),
+        remove=dict(type='bool', required=False)
     )
 
     ipv6addr_spec = dict(
         ipv6addr=dict(required=True, aliases=['address'], ib_req=True),
-        configure_for_dhcp=dict(type='bool', required=False, aliases=['configure_for_dhcp'], ib_req=True),
-        mac=dict(required=False, aliases=['mac'], ib_req=True)
+        configure_for_dhcp=dict(type='bool', required=False, ib_req=True),
+        mac=dict(required=False, ib_req=True)
     )
 
     ib_spec = dict(

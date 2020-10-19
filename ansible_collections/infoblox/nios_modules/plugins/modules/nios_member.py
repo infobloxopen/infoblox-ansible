@@ -6,14 +6,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
 DOCUMENTATION = '''
 ---
 module: nios_member
-version_added: "2.8"
 author: "Krishna Vasudevan (@krisvasudevan)"
 short_description: Configure Infoblox NIOS members
 description:
@@ -33,7 +28,6 @@ options:
   vip_setting:
     description:
       - Configures the network settings for the grid member.
-    required: true
     suboptions:
       address:
         description:
@@ -48,10 +42,10 @@ options:
           - The default gateway for the Grid Member
         type: str
     type: list
+    elements: dict
   ipv6_setting:
     description:
       - Configures the IPv6 settings for the grid member.
-    required: true
     suboptions:
       virtual_ip:
         description:
@@ -66,6 +60,7 @@ options:
           - The gateway address for the Grid Member
         type: str
     type: list
+    elements: dict
   config_addr_type:
     description:
       - Address configuration type (IPV4/IPV6/BOTH)
@@ -95,6 +90,7 @@ options:
     description:
       - Settings for the Grid member LAN2 port if 'lan2_enabled' is set to "true".
     type: list
+    elements: dict
     suboptions:
       enabled:
         description:
@@ -117,10 +113,12 @@ options:
               - The default gateway of LAN2
             type: str
         type: list
+        elements: dict
       v6_network_setting:
         description:
           - If the 'enable' field is set to True, this defines IPv6 network settings for LAN2.
         type: list
+        elements: dict
         suboptions:
           virtual_ip:
             description:
@@ -143,6 +141,7 @@ options:
     description:
       - Configures the node information list with detailed status report on the operations of the Grid Member.
     type: list
+    elements: dict
     suboptions:
       lan2_physical_setting:
         description:
@@ -161,10 +160,12 @@ options:
               - The port speed; if speed is 1000, duplex is FULL.
             type: str
         type: list
+        elements: dict
       lan_ha_port_setting:
         description:
           - LAN/HA port settings for the node.
         type: list
+        elements: dict
         suboptions:
           ha_ip_address:
             description:
@@ -174,6 +175,7 @@ options:
             description:
               - Physical port settings for the HA interface.
             type: list
+            elements: dict
             suboptions:
               auto_port_setting_enabled:
                 description:
@@ -191,6 +193,7 @@ options:
             description:
               - Physical port settings for the LAN interface.
             type: list
+            elements: dict
             suboptions:
               auto_port_setting_enabled:
                 description:
@@ -216,6 +219,7 @@ options:
         description:
           - Network settings for the MGMT port of the node.
         type: list
+        elements: dict
         suboptions:
           address:
             description:
@@ -233,6 +237,7 @@ options:
         description:
           - The network settings for the IPv6 MGMT port of the node.
         type: list
+        elements: dict
         suboptions:
           virtual_ip:
             description:
@@ -250,6 +255,7 @@ options:
     description:
       - Settings for the member MGMT port.
     type: list
+    elements: dict
     suboptions:
       enabled:
         description:
@@ -280,6 +286,7 @@ options:
     description:
       - The list of external syslog servers.
     type: list
+    elements: dict
     suboptions:
       address:
         description:
@@ -327,11 +334,13 @@ options:
     description:
       - Pre-provisioning information.
     type: list
+    elements: dict
     suboptions:
       hardware_info:
         description:
           - An array of structures that describe the hardware being pre-provisioned.
         type: list
+        elements: dict
         suboptions:
           hwmodel:
             description:

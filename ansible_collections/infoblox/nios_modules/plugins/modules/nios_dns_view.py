@@ -6,15 +6,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
-
 DOCUMENTATION = '''
 ---
 module: nios_dns_view
-version_added: "2.5"
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS DNS views
 description:
@@ -40,7 +34,6 @@ options:
       - Specifies the name of the network view to assign the configured
         DNS view to.  The network view must already be configured on the
         target system.
-    required: true
     default: default
     type: str
   extattrs:

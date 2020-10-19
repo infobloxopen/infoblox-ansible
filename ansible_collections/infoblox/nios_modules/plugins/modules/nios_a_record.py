@@ -6,15 +6,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
-
 DOCUMENTATION = '''
 ---
 module: nios_a_record
-version_added: "2.7"
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS A records
 description:
@@ -35,7 +29,6 @@ options:
     description:
       - Sets the DNS view to associate this A record with.  The DNS
         view must already be configured on the system
-    required: true
     default: default
     aliases:
       - dns_view
@@ -45,7 +38,6 @@ options:
       - Configures the IPv4 address for this A record. Users can dynamically
         allocate ipv4 address to A record by passing dictionary containing,
         I(nios_next_ip) and I(CIDR network range). See example
-    required: true
     aliases:
       - ipv4
     type: str

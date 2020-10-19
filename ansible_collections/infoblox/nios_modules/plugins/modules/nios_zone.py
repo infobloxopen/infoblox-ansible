@@ -6,15 +6,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
-
 DOCUMENTATION = '''
 ---
 module: nios_zone
-version_added: "2.5"
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS DNS zones
 description:
@@ -38,7 +32,6 @@ options:
       - Configures the DNS view name for the configured resource.  The
         specified DNS zone must already exist on the running NIOS instance
         prior to configuring zones.
-    required: true
     default: default
     aliases:
       - dns_view
@@ -50,8 +43,10 @@ options:
       name:
         description:
           - The name of the grid primary server
+        required: true
         type: str
     type: list
+    elements: dict
   grid_secondaries:
     description:
       - Configures the grid secondary servers for this zone.
@@ -59,22 +54,21 @@ options:
       name:
         description:
           - The name of the grid secondary server
+        required: true
         type: str
     type: list
+    elements: dict
   ns_group:
-    version_added: "2.6"
     description:
       - Configures the name server group for this zone. Name server group is
         mutually exclusive with grid primary and grid secondaries.
     type: str
   restart_if_needed:
-    version_added: "2.6"
     description:
       - If set to true, causes the NIOS DNS service to restart and load the
         new zone configuration
     type: bool
   zone_format:
-    version_added: "2.7"
     description:
       - Create an authorative Reverse-Mapping Zone which is an area of network
         space for which one or more name servers-primary and secondary-have the
@@ -203,7 +197,7 @@ def main():
 
     ib_spec = dict(
         fqdn=dict(required=True, aliases=['name'], ib_req=True, update=False),
-        zone_format=dict(default='FORWARD', aliases=['zone_format'], ib_req=False),
+        zone_format=dict(default='FORWARD', ib_req=False),
         view=dict(default='default', aliases=['dns_view'], ib_req=True),
 
         grid_primary=dict(type='list', elements='dict', options=grid_spec),

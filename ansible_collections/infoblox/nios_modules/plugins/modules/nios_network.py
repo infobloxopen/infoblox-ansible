@@ -6,15 +6,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
-
 DOCUMENTATION = '''
 ---
 module: nios_network
-version_added: "2.5"
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS network object
 description:
@@ -40,7 +34,6 @@ options:
       - Configures the name of the network view to associate with this
         configured instance.
     type: str
-    required: true
     default: default
   options:
     description:
@@ -49,6 +42,7 @@ options:
         of values (see suboptions).  When configuring suboptions at
         least one of C(name) or C(num) must be specified.
     type: list
+    elements: dict
     suboptions:
       name:
         description:
@@ -93,7 +87,6 @@ options:
       - If set to true it'll create the network container to be added or removed
         from the system.
     type: bool
-    version_added: '2.8'
   state:
     description:
       - Configures the intended state of the instance of the object on

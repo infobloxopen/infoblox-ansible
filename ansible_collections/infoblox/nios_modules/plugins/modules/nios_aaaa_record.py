@@ -6,15 +6,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
-
-
 DOCUMENTATION = '''
 ---
 module: nios_aaaa_record
-version_added: "2.6"
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS AAAA records
 description:
@@ -34,7 +28,6 @@ options:
     description:
       - Sets the DNS view to associate this AAAA record with.  The DNS
         view must already be configured on the system
-    required: true
     default: default
     aliases:
       - dns_view
@@ -42,7 +35,6 @@ options:
   ipv6addr:
     description:
       - Configures the IPv6 address for this AAAA record.
-    required: true
     aliases:
       - ipv6
     type: str

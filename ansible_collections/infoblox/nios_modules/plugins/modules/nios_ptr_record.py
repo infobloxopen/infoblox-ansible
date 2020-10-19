@@ -4,17 +4,11 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
-
 __metaclass__ = type
-
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'certified'}
 
 DOCUMENTATION = '''
 ---
 module: nios_ptr_record
-version_added: "2.7"
 author: "Trebuchet Clement (@clementtrebuchet)"
 short_description: Configure Infoblox NIOS PTR records
 description:
@@ -43,21 +37,18 @@ options:
   ipv4addr:
     description:
       - The IPv4 Address of the record. Mutually exclusive with the ipv6addr.
-    required: true
     type: str
     aliases:
       - ipv4
   ipv6addr:
     description:
       - The IPv6 Address of the record. Mutually exclusive with the ipv4addr.
-    required: true
     aliases:
       - ipv6
     type: str
   ptrdname:
     description:
       - The domain name of the DNS PTR record in FQDN format.
-    required: true
     type: str
   ttl:
     description:
