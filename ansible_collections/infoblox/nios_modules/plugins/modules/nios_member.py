@@ -77,6 +77,7 @@ options:
   enable_ha:
     description:
       - If set to True, the member has two physical nodes (HA pair).
+    default: False
     type: bool
   router_id:
     description:
@@ -85,6 +86,7 @@ options:
   lan2_enabled:
     description:
       - When set to "true", the LAN2 port is enabled as an independent port or as a port for failover purposes.
+    default: False
     type: bool
   lan2_port_setting:
     description:
@@ -296,6 +298,7 @@ options:
         description:
           - The list of all syslog logging categories.
         type: list
+        elements: str
       connection_type:
         description:
           - The connection type for communicating with this server.(STCP/TCP?UDP)
@@ -354,6 +357,7 @@ options:
         description:
           - An array of license types.
         type: list
+        elements: str
   create_token:
     description:
       - Flag for initiating a create token request for pre-provisioned members.
@@ -502,7 +506,7 @@ def main():
 
     syslog_spec = dict(
         address=dict(),
-        category_list=dict(type='list'),
+        category_list=dict(type='list', elements='str'),
         connection_type=dict(default='UDP'),
         local_interface=dict(default='ANY'),
         message_node_id=dict(default='LAN'),
@@ -519,7 +523,7 @@ def main():
 
     pre_prov_spec = dict(
         hardware_info=dict(type='list', elements='dict', options=hw_spec),
-        licenses=dict(type='list'),
+        licenses=dict(type='list', elements='str'),
     )
 
     ib_spec = dict(
