@@ -136,6 +136,7 @@ options:
         record. These are equivalent to CNAMEs but held within a host
         record. Must be in list format.
     type: list
+    elements: str
   ttl:
     description:
       - Configures the TTL to be associated with this host record
@@ -332,7 +333,7 @@ def main():
         ipv4addrs=dict(type='list', aliases=['ipv4'], elements='dict', options=ipv4addr_spec, transform=ipv4addrs),
         ipv6addrs=dict(type='list', aliases=['ipv6'], elements='dict', options=ipv6addr_spec, transform=ipv6addrs),
         configure_for_dns=dict(type='bool', default=True, required=False, aliases=['dns'], ib_req=True),
-        aliases=dict(type='list'),
+        aliases=dict(type='list', elements='str'),
 
         ttl=dict(type='int'),
 

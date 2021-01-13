@@ -57,6 +57,11 @@ options:
           - Configure the external nameserver as stealth server (without NS record) in the zones.
         type: bool
         default: false
+      preferred_primaries:
+        description:
+          - Provide a list of elements like in I(external_primaries) to set the precedence of preferred primary nameservers.
+        type: list
+        elements: dict
   grid_secondaries:
     description:
      - Configures the list of grid member hosts that act as secondary nameservers.
@@ -91,6 +96,8 @@ options:
       preferred_primaries:
         description:
           - Provide a list of elements like in I(external_primaries) to set the precedence of preferred primary nameservers.
+        type: list
+        elements: dict
   is_grid_default:
     description:
       - If set to C(True) this nsgroup will become the default nameserver group for new zones.
