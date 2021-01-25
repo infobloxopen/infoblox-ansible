@@ -3,6 +3,9 @@ on:
 # Run CI against all pushes (direct commits) and Pull Requests
 - push
 - pull_request
+# Run CI once per day (at 06:00 UTC)
+  schedule:
+    - cron: '0 6 * * *'
 
 jobs:
 
