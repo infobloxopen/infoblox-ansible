@@ -136,6 +136,22 @@ Please refer to our Ansible [deployment
 guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
 for more details.
 
+Introduction
+=========
+
+This issue describes how and when infoblox is released, and to announce updates to the release/versioning schedule. Other changes to this first post are always announced by separate posts in this issue.
+
+Current release
+=========
+
+1.0.1 on 25 January 2021
+
+Versioning
+=========
+
+-   galaxy.yml in the master branch will always contain the version of the current major or minor release. It will be updated right after a release.
+-   version_added needs to be used for every new feature and module/plugin, and needs to coincide with the next minor/major release version. (This will eventually be enforced by CI.)
+
 Resources
 =========
 
