@@ -136,11 +136,6 @@ Please refer to our Ansible [deployment
 guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
 for more details.
 
-Introduction
-=========
-
-This issue describes how and when infoblox is released, and to announce updates to the release/versioning schedule. Other changes to this first post are always announced by separate posts in this issue.
-
 Current release
 =========
 
