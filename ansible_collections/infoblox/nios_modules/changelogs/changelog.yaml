@@ -1,0 +1,75 @@
+ancestor: null
+releases:
+  1.0.0:
+    changes:
+      release_summary: 'First release of the `nios_modules` collection! This release
+        includes multiple plugins:- an `api` plugin, a `network` plugin, a `nios`
+        plugin, a `nios_inventory` plugin, a `lookup plugin`, a `nios_next_ip` plugin,
+        a `nios_next_network` plugin '
+    modules:
+    - description: Configure Infoblox NIOS A records
+      name: nios_a_record
+      namespace: ''
+    - description: Configure Infoblox NIOS AAAA records
+      name: nios_aaaa_record
+      namespace: ''
+    - description: Configure Infoblox NIOS CNAME records
+      name: nios_cname_record
+      namespace: ''
+    - description: Configure Infoblox NIOS DNS views
+      name: nios_dns_view
+      namespace: ''
+    - description: Configure Infoblox NIOS DHCP Fixed Address
+      name: nios_fixed_address
+      namespace: ''
+    - description: Configure Infoblox NIOS host records
+      name: nios_host_record
+      namespace: ''
+    - description: Configure Infoblox NIOS members
+      name: nios_member
+      namespace: ''
+    - description: Configure Infoblox NIOS MX records
+      name: nios_mx_record
+      namespace: ''
+    - description: Configure Infoblox NIOS NAPTR records
+      name: nios_naptr_record
+      namespace: ''
+    - description: Configure Infoblox NIOS network object
+      name: nios_network
+      namespace: ''
+    - description: Configure Infoblox NIOS network views
+      name: nios_network_view
+      namespace: ''
+    - description: Configure Infoblox NIOS Nameserver Groups
+      name: nios_nsgroup
+      namespace: ''
+    - description: Configure Infoblox NIOS PTR records
+      name: nios_ptr_record
+      namespace: ''
+    - description: Configure Infoblox NIOS SRV records
+      name: nios_srv_record
+      namespace: ''
+    - description: Configure Infoblox NIOS txt records
+      name: nios_txt_record
+      namespace: ''
+    - description: Configure Infoblox NIOS DNS zones
+      name: nios_zone
+      namespace: ''
+    plugins:
+      lookup:
+      - description: Query Infoblox NIOS objects
+        name: nios
+        namespace: null
+      - description: Return the next available IP address for a network
+        name: nios_next_ip
+        namespace: null
+      - description: Return the next available network range for a network-container
+        name: nios_next_network
+        namespace: null
+    release_date: '2020-10-23'
+  1.0.1:
+    changes:
+      minor_changes:
+      - Made it compatible for Ansible v3.0.0
+      release_summary: This release provides compatibilty for Ansible v3.0.0
+    release_date: '2021-01-25'
