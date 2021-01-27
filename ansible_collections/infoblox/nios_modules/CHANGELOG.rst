@@ -5,6 +5,20 @@ Infoblox.Nios_Modules Release Notes
 .. contents:: Topics
 
 
+v1.0.2
+======
+
+Release Summary
+---------------
+
+This release provides compatibilty for Ansible v3.0.0
+
+Minor Changes
+-------------
+
+- Fixed the ignored sanity errors required for Ansible 3.0.0 collection
+- Made it compatible for Ansible v3.0.0
+
 v1.0.1
 ======
 

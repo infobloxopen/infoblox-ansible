@@ -14,4 +14,3 @@ plugins/modules/nios_zone.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_nsgroup.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_network.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_network_view.py validate-modules:invalid-ansiblemodule-schema
-
