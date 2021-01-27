@@ -3,7 +3,7 @@
     "results": [
         {
             "message": "The test `ansible-test sanity --test validate-modules` [[explain](https://docs.ansible.com/ansible/2.9/dev_guide/testing/sanity/validate-modules.html)] failed with 1 error:",
-            "output": "tests/sanity/ignore-2.9.txt:1:1: A100: Ignoring 'missing-suboption-docs' on 'plugins/modules/nios_nsgroup.py' is unnecessary"
+            "output": "plugins/modules/nios_nsgroup.py:436:0: missing-if-name-main: Next to last line should be: if __name__ == \"__main__\":"
         }
     ],
     "verified": false
