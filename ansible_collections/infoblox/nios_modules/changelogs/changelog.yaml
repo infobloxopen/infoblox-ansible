@@ -73,3 +73,10 @@ releases:
       - Made it compatible for Ansible v3.0.0
       release_summary: This release provides compatibilty for Ansible v3.0.0
     release_date: '2021-01-25'
+  1.0.2:
+    changes:
+      minor_changes:
+      - Fixed the ignored sanity errors required for Ansible 3.0.0 collection
+      - Made it compatible for Ansible v3.0.0
+      release_summary: This release provides compatibilty for Ansible v3.0.0
+    release_date: '2021-01-27'
