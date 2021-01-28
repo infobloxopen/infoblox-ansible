@@ -139,7 +139,7 @@ for more details.
 Current release
 =========
 
-1.0.1 on 25 January 2021
+1.0.2 on 27 January 2021
 
 Versioning
 =========

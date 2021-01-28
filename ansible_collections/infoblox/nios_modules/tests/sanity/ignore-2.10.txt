@@ -1,9 +1,3 @@
-plugins/modules/nios_nsgroup.py validate-modules:undocumented-parameter
-plugins/modules/nios_nsgroup.py validate-modules:parameter-type-not-in-doc
-plugins/modules/nios_nsgroup.py validate-modules:missing-suboption-docs
-plugins/modules/nios_nsgroup.py validate-modules:doc-missing-type
-plugins/modules/nios_nsgroup.py validate-modules:doc-default-does-not-match-spec
-plugins/modules/nios_nsgroup.py validate-modules:doc-choices-do-not-match-spec
 plugins/modules/nios_srv_record.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_member.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_aaaa_record.py validate-modules:invalid-ansiblemodule-schema
@@ -20,4 +14,3 @@ plugins/modules/nios_zone.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_nsgroup.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_network.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_network_view.py validate-modules:invalid-ansiblemodule-schema
-plugins/modules/nios_nsgroup.py validate-modules:doc-required-mismatch
