@@ -77,39 +77,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a DTC Server
-  infoblox.nios_modules.nios_dtc_server:
-    name: a.ansible.com
-    host: 192.168.10.1
-    state: present
-    provider:
-      host: "{{ inventory_hostname_short }}"
-      username: admin
-      password: admin
-  connection: local
-
-- name: add a comment to a DTC server
-  infoblox.nios_modules.nios_dtc_server:
-    name: a.ansible.com
-    host: 192.168.10.1
-    comment: this is a test comment
-    state: present
-    provider:
-      host: "{{ inventory_hostname_short }}"
-      username: admin
-      password: admin
-  connection: local
-
-- name: remove a DTC Server from the system
-  infoblox.nios_modules.nios_dtc_server:
-    name: a.ansible.com
-    host: 192.168.10.1
-    state: absent
-    provider:
-      host: "{{ inventory_hostname_short }}"
-      username: admin
-      password: admin
-  connection: local
+TBD
 '''
 
 RETURN = ''' # '''
