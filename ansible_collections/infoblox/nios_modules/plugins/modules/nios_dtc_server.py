@@ -26,7 +26,8 @@ options:
     type: str
   host:
     description:
-      - Configures the address or FQDN of the server
+      - Configures the IP address (A response) or FQDN (CNAME response)
+        of the server
     required: true
     type: str
   extattrs:
@@ -57,7 +58,7 @@ options:
 EXAMPLES = '''
 - name: configure a DTC Server
   infoblox.nios_modules.nios_dtc_server:
-    name: a.ansible.com
+    name: a.example.com
     host: 192.168.10.1
     state: present
     provider:
@@ -68,7 +69,7 @@ EXAMPLES = '''
 
 - name: add a comment to a DTC server
   infoblox.nios_modules.nios_dtc_server:
-    name: a.ansible.com
+    name: a.example.com
     host: 192.168.10.1
     comment: this is a test comment
     state: present
@@ -80,7 +81,7 @@ EXAMPLES = '''
 
 - name: remove a DTC Server from the system
   infoblox.nios_modules.nios_dtc_server:
-    name: a.ansible.com
+    name: a.example.com
     host: 192.168.10.1
     state: absent
     provider:

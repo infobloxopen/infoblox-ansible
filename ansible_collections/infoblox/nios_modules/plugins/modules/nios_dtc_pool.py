@@ -36,7 +36,7 @@ options:
       - RATIO
       - ROUND_ROBIN
       - TOPOLOGY
-    required: false
+    required: true
     type: str
   servers:
     description:
@@ -82,7 +82,42 @@ options:
 '''
 
 EXAMPLES = '''
-TBD
+- name: configure a DTC Pool
+  infoblox.nios_modules.nios_dtc_pool:
+    name: web_pool
+    lb_preferred_method: ROUND_ROBIN
+    servers:
+      - server: a.ansible.com
+      - server: b.ansible.com
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: add a comment to a DTC Pool
+  infoblox.nios_modules.nios_dtc_pool:
+    name: web_pool
+    lb_preferred_method: ROUND_ROBIN
+    comment: this is a test comment
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: remove a DTC Pool from the system
+  infoblox.nios_modules.nios_dtc_pool:
+    name: web_pool
+    lb_preferred_method: ROUND_ROBIN
+    state: absent
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
 '''
 
 RETURN = ''' # '''

@@ -77,7 +77,41 @@ options:
 '''
 
 EXAMPLES = '''
-TBD
+- name: configure a DTC LBDN
+  infoblox.nios_modules.nios_dtc_lbdn:
+    name: web.ansible.com
+    lb_method: ROUND_ROBIN
+    pools:
+      - pool: web_pool
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: add a comment to a DTC LBDN
+  infoblox.nios_modules.nios_dtc_lbdn:
+    name: web.ansible.com
+    lb_method: ROUND_ROBIN
+    comment: this is a test comment
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: remove a DTC LBDN from the system
+  infoblox.nios_modules.nios_dtc_lbdn:
+    name: web.ansible.com
+    lb_method: ROUND_ROBIN
+    state: absent
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
 '''
 
 RETURN = ''' # '''
