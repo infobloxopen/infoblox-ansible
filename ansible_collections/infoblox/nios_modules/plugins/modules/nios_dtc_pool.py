@@ -6,6 +6,12 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+from ..module_utils.api import NIOS_DTC_SERVER
+from ..module_utils.api import NIOS_DTC_POOL
+from ..module_utils.api import WapiModule
+from ansible.module_utils.six import iteritems
+from ansible.module_utils.basic import AnsibleModule
+
 DOCUMENTATION = '''
 ---
 module: nios_dtc_server
@@ -151,57 +157,57 @@ EXAMPLES = '''
 
 RETURN = ''' # '''
 
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
-from ..module_utils.api import WapiModule
-from ..module_utils.api import NIOS_DTC_POOL
-from ..module_utils.api import NIOS_DTC_SERVER
 
 def main():
     ''' Main entry point for module execution
     '''
 
     def servers_transform(module):
-      server_list = list()
-      if module.params['servers']:
-        for server in module.params['servers']:
-          server_obj = wapi.get_object('dtc:server',
-            {'name': server['server']})
-          if not 'ratio' in server:
-            server['ratio'] = 1
-          if server_obj is not None:
-            server_list.append({'server': server_obj[0]['_ref'],
-              'ratio': server['ratio']})
-      return server_list
+        server_list = list()
+        if module.params['servers']:
+            for server in module.params['servers']:
+                server_obj = wapi.get_object('dtc:server',
+                                             {'name': server['server']})
+                if 'ratio' not in server:
+                    server['ratio'] = 1
+                if server_obj is not None:
+                    server_list.append({'server': server_obj[0]['_ref'],
+                                        'ratio': server['ratio']})
+        return server_list
 
     def monitors_transform(module):
-      monitor_list = list()
-      if module.params['monitors']:
-        for monitor in module.params['monitors']:
-          monitor_obj = wapi.get_object('dtc:monitor:' + monitor['type'],
-            {'name': monitor['name']})
-          if monitor_obj is not None:
-            monitor_list.append(monitor_obj[0]['_ref'])
-      return monitor_list
+        monitor_list = list()
+        if module.params['monitors']:
+            for monitor in module.params['monitors']:
+                monitor_obj = wapi.get_object('dtc:monitor:' + monitor['type'],
+                                              {'name': monitor['name']})
+                if monitor_obj is not None:
+                    monitor_list.append(monitor_obj[0]['_ref'])
+        return monitor_list
 
-    servers_spec=dict(
-      server=dict(),
-      ratio=dict(type='int')
+    servers_spec = dict(
+        server=dict(),
+        ratio=dict(type='int')
     )
 
-    monitors_spec=dict(
-      name=dict(),
-      type=dict(choices=['http', 'icmp', 'tcp', 'pdp', 'sip', 'snmp'])
+    monitors_spec = dict(
+        name=dict(),
+        type=dict(choices=['http', 'icmp', 'tcp', 'pdp', 'sip', 'snmp'])
     )
 
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
         lb_preferred_method=dict(required=True, choices=['ALL_AVAILABLE',
-          'DYNAMIC_RATIO', 'GLOBAL_AVAILABILITY', 'RATIO', 'ROUND_ROBIN',
-          'TOPOLOGY']),
+                                                         'DYNAMIC_RATIO',
+                                                         'GLOBAL_AVAILABILITY',
+                                                         'RATIO',
+                                                         'ROUND_ROBIN',
+                                                         'TOPOLOGY']),
 
-        servers=dict(type='list', options=servers_spec, transform=servers_transform),
-        monitors=dict(type='list', options=monitors_spec, transform=monitors_transform),
+        servers=dict(type='list', options=servers_spec,
+                     transform=servers_transform),
+        monitors=dict(type='list', options=monitors_spec,
+                      transform=monitors_transform),
 
         extattrs=dict(type='dict'),
         comment=dict(),

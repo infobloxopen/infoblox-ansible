@@ -6,6 +6,11 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+from ..module_utils.api import NIOS_DTC_LBDN
+from ..module_utils.api import WapiModule
+from ansible.module_utils.six import iteritems
+from ansible.module_utils.basic import AnsibleModule
+
 DOCUMENTATION = '''
 ---
 module: nios_dtc_lbdn
@@ -151,62 +156,59 @@ EXAMPLES = '''
 
 RETURN = ''' # '''
 
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
-from ..module_utils.api import WapiModule
-from ..module_utils.api import NIOS_DTC_LBDN
 
 def main():
     ''' Main entry point for module execution
     '''
 
     def auth_zones_transform(module):
-      zone_list = list()
-      if module.params['auth_zones']:
-        for zone in module.params['auth_zones']:
-          zone_obj = wapi.get_object('zone_auth',
-            {'fqdn': zone})
-          if zone_obj is not None:
-            zone_list.append(zone_obj[0]['_ref'])
-          else:
-            module.fail_json(msg='auth_zone %s cannot be found.' % zone)
-      # epdb.serve()
-      return zone_list
+        zone_list = list()
+        if module.params['auth_zones']:
+            for zone in module.params['auth_zones']:
+                zone_obj = wapi.get_object('zone_auth',
+                                           {'fqdn': zone})
+                if zone_obj is not None:
+                    zone_list.append(zone_obj[0]['_ref'])
+                else:
+                    module.fail_json(
+                        msg='auth_zone %s cannot be found.' % zone)
+        # epdb.serve()
+        return zone_list
 
     def pools_transform(module):
-      pool_list = list()
-      if module.params['pools']:
-        for pool in module.params['pools']:
-          pool_obj = wapi.get_object('dtc:pool',
-            {'name': pool['pool']})
-          if not 'ratio' in pool:
-            pool['ratio'] = 1
-          if pool_obj is not None:
-            pool_list.append({'pool': pool_obj[0]['_ref'],
-              'ratio': pool['ratio']})
-          else:
-            module.fail_json(msg='pool %s cannot be found.' % pool)
-      return pool_list
+        pool_list = list()
+        if module.params['pools']:
+            for pool in module.params['pools']:
+                pool_obj = wapi.get_object('dtc:pool',
+                                           {'name': pool['pool']})
+                if 'ratio' not in pool:
+                    pool['ratio'] = 1
+                if pool_obj is not None:
+                    pool_list.append({'pool': pool_obj[0]['_ref'],
+                                      'ratio': pool['ratio']})
+                else:
+                    module.fail_json(msg='pool %s cannot be found.' % pool)
+        return pool_list
 
-    auth_zones_spec=dict(),
+    auth_zones_spec = dict(),
 
-    pools_spec=dict(
-      pool=dict(),
-      ratio=dict(type='int')
+    pools_spec = dict(
+        pool=dict(),
+        ratio=dict(type='int')
     )
 
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
         lb_method=dict(required=True, choices=['GLOBAL_AVAILABILITY',
-          'RATIO', 'ROUND_ROBIN', 'TOPOLOGY']),
+                                               'RATIO', 'ROUND_ROBIN', 'TOPOLOGY']),
 
         auth_zones=dict(type='list', options=auth_zones_spec,
-          transform=auth_zones_transform),
+                        transform=auth_zones_transform),
         patterns=dict(type='list', elements='str'),
         types=dict(type='list', choices=['A', 'AAAA', 'CNAME', 'NAPTR',
-          'SRV']),
+                                         'SRV']),
         pools=dict(type='list', options=pools_spec,
-          transform=pools_transform),
+                   transform=pools_transform),
         ttl=dict(type='int'),
 
         extattrs=dict(type='dict'),
