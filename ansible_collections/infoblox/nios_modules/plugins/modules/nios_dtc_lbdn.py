@@ -79,6 +79,13 @@ options:
         default: 1
         required: false
         type: int
+  ttl:
+    description:
+      - The Time To Live (TTL) value for the DTC LBDN. A 32-bit unsigned
+        integer that represents the duration, in seconds, for which the
+        record is valid (cached). Zero indicates that the record should
+        not be cached.
+    type: int
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
@@ -200,6 +207,7 @@ def main():
           'SRV']),
         pools=dict(type='list', options=pools_spec,
           transform=pools_transform),
+        ttl=dict(type='int'),
 
         extattrs=dict(type='dict'),
         comment=dict(),
