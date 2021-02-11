@@ -63,7 +63,7 @@ options:
         limitation.
       - NOTE: This option only works if you set the C(wapi_version)
         variable on your C(provider) variable to a number higher
-        than "2.5".
+        than "2.6".
     required: false
     type: list
     elements: dict

@@ -33,6 +33,34 @@ options:
       - RATIO
       - ROUND_ROBIN
       - TOPOLOGY
+  auth_zones:
+    description:
+      - List of linked authoritative zones.
+      - NOTE: when using C(auth_zones), you must specify at least one
+        C(patterns)
+    required: false
+    type: list
+    elements: str
+  patterns:
+    description:
+      - Specify LBDN wildcards for pattern match.
+    required: false
+    type: list
+    elements: str
+  types:
+    description:
+      - Specifies the list of resource record types supported by LBDN.
+      - NOTE: This option will work properly only if you set the
+        C(wapi_version) variable on your C(provider) variable to a
+        number higher than "2.6".
+    required: false
+    type: list
+    choices:
+      - A
+      - AAAA
+      - CNAME
+      - NAPTR
+      - SRV
   pools:
     description:
       - The pools used for load balancing.
@@ -121,10 +149,22 @@ from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_DTC_LBDN
 
-
 def main():
     ''' Main entry point for module execution
     '''
+
+    def auth_zones_transform(module):
+      zone_list = list()
+      if module.params['auth_zones']:
+        for zone in module.params['auth_zones']:
+          zone_obj = wapi.get_object('zone_auth',
+            {'fqdn': zone})
+          if zone_obj is not None:
+            zone_list.append(zone_obj[0]['_ref'])
+          else:
+            module.fail_json(msg='auth_zone %s cannot be found.' % zone)
+      # epdb.serve()
+      return zone_list
 
     def pools_transform(module):
       pool_list = list()
@@ -137,7 +177,11 @@ def main():
           if pool_obj is not None:
             pool_list.append({'pool': pool_obj[0]['_ref'],
               'ratio': pool['ratio']})
+          else:
+            module.fail_json(msg='pool %s cannot be found.' % pool)
       return pool_list
+
+    auth_zones_spec=dict(),
 
     pools_spec=dict(
       pool=dict(),
@@ -149,7 +193,13 @@ def main():
         lb_method=dict(required=True, choices=['GLOBAL_AVAILABILITY',
           'RATIO', 'ROUND_ROBIN', 'TOPOLOGY']),
 
-        pools=dict(type='list', options=pools_spec, transform=pools_transform),
+        auth_zones=dict(type='list', options=auth_zones_spec,
+          transform=auth_zones_transform),
+        patterns=dict(type='list', elements='str'),
+        types=dict(type='list', choices=['A', 'AAAA', 'CNAME', 'NAPTR',
+          'SRV']),
+        pools=dict(type='list', options=pools_spec,
+          transform=pools_transform),
 
         extattrs=dict(type='dict'),
         comment=dict(),
