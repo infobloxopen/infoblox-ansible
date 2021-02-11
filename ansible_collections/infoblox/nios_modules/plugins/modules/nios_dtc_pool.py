@@ -56,6 +56,35 @@ options:
         default: 1
         required: false
         type: int
+  monitors:
+    description:
+      - Specifies the health monitors related to pool.
+      - The format of this parameter is required due to an API
+        limitation.
+      - NOTE: This option only works if you set the C(wapi_version)
+        variable on your C(provider) variable to a number higher
+        than "2.5".
+    required: false
+    type: list
+    elements: dict
+    suboptions:
+      name:
+        description:
+          - Provide the name of the health monitor.
+        required: true
+        type: str
+      type:
+        description:
+          - Provide the type of health monitor.
+        choices:
+          - http
+          - icmp
+          - tcp
+          - pdp
+          - sip
+          - snmp
+        required: true
+        type: str
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
@@ -145,9 +174,24 @@ def main():
               'ratio': server['ratio']})
       return server_list
 
+    def monitors_transform(module):
+      monitor_list = list()
+      if module.params['monitors']:
+        for monitor in module.params['monitors']:
+          monitor_obj = wapi.get_object('dtc:monitor:' + monitor['type'],
+            {'name': monitor['name']})
+          if monitor_obj is not None:
+            monitor_list.append(monitor_obj[0]['_ref'])
+      return monitor_list
+
     servers_spec=dict(
       server=dict(),
       ratio=dict(type='int')
+    )
+
+    monitors_spec=dict(
+      name=dict(),
+      type=dict(choices=['http', 'icmp', 'tcp', 'pdp', 'sip', 'snmp'])
     )
 
     ib_spec = dict(
@@ -157,6 +201,7 @@ def main():
           'TOPOLOGY']),
 
         servers=dict(type='list', options=servers_spec, transform=servers_transform),
+        monitors=dict(type='list', options=monitors_spec, transform=monitors_transform),
 
         extattrs=dict(type='dict'),
         comment=dict(),
