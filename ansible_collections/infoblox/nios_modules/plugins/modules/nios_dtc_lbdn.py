@@ -36,8 +36,8 @@ options:
   auth_zones:
     description:
       - List of linked authoritative zones.
-      - NOTE: when using C(auth_zones), you must specify at least one
-        C(patterns)
+      - When using I(auth_zones), you must specify at least one
+        I(patterns)
     required: false
     type: list
     elements: str
@@ -50,8 +50,8 @@ options:
   types:
     description:
       - Specifies the list of resource record types supported by LBDN.
-      - NOTE: This option will work properly only if you set the
-        C(wapi_version) variable on your C(provider) variable to a
+      - This option will work properly only if you set the C(wapi_version)
+        variable on your C(provider) variable to a
         number higher than "2.6".
     required: false
     type: list

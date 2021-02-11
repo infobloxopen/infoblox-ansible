@@ -61,7 +61,7 @@ options:
       - Specifies the health monitors related to pool.
       - The format of this parameter is required due to an API
         limitation.
-      - NOTE: This option only works if you set the C(wapi_version)
+      - This option only works if you set the C(wapi_version)
         variable on your C(provider) variable to a number higher
         than "2.6".
     required: false
