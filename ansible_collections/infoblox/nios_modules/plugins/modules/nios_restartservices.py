@@ -90,7 +90,6 @@ RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
-from ansible.errors import AnsibleError
 from ..module_utils.api import WapiModule
 
 
@@ -133,7 +132,7 @@ def main():
         del restart_params['mode']
     grid_obj = wapi.get_object('grid')
     if grid_obj is None:
-        raise AnsibleError('Failed to get NIOS grid information.')
+        module.fail_json(msg='Failed to get NIOS grid information.')
     result = wapi.call_func('restartservices', grid_obj[0]['_ref'], restart_params)
 
     module.exit_json(**result)
