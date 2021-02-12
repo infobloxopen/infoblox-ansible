@@ -6,15 +6,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-from ..module_utils.api import NIOS_DTC_SERVER
-from ..module_utils.api import NIOS_DTC_POOL
-from ..module_utils.api import WapiModule
-from ansible.module_utils.six import iteritems
-from ansible.module_utils.basic import AnsibleModule
-
 DOCUMENTATION = '''
 ---
-module: nios_dtc_server
+module: nios_dtc_pool
 author: "Mauricio Teixeira (@badnetmask)"
 short_description: Configure Infoblox NIOS DTC Pool
 description:
@@ -157,6 +151,11 @@ EXAMPLES = '''
 
 RETURN = ''' # '''
 
+from ..module_utils.api import NIOS_DTC_POOL
+from ..module_utils.api import WapiModule
+from ansible.module_utils.six import iteritems
+from ansible.module_utils.basic import AnsibleModule
+
 
 def main():
     ''' Main entry point for module execution
@@ -168,8 +167,6 @@ def main():
             for server in module.params['servers']:
                 server_obj = wapi.get_object('dtc:server',
                                              {'name': server['server']})
-                if 'ratio' not in server:
-                    server['ratio'] = 1
                 if server_obj is not None:
                     server_list.append({'server': server_obj[0]['_ref'],
                                         'ratio': server['ratio']})
@@ -186,13 +183,13 @@ def main():
         return monitor_list
 
     servers_spec = dict(
-        server=dict(),
-        ratio=dict(type='int')
+        server=dict(required=True),
+        ratio=dict(type='int', default=1)
     )
 
     monitors_spec = dict(
-        name=dict(),
-        type=dict(choices=['http', 'icmp', 'tcp', 'pdp', 'sip', 'snmp'])
+        name=dict(required=True),
+        type=dict(required=True, choices=['http', 'icmp', 'tcp', 'pdp', 'sip', 'snmp'])
     )
 
     ib_spec = dict(
@@ -204,9 +201,9 @@ def main():
                                                          'ROUND_ROBIN',
                                                          'TOPOLOGY']),
 
-        servers=dict(type='list', options=servers_spec,
+        servers=dict(type='list', elements='dict', options=servers_spec,
                      transform=servers_transform),
-        monitors=dict(type='list', options=monitors_spec,
+        monitors=dict(type='list', elements='dict', options=monitors_spec,
                       transform=monitors_transform),
 
         extattrs=dict(type='dict'),
