@@ -6,11 +6,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-from ..module_utils.api import NIOS_DTC_LBDN
-from ..module_utils.api import WapiModule
-from ansible.module_utils.six import iteritems
-from ansible.module_utils.basic import AnsibleModule
-
 DOCUMENTATION = '''
 ---
 module: nios_dtc_lbdn
@@ -33,6 +28,7 @@ options:
     description:
       - Configures the load balancing method. Used to select pool.
     required: true
+    type: str
     choices:
       - GLOBAL_AVAILABILITY
       - RATIO
@@ -60,6 +56,7 @@ options:
         number higher than "2.6".
     required: false
     type: list
+    elements: str
     choices:
       - A
       - AAAA
@@ -156,6 +153,11 @@ EXAMPLES = '''
 
 RETURN = ''' # '''
 
+from ..module_utils.api import NIOS_DTC_LBDN
+from ..module_utils.api import WapiModule
+from ansible.module_utils.six import iteritems
+from ansible.module_utils.basic import AnsibleModule
+
 
 def main():
     ''' Main entry point for module execution
@@ -190,11 +192,11 @@ def main():
                     module.fail_json(msg='pool %s cannot be found.' % pool)
         return pool_list
 
-    auth_zones_spec = dict(),
+    auth_zones_spec = dict()
 
     pools_spec = dict(
-        pool=dict(),
-        ratio=dict(type='int')
+        pool=dict(required=True),
+        ratio=dict(type='int', default=1)
     )
 
     ib_spec = dict(
@@ -202,12 +204,12 @@ def main():
         lb_method=dict(required=True, choices=['GLOBAL_AVAILABILITY',
                                                'RATIO', 'ROUND_ROBIN', 'TOPOLOGY']),
 
-        auth_zones=dict(type='list', options=auth_zones_spec,
+        auth_zones=dict(type='list', elements='str', options=auth_zones_spec,
                         transform=auth_zones_transform),
         patterns=dict(type='list', elements='str'),
-        types=dict(type='list', choices=['A', 'AAAA', 'CNAME', 'NAPTR',
+        types=dict(type='list', elements='str', choices=['A', 'AAAA', 'CNAME', 'NAPTR',
                                          'SRV']),
-        pools=dict(type='list', options=pools_spec,
+        pools=dict(type='list', elements='dict', options=pools_spec,
                    transform=pools_transform),
         ttl=dict(type='int'),
 
