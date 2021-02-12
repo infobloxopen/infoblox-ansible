@@ -208,7 +208,7 @@ def main():
                         transform=auth_zones_transform),
         patterns=dict(type='list', elements='str'),
         types=dict(type='list', elements='str', choices=['A', 'AAAA', 'CNAME', 'NAPTR',
-                                         'SRV']),
+                                                         'SRV']),
         pools=dict(type='list', elements='dict', options=pools_spec,
                    transform=pools_transform),
         ttl=dict(type='int'),
