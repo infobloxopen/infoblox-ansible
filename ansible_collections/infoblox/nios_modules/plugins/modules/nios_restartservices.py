@@ -36,9 +36,7 @@ options:
       - The restart method in case of grid restart.
     required: false
     type: str
-    default: None
     choices:
-      - None
       - GROUPED
       - SEQUENTIAL
       - SIMULTANEOUS
@@ -100,8 +98,8 @@ def main():
     ib_spec = dict(
         groups=dict(type='list', elements='str'),
         members=dict(type='list', elements='str'),
-        mode=dict(type='str', default='None',
-                  choices=['None', 'GROUPED', 'SEQUENTIAL', 'SIMULTANEOUS']),
+        mode=dict(type='str', choices=['GROUPED', 'SEQUENTIAL',
+                                       'SIMULTANEOUS']),
         restart_option=dict(type='str', default='RESTART_IF_NEEDED',
                             choices=['RESTART_IF_NEEDED', 'FORCE_RESTART']),
         services=dict(type='list', elements='str', default=['ALL'],
