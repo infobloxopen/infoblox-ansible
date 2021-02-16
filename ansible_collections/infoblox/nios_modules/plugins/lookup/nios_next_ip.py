@@ -64,6 +64,7 @@ from ansible.errors import AnsibleError
 from ..module_utils.api import WapiLookup
 import ipaddress
 
+
 class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
