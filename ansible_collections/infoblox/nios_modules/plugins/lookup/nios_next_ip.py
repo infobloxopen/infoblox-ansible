@@ -44,9 +44,9 @@ EXAMPLES = """
     ipaddr: "{{ lookup('nios_next_ip', '192.168.10.0/24', num=3, exclude=['192.168.10.1', '192.168.10.2'],
                 provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
-- name: return next available IP address for network 2230:52:2:1211::/64
+- name: return next available IP address for network fd30:f52:2:12::/64
   set_fact:
-    ipaddr: "{{ lookup('nios_next_ip', '2230:52:2:1211::/64', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+    ipaddr: "{{ lookup('nios_next_ip', 'fd30:f52:2:12::/64', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 """
 
 RETURN = """
