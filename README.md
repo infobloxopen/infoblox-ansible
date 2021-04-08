@@ -27,12 +27,6 @@ Modules:
 
 -   `nios_dns_view` – Configure Infoblox NIOS DNS views
 
--   `nios_dtc_lbdn` – Configure Infoblox NIOS DTC LBDN records
-
--   `nios_dtc_pool` – Configure Infoblox NIOS DTC pools
-
--   `nios_dtc_server` – Configure Infoblox NIOS DTC server records
-
 -   `nios_fixed_address` – Configure Infoblox NIOS DHCP Fixed Address
 
 -   `nios_host_record` – Configure Infoblox NIOS host records
@@ -50,8 +44,6 @@ Modules:
 -   `nios_nsgroup` – Configure Infoblox DNS Nameserver Groups
 
 -   `nios_ptr_record` – Configure Infoblox NIOS PTR records
-
--   `nios_restartservices` - Controlled restart of Infoblox NIOS services
 
 -   `nios_srv_record` – Configure Infoblox NIOS SRV records
 
