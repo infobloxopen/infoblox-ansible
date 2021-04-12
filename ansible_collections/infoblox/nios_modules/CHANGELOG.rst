@@ -8,6 +8,11 @@ Infoblox.Nios_Modules Release Notes
 v1.1.0
 ======
 
+Release Summary
+---------------
+
+This release provides plugins for NIOS DTC
+
 New Modules
 -----------
 
