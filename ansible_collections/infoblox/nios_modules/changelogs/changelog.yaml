@@ -80,3 +80,18 @@ releases:
       - Made it compatible for Ansible v3.0.0
       release_summary: This release provides compatibilty for Ansible v3.0.0
     release_date: '2021-01-27'
+  1.1.0:
+    modules:
+    - description: Configure Infoblox NIOS DTC LBDN
+      name: nios_dtc_lbdn
+      namespace: ''
+    - description: Configure Infoblox NIOS DTC Pool
+      name: nios_dtc_pool
+      namespace: ''
+    - description: Configure Infoblox NIOS DTC Server
+      name: nios_dtc_server
+      namespace: ''
+    - description: Restart grid services.
+      name: nios_restartservices
+      namespace: ''
+    release_date: '2021-04-12'

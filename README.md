@@ -144,16 +144,29 @@ Please refer to our Ansible [deployment
 guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
 for more details.
 
-Current release
+Releasing
 =========
 
-1.0.2 on 27 January 2021
+Next release
+---------------
+
+Dates TBD
+
+Current release
+---------------
+
+1.1.0 on 12 April 2021
 
 Versioning
 =========
 
 -   galaxy.yml in the master branch will always contain the version of the current major or minor release. It will be updated right after a release.
 -   version_added needs to be used for every new feature and module/plugin, and needs to coincide with the next minor/major release version. (This will eventually be enforced by CI.)
+
+Deprecation
+===========
+-   Deprecations are done by version number (not by date).
+-   New deprecations can be added during every minor release, under the condition that they do not break backwards compatibility.
 
 Resources
 =========
