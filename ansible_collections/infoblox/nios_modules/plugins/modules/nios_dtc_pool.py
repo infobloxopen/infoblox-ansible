@@ -10,7 +10,7 @@ DOCUMENTATION = '''
 ---
 module: nios_dtc_pool
 author: "Mauricio Teixeira (@badnetmask)"
-version_added: "1.0.3"
+version_added: "1.1.0"
 short_description: Configure Infoblox NIOS DTC Pool
 description:
   - Adds and/or removes instances of DTC Pool objects from

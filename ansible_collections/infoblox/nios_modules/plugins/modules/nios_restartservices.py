@@ -11,7 +11,7 @@ DOCUMENTATION = '''
 module: nios_restartservices
 author: "Mauricio Teixeira (@badnetmask)"
 short_description: Restart grid services.
-version_added: "1.0.3"
+version_added: "1.1.0"
 description:
   - Restart grid services.
   - When invoked without any options, will restart ALL services on the
