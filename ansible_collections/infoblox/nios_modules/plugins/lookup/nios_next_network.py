@@ -40,17 +40,18 @@ options:
 
 EXAMPLES = """
 - name: return next available network for network-container 192.168.10.0/24
-  set_fact:
-    networkaddr: "{{ lookup('nios_next_network', '192.168.10.0/24', cidr=25, provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+  ansible.builtin.set_fact:
+    networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '192.168.10.0/24', cidr=25,
+                        provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return the next 2 available network addresses for network-container 192.168.10.0/24
-  set_fact:
-    networkaddr: "{{ lookup('nios_next_network', '192.168.10.0/24', cidr=25, num=2,
+  ansible.builtin.set_fact:
+    networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '192.168.10.0/24', cidr=25, num=2,
                         provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return the available network addresses for network-container 192.168.10.0/24 excluding network range '192.168.10.0/25'
-  set_fact:
-    networkaddr: "{{ lookup('nios_next_network', '192.168.10.0/24', cidr=25, exclude=['192.168.10.0/25'],
+  ansible.builtin.set_fact:
+    networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '192.168.10.0/24', cidr=25, exclude=['192.168.10.0/25'],
                         provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 """
 
