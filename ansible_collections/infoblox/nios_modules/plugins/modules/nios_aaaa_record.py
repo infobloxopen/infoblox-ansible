@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_aaaa_record
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS AAAA records
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of AAAA record objects from
     Infoblox NIOS servers.  This module manages NIOS C(record:aaaa) objects

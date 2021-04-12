@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_dns_view
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS DNS views
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of DNS view objects from
     Infoblox NIOS servers.  This module manages NIOS C(view) objects

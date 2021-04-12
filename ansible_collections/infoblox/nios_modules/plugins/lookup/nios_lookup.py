@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 ---
 lookup: nios
 short_description: Query Infoblox NIOS objects
+version_added: "1.0.0"
 description:
   - Uses the Infoblox WAPI API to fetch NIOS specified objects.  This lookup
     supports adding additional keywords to filter the return data and specify

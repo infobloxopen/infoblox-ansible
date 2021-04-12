@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_cname_record
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS CNAME records
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of CNAME record objects from
     Infoblox NIOS servers.  This module manages NIOS C(record:cname) objects

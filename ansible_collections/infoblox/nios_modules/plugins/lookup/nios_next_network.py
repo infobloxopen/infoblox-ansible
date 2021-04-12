@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 ---
 lookup: nios_next_network
 short_description: Return the next available network range for a network-container
+version_added: "1.0.0"
 description:
   - Uses the Infoblox WAPI API to return the next available network addresses for
     a given network CIDR

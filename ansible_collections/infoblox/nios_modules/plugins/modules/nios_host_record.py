@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_host_record
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS host records
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of host record objects from
     Infoblox NIOS servers.  This module manages NIOS C(record:host) objects

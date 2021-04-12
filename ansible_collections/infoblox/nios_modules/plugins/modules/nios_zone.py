@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_zone
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS DNS zones
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of DNS zone objects from
     Infoblox NIOS servers.  This module manages NIOS C(zone_auth) objects

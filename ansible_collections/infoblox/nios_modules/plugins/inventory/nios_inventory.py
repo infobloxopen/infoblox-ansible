@@ -10,7 +10,7 @@ DOCUMENTATION = r'''
     author:
       - Will Tome (@willtome)
     short_description: Infoblox inventory plugin
-    version_added: "2.10"
+    version_added: "1.0.0"
     description:
         - Infoblox inventory plugin
     options:

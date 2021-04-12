@@ -10,6 +10,7 @@ DOCUMENTATION = '''
 ---
 module: nios_dtc_lbdn
 author: "Mauricio Teixeira (@badnetmask)"
+version_added: "1.0.3"
 short_description: Configure Infoblox NIOS DTC LBDN
 description:
   - Adds and/or removes instances of DTC Load Balanced Domain Name (LBDN)

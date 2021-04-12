@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_a_record
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS A records
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of A record objects from
     Infoblox NIOS servers.  This module manages NIOS C(record:a) objects

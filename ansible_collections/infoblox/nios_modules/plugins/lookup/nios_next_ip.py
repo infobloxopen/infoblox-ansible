@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 ---
 lookup: nios_next_ip
 short_description: Return the next available IP address for a network
+version_added: "1.0.0"
 description:
   - Uses the Infoblox WAPI API to return the next available IP addresses
     for a given network CIDR

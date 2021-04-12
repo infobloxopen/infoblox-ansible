@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_srv_record
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS SRV records
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of SRV record objects from
     Infoblox NIOS servers.  This module manages NIOS C(record:srv) objects

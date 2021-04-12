@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_network
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS network object
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of network objects from
     Infoblox NIOS servers.  This module manages NIOS C(network) objects

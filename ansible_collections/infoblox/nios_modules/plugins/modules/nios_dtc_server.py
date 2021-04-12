@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_dtc_server
 author: "Mauricio Teixeira (@badnetmask)"
 short_description: Configure Infoblox NIOS DTC Server
+version_added: "1.0.3"
 description:
   - Adds and/or removes instances of DTC Server objects from
     Infoblox NIOS servers. This module manages NIOS C(dtc:server) objects
