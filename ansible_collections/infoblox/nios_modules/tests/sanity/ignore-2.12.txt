@@ -17,3 +17,5 @@ plugins/modules/nios_network_view.py validate-modules:invalid-ansiblemodule-sche
 plugins/modules/nios_dtc_lbdn.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_dtc_pool.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_dtc_server.py validate-modules:invalid-ansiblemodule-schema
+plugins/modules/nios_nsgroup_forwardingmember.py validate-modules:invalid-ansiblemodule-schema
+plugins/modules/nios_nsgroup_forwardstubserver.py validate-modules:invalid-ansiblemodule-schema

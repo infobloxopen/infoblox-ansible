@@ -10,7 +10,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: nios_nsgroup_forwardstub
+module: nios_nsgroup_forwardstubserver
 short_description: Configure InfoBlox DNS Nameserver Forwarding Member Groups
 extends_documentation_fragment: infoblox.nios_modules.nios
 author:
@@ -107,7 +107,7 @@ def main():
 
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
-        external_servers=dict(type='list', elements='dict', options=external_servers_spec),
+        external_servers=dict(type='list', elements='dict', required=True, options=external_servers_spec),
         extattrs=dict(),
         comment=dict(),
     )

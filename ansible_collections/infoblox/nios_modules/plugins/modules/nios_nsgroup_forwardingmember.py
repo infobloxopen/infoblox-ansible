@@ -10,7 +10,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: nios_nsgroup_forwardstub
+module: nios_nsgroup_forwardingmember
 short_description: Configure InfoBlox DNS Nameserver Forward/Stub Server Groups
 extends_documentation_fragment: infoblox.nios_modules.nios
 author:
@@ -97,7 +97,7 @@ EXAMPLES = '''
   infoblox.nios_modules.nios_nsgroup_forwardingmember:
     name: my-forwardingmember-group
     comment: "this is a forwarding member nameserver group"
-    name:
+    forwarding_servers:
       - name: member.localdomain
     state: present
     provider:
@@ -110,7 +110,7 @@ EXAMPLES = '''
   infoblox.nios_modules.nios_nsgroup_forwardingmember:
     name: my-forwardingmember-group
     comment: "this is a forwarding member nameserver group with external forwarders"
-    name:
+    forwarding_servers:
       - name: member.localdomain
         use_override_forwarders: true
         forward_to:
@@ -141,19 +141,19 @@ def main():
 
     forward_to_spec = dict(
         name=dict(required=True),
-        address=dict(required=True)
+        address=dict(required=True),
     )
 
     forwarding_servers_spec = dict(
         name=dict(required=True),
         forwarders_only=dict(type='bool', default=False),
         forward_to=dict(type='list', elements='dict', options=forward_to_spec, default=[], required=False),
-        use_override_forwarders=dict(type='bool', default=False)
+        use_override_forwarders=dict(type='bool', default=False),
     )
 
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
-        forwarding_servers=dict(type='list', elements='dict', options=forwarding_servers_spec),
+        forwarding_servers=dict(type='list', elements='dict', required=True, options=forwarding_servers_spec),
         extattrs=dict(),
         comment=dict(),
     )
