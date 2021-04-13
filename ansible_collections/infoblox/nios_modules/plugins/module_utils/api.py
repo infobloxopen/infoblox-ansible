@@ -68,6 +68,7 @@ NIOS_MEMBER = 'member'
 NIOS_DTC_SERVER = 'dtc:server'
 NIOS_DTC_POOL = 'dtc:pool'
 NIOS_DTC_LBDN = 'dtc:lbdn'
+NIOS_NSGROUP_FORWARDSTUBSERVER = 'nsgroup:forwardstubserver'
 
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
