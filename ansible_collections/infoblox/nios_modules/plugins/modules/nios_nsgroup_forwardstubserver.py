@@ -17,7 +17,7 @@ author:
   - Mauricio Teixeira (@badnetmask)
 description:
   - Adds and/or removes nameserver groups of type "Forward/Stub Server" form Infoblox NIOS servers.
-    This module manages NIOS C(nsgroup) objects using the Infoblox. WAPI interface over REST.
+    This module manages NIOS C(nsgroup:forwardstubserver) objects using the Infoblox. WAPI interface over REST.
 requirements:
   - infoblox_client
 options:
