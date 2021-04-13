@@ -19,3 +19,4 @@ plugins/modules/nios_dtc_pool.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_dtc_server.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_nsgroup_forwardingmember.py validate-modules:invalid-ansiblemodule-schema
 plugins/modules/nios_nsgroup_forwardstubserver.py validate-modules:invalid-ansiblemodule-schema
+plugins/modules/nios_nsgroup_delegation.py validate-modules:invalid-ansiblemodule-schema

@@ -49,6 +49,8 @@ Modules:
 
 -   `nios_nsgroup` – Configure Infoblox DNS Nameserver Authoritative Groups
 
+-   `nios_nsgroup_delegation` – Configure Infoblox DNS Nameserver Delegation Groups
+
 -   `nios_nsgroup_forwardingmember` – Configure Infoblox DNS Nameserver Forwarding Member Groups
 
 -   `nios_nsgroup_forwardstubserver` – Configure Infoblox DNS Nameserver Forward/Stub Server Groups
