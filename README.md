@@ -47,7 +47,7 @@ Modules:
 
 -   `nios_network_view` – Configure Infoblox NIOS network views
 
--   `nios_nsgroup` – Configure Infoblox DNS Nameserver Groups
+-   `nios_nsgroup` – Configure Infoblox DNS Nameserver Authoritative Groups
 
 -   `nios_ptr_record` – Configure Infoblox NIOS PTR records
 

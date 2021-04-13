@@ -11,13 +11,13 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: nios_nsgroup
-short_description: Configure InfoBlox DNS Nameserver Groups
+short_description: Configure InfoBlox DNS Nameserver Authoritative Groups
 extends_documentation_fragment: infoblox.nios_modules.nios
 author:
   - Erich Birngruber (@ebirn)
   - Sumit Jaiswal (@sjaiswal)
 description:
-  - Adds and/or removes nameserver groups form Infoblox NIOS servers.
+  - Adds and/or removes nameserver groups of type "Authoritative" form Infoblox NIOS servers.
     This module manages NIOS C(nsgroup) objects using the Infoblox. WAPI interface over REST.
 requirements:
   - infoblox_client
