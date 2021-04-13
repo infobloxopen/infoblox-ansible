@@ -55,6 +55,8 @@ Modules:
 
 -   `nios_nsgroup_forwardstubserver` – Configure Infoblox DNS Nameserver Forward/Stub Server Groups
 
+-   `nios_nsgroup_stubmember` – Configure Infoblox DNS Nameserver Stub Member Groups
+
 -   `nios_ptr_record` – Configure Infoblox NIOS PTR records
 
 -   `nios_restartservices` - Controlled restart of Infoblox NIOS services
