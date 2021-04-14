@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_mx_record
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS MX records
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of MX record objects from
     Infoblox NIOS servers.  This module manages NIOS C(record:mx) objects

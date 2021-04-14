@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_member
 author: "Krishna Vasudevan (@krisvasudevan)"
 short_description: Configure Infoblox NIOS members
+version_added: "1.0.0"
 description:
   - Adds and/or removes Infoblox NIOS servers.  This module manages NIOS C(member) objects using the Infoblox WAPI interface over REST.
 requirements:

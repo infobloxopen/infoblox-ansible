@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_network_view
 author: "Peter Sprygada (@privateip)"
 short_description: Configure Infoblox NIOS network views
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of network view objects from
     Infoblox NIOS servers.  This module manages NIOS C(networkview) objects

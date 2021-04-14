@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 ---
 lookup: nios_next_ip
 short_description: Return the next available IP address for a network
+version_added: "1.0.0"
 description:
   - Uses the Infoblox WAPI API to return the next available IP addresses
     for a given network CIDR
@@ -32,16 +33,17 @@ options:
 
 EXAMPLES = """
 - name: return next available IP address for network 192.168.10.0/24
-  set_fact:
-    ipaddr: "{{ lookup('nios_next_ip', '192.168.10.0/24', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+  ansible.builtin.set_fact:
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return the next 3 available IP addresses for network 192.168.10.0/24
-  set_fact:
-    ipaddr: "{{ lookup('nios_next_ip', '192.168.10.0/24', num=3, provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+  ansible.builtin.set_fact:
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', num=3,
+                provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return the next 3 available IP addresses for network 192.168.10.0/24 excluding ip addresses - ['192.168.10.1', '192.168.10.2']
-  set_fact:
-    ipaddr: "{{ lookup('nios_next_ip', '192.168.10.0/24', num=3, exclude=['192.168.10.1', '192.168.10.2'],
+  ansible.builtin.set_fact:
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', num=3, exclude=['192.168.10.1', '192.168.10.2'],
                 provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 """
 

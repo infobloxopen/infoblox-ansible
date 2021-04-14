@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_naptr_record
 author: "Blair Rampling (@brampling)"
 short_description: Configure Infoblox NIOS NAPTR records
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of NAPTR record objects from
     Infoblox NIOS servers.  This module manages NIOS C(record:naptr) objects

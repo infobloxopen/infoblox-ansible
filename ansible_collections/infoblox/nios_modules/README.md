@@ -27,6 +27,12 @@ Modules:
 
 -   `nios_dns_view` – Configure Infoblox NIOS DNS views
 
+-   `nios_dtc_lbdn` – Configure Infoblox NIOS DTC LBDN records
+
+-   `nios_dtc_pool` – Configure Infoblox NIOS DTC pools
+
+-   `nios_dtc_server` – Configure Infoblox NIOS DTC server records
+
 -   `nios_fixed_address` – Configure Infoblox NIOS DHCP Fixed Address
 
 -   `nios_host_record` – Configure Infoblox NIOS host records
@@ -44,6 +50,8 @@ Modules:
 -   `nios_nsgroup` – Configure Infoblox DNS Nameserver Groups
 
 -   `nios_ptr_record` – Configure Infoblox NIOS PTR records
+
+-   `nios_restartservices` - Controlled restart of Infoblox NIOS services
 
 -   `nios_srv_record` – Configure Infoblox NIOS SRV records
 
@@ -90,7 +98,7 @@ Installation of nios\_modules Collection
 
 The `nios_modules` collection can be installed either from Ansible Galaxy
 or directly from git. It is recommended to install collections from
-Ansible Galaxy are those are more stable than the ones in the git
+Ansible Galaxy as those are more stable than the ones in the git
 branch.
 
 ### Installation from Ansible Galaxy
@@ -112,11 +120,10 @@ To git clone and install from this repo, follow these steps:
 -   **Clone the repo:**
 
 ```shell
-$ git clone
-https://github.com/infobloxopen/infoblox-ansible.git
+$ git clone https://github.com/infobloxopen/infoblox-ansible.git
 ```
 
--   **Build the collection: **
+-   **Build the collection:**
 
     To build a collection, run the following command from inside the
     root directory of the collection:
@@ -130,24 +137,36 @@ This creates a tarball of the built collection in the current directory.
 -   **Install the collection:**
 
 ```shell
-$ ansible-galaxy collection install &lt;collection-name&gt;.tar.gz -p
-./collections
+$ ansible-galaxy collection install <collection-name>.tar.gz -p ./collections
 ```
 
 Please refer to our Ansible [deployment
 guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
 for more details.
 
-Current release
+Releasing
 =========
 
-1.0.2 on 27 January 2021
+Next release
+---------------
+
+Dates TBD
+
+Current release
+---------------
+
+1.1.0 on 14 April 2021
 
 Versioning
 =========
 
 -   galaxy.yml in the master branch will always contain the version of the current major or minor release. It will be updated right after a release.
 -   version_added needs to be used for every new feature and module/plugin, and needs to coincide with the next minor/major release version. (This will eventually be enforced by CI.)
+
+Deprecation
+===========
+-   Deprecations are done by version number (not by date).
+-   New deprecations can be added during every minor release, under the condition that they do not break backwards compatibility.
 
 Resources
 =========

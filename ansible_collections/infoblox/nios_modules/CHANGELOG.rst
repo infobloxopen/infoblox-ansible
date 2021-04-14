@@ -5,6 +5,22 @@ Infoblox.Nios_Modules Release Notes
 .. contents:: Topics
 
 
+v1.1.0
+======
+
+Release Summary
+---------------
+
+This release provides plugins for NIOS DTC
+
+New Modules
+-----------
+
+- infoblox.nios_modules.nios_dtc_lbdn - Configure Infoblox NIOS DTC LBDN
+- infoblox.nios_modules.nios_dtc_pool - Configure Infoblox NIOS DTC Pool
+- infoblox.nios_modules.nios_dtc_server - Configure Infoblox NIOS DTC Server
+- infoblox.nios_modules.nios_restartservices - Restart grid services.
+
 v1.0.2
 ======
 

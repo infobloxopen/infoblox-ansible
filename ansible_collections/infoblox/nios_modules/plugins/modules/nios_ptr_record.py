@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_ptr_record
 author: "Trebuchet Clement (@clementtrebuchet)"
 short_description: Configure Infoblox NIOS PTR records
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of PTR record objects from
     Infoblox NIOS servers.  This module manages NIOS C(record:ptr) objects

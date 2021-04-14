@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 module: nios_txt_record
 author: "Corey Wanless (@coreywan)"
 short_description: Configure Infoblox NIOS txt records
+version_added: "1.0.0"
 description:
   - Adds and/or removes instances of txt record objects from
     Infoblox NIOS servers.  This module manages NIOS C(record:txt) objects
