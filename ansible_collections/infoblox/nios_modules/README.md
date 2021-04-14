@@ -155,7 +155,7 @@ Dates TBD
 Current release
 ---------------
 
-1.1.0 on 12 April 2021
+1.1.0 on 14 April 2021
 
 Versioning
 =========
