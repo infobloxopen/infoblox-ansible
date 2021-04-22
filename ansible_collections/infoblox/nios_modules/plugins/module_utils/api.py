@@ -547,6 +547,7 @@ class WapiModule(WapiBase):
                     ipaddr = ipaddr_obj['old_ipv4addr']
                 except TypeError:
                     ipaddr = obj_filter['ipv4addr']
+                test_obj_filter['ipv4addr'] = ipaddr
             elif (ib_obj_type == NIOS_TXT_RECORD):
                 # resolves issue where multiple txt_records with same name and different text
                 test_obj_filter = obj_filter
@@ -556,7 +557,6 @@ class WapiModule(WapiBase):
                 except TypeError:
                     txt = obj_filter['text']
                 test_obj_filter['text'] = txt
-                ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
             # check if test_obj_filter is empty copy passed obj_filter
             else:
                 test_obj_filter = obj_filter
