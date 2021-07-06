@@ -111,6 +111,7 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_PTR_RECORD
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -133,7 +134,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     mutually_exclusive = [('ipv4addr', 'ipv6addr')]

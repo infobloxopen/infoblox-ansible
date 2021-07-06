@@ -186,6 +186,7 @@ from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK
 from ..module_utils.api import NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER
+from ..module_utils.api import normalize_ib_spec
 from ..module_utils.network import validate_ip_address, validate_ip_v6_address
 
 
@@ -280,7 +281,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

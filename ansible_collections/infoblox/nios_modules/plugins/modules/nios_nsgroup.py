@@ -326,6 +326,7 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_NSGROUP
+from ..module_utils.api import normalize_ib_spec
 
 
 # from infoblox documentation
@@ -426,7 +427,7 @@ def main():
         comment=dict(),
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
