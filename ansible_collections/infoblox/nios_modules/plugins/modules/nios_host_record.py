@@ -315,17 +315,17 @@ def main():
     ''' Main entry point for module execution
     '''
     ipv4addr_spec = dict(
-        ipv4addr=dict(required=True, aliases=['address'], ib_req=True),
-        configure_for_dhcp=dict(type='bool', required=False, aliases=['dhcp'], ib_req=True),
-        mac=dict(required=False, ib_req=True),
+        ipv4addr=dict(required=True, aliases=['address']),
+        configure_for_dhcp=dict(type='bool', required=False, aliases=['dhcp']),
+        mac=dict(required=False),
         add=dict(type='bool', required=False),
         remove=dict(type='bool', required=False)
     )
 
     ipv6addr_spec = dict(
-        ipv6addr=dict(required=True, aliases=['address'], ib_req=True),
-        configure_for_dhcp=dict(type='bool', required=False, ib_req=True),
-        mac=dict(required=False, ib_req=True)
+        ipv6addr=dict(required=True, aliases=['address']),
+        configure_for_dhcp=dict(type='bool', required=False),
+        mac=dict(required=False)
     )
 
     ib_spec = dict(

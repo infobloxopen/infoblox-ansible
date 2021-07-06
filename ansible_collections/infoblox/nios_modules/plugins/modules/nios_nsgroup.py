@@ -395,8 +395,8 @@ def main():
         return module.params['grid_secondaries']
 
     extserver_spec = dict(
-        address=dict(required=True, ib_req=True),
-        name=dict(required=True, ib_req=True),
+        address=dict(required=True),
+        name=dict(required=True),
         stealth=dict(type='bool', default=False),
         tsig_key=dict(no_log=True),
         tsig_key_alg=dict(choices=['HMAC-MD5', 'HMAC-SHA256'], default='HMAC-MD5'),
@@ -404,7 +404,7 @@ def main():
     )
 
     memberserver_spec = dict(
-        name=dict(required=True, ib_req=True),
+        name=dict(required=True),
         enable_preferred_primaries=dict(type='bool', default=False),
         grid_replicate=dict(type='bool', default=False),
         lead=dict(type='bool', default=False),
