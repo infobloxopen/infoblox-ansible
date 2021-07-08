@@ -250,7 +250,7 @@ def main():
         name=dict(required=True),
         ipaddr=dict(required=True, ib_req=True, type='str'),
         mac=dict(required=True, ib_req=True, type='str'),
-        network=dict(required=True),
+        network=dict(),
         network_view=dict(default='default'),
 
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
