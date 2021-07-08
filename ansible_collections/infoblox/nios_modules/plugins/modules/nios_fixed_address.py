@@ -41,7 +41,6 @@ options:
     description:
       - Specifies the network range in which ipaddr exists.
     type: str
-    required: true
     aliases:
       - network
   network_view:
@@ -251,7 +250,7 @@ def main():
         name=dict(required=True),
         ipaddr=dict(required=True, ib_req=True, type='str'),
         mac=dict(required=True, ib_req=True, type='str'),
-        network=dict(required=True, ib_req=True),
+        network=dict(required=True),
         network_view=dict(default='default'),
 
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
