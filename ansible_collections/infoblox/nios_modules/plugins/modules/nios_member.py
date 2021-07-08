@@ -64,7 +64,7 @@ options:
     elements: dict
   config_addr_type:
     description:
-      - Address configuration type (IPV4/IPV6/BOTH)
+      - Address configuration type (IPV4/IPV6/BOTH).
     default: IPV4
     type: str
   comment:
@@ -279,11 +279,11 @@ options:
     type: str
   use_syslog_proxy_setting:
     description:
-      - Use flag for external_syslog_server_enable , syslog_servers, syslog_proxy_setting, syslog_size
+      - Use flag for external_syslog_server_enable , syslog_servers, syslog_proxy_setting, syslog_size.
     type: bool
   external_syslog_server_enable:
     description:
-      - Determines if external syslog servers should be enabled
+      - Determines if external syslog servers should be enabled.
     type: bool
   syslog_servers:
     description:
@@ -378,7 +378,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: add a member to the grid with IPv4 address
+- name: Add a member to the grid with IPv4 address
   infoblox.nios_modules.nios_member:
     host_name: member01.localdomain
     vip_setting:
@@ -394,7 +394,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: add a HA member to the grid
+
+- name: Add a HA member to the grid
   infoblox.nios_modules.nios_member:
     host_name: memberha.localdomain
     vip_setting:
@@ -419,7 +420,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: update the member with pre-provisioning details specified
+
+- name: Update the member with pre-provisioning details specified
   infoblox.nios_modules.nios_member:
     name: member01.localdomain
     pre_provisioning:
@@ -438,7 +440,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove the member
+
+- name: Remove the member
   infoblox.nios_modules.nios_member:
     name: member01.localdomain
     state: absent

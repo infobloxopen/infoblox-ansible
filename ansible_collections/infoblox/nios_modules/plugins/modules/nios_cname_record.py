@@ -23,13 +23,13 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system
+        the system.
     required: true
     type: str
   view:
     description:
       - Sets the DNS view to associate this CNAME record with.  The DNS
-        view must already be configured on the system
+        view must already be configured on the system.
     default: default
     aliases:
       - dns_view
@@ -42,7 +42,7 @@ options:
     type: str
   ttl:
     description:
-      - Configures the TTL to be associated with this CNAME record
+      - Configures the TTL to be associated with this CNAME record.
     type: int
   extattrs:
     description:
@@ -70,7 +70,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a CNAME record
+- name: Configure a CNAME record
   infoblox.nios_modules.nios_cname_record:
     name: cname.ansible.com
     canonical: realhost.ansible.com
@@ -81,7 +81,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to an existing CNAME record
+- name: Add a comment to an existing CNAME record
   infoblox.nios_modules.nios_cname_record:
     name: cname.ansible.com
     canonical: realhost.ansible.com
@@ -93,7 +93,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove a CNAME record from the system
+- name: Remove a CNAME record from the system
   infoblox.nios_modules.nios_cname_record:
     name: cname.ansible.com
     canonical: realhost.ansible.com

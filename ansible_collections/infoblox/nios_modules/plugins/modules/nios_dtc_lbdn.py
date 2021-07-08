@@ -115,7 +115,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a DTC LBDN
+- name: Configure a DTC LBDN
   infoblox.nios_modules.nios_dtc_lbdn:
     name: web.ansible.com
     lb_method: ROUND_ROBIN
@@ -128,7 +128,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to a DTC LBDN
+- name: Add a comment to a DTC LBDN
   infoblox.nios_modules.nios_dtc_lbdn:
     name: web.ansible.com
     lb_method: ROUND_ROBIN
@@ -140,7 +140,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove a DTC LBDN from the system
+- name: Remove a DTC LBDN from the system
   infoblox.nios_modules.nios_dtc_lbdn:
     name: web.ansible.com
     lb_method: ROUND_ROBIN

@@ -168,14 +168,12 @@ options:
     description:
       - If set to C(True) this nsgroup will become the default nameserver group for new zones.
     type: bool
-    required: false
     default: false
   use_external_primary:
     description:
       - This flag controls whether the group is using an external primary nameserver.
         Note that modification of this field requires passing values for I(grid_secondaries) and I(external_primaries).
     type: bool
-    required: false
     default: false
   external_primaries:
     description:
@@ -214,7 +212,6 @@ options:
         description:
           - Set a DNS TSIG key for the nameserver to secure zone transfers (AFXRs).
         type: str
-    required: false
   external_secondaries:
     description:
       - Allows to provide a list of external secondary nameservers, that are not members of the grid.
@@ -256,14 +253,12 @@ options:
       - Allows for the configuration of Extensible Attributes on the
         instance of the object.  This argument accepts a set of key / value
         pairs for configuration.
-    required: false
     type: str
   comment:
     description:
       - Configures a text string comment to be associated with the instance
         of this object.  The provided text string will be configured on the
         object instance.
-    required: false
     type: str
   state:
     description:
@@ -277,7 +272,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: create simple infoblox nameserver group
+- name: Create simple infoblox nameserver group
   infoblox.nios_modules.nios_nsgroup:
     name: my-simple-group
     comment: "this is a simple nameserver group"
@@ -290,7 +285,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: create infoblox nameserver group with external primaries
+- name: Create infoblox nameserver group with external primaries
   infoblox.nios_modules.nios_nsgroup:
     name: my-example-group
     use_external_primary: true
@@ -307,7 +302,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: delete infoblox nameserver group
+- name: Delete infoblox nameserver group
   infoblox.nios_modules.nios_nsgroup:
     name: my-simple-group
     comment: "this is a simple nameserver group"

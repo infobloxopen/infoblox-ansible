@@ -57,7 +57,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a DTC Server
+- name: Configure a DTC Server
   infoblox.nios_modules.nios_dtc_server:
     name: a.example.com
     host: 192.168.10.1
@@ -68,7 +68,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to a DTC server
+- name: Add a comment to a DTC server
   infoblox.nios_modules.nios_dtc_server:
     name: a.example.com
     host: 192.168.10.1
@@ -80,7 +80,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove a DTC Server from the system
+- name: Remove a DTC Server from the system
   infoblox.nios_modules.nios_dtc_server:
     name: a.example.com
     host: 192.168.10.1

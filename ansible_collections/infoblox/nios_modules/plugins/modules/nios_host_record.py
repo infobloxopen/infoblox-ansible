@@ -31,7 +31,7 @@ options:
   view:
     description:
       - Sets the DNS view to associate this host record with.  The DNS
-        view must already be configured on the system
+        view must already be configured on the system.
     type: str
     default: default
     aliases:
@@ -41,14 +41,13 @@ options:
       - Sets the DNS to particular parent. If user needs to bypass DNS
         user can make the value to false.
     type: bool
-    required: false
     default: true
     aliases:
       - dns
   ipv4addrs:
     description:
       - Configures the IPv4 addresses for this host record.  This argument
-        accepts a list of values (see suboptions)
+        accepts a list of values (see suboptions).
     type: list
     elements: dict
     aliases:
@@ -60,7 +59,7 @@ options:
             allocate ipv4 address to host record by passing dictionary containing,
             I(nios_next_ip) and I(CIDR network range). If user wants to add or
             remove the ipv4 address from existing record, I(add/remove)
-            params need to be used. See examples
+            params need to be used. See examples.
         type: str
         required: true
         aliases:
@@ -68,7 +67,7 @@ options:
       configure_for_dhcp:
         description:
           - Configure the host_record over DHCP instead of DNS, if user
-            changes it to true, user need to mention MAC address to configure
+            changes it to true, user need to mention MAC address to configure.
         type: bool
         required: false
         aliases:
@@ -104,7 +103,7 @@ options:
   ipv6addrs:
     description:
       - Configures the IPv6 addresses for the host record.  This argument
-        accepts a list of values (see options)
+        accepts a list of values (see options).
     type: list
     elements: dict
     aliases:
@@ -112,7 +111,7 @@ options:
     suboptions:
       ipv6addr:
         description:
-          - Configures the IPv6 address for the host record
+          - Configures the IPv6 address for the host record.
         type: str
         required: true
         aliases:
@@ -120,7 +119,7 @@ options:
       configure_for_dhcp:
         description:
           - Configure the host_record over DHCP instead of DNS, if user
-            changes it to true, user need to mention MAC address to configure
+            changes it to true, user need to mention MAC address to configure.
         type: bool
         required: false
       mac:
@@ -140,7 +139,7 @@ options:
     elements: str
   ttl:
     description:
-      - Configures the TTL to be associated with this host record
+      - Configures the TTL to be associated with this host record.
     type: int
   extattrs:
     description:
@@ -168,7 +167,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure an ipv4 host record
+- name: Configure an ipv4 host record
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
@@ -181,7 +180,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: add a comment to an existing host record
+
+- name: Add a comment to an existing host record
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
@@ -193,7 +193,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove a host record from the system
+
+- name: Remove a host record from the system
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     state: absent
@@ -202,7 +203,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: update an ipv4 host record
+
+- name: Update an ipv4 host record
   infoblox.nios_modules.nios_host_record:
     name: {new_name: host-new.ansible.com, old_name: host.ansible.com}
     ipv4:
@@ -213,7 +215,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: create an ipv4 host record bypassing DNS
+
+- name: Create an ipv4 host record bypassing DNS
   infoblox.nios_modules.nios_host_record:
     name: new_host
     ipv4:
@@ -225,7 +228,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: create an ipv4 host record over DHCP
+
+- name: Create an ipv4 host record over DHCP
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
@@ -238,7 +242,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: dynamically add host record to next available ip
+
+- name: Dynamically add host record to next available ip
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
@@ -250,7 +255,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: add ip to host record
+
+- name: Add ip to host record
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
@@ -262,7 +268,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove ip to host record
+
+- name: Remove ip from host record
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:

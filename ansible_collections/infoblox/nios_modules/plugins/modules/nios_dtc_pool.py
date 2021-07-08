@@ -112,7 +112,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a DTC Pool
+- name: Configure a DTC Pool
   infoblox.nios_modules.nios_dtc_pool:
     name: web_pool
     lb_preferred_method: ROUND_ROBIN
@@ -126,7 +126,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to a DTC Pool
+- name: Add a comment to a DTC Pool
   infoblox.nios_modules.nios_dtc_pool:
     name: web_pool
     lb_preferred_method: ROUND_ROBIN
@@ -138,7 +138,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove a DTC Pool from the system
+- name: Remove a DTC Pool from the system
   infoblox.nios_modules.nios_dtc_pool:
     name: web_pool
     lb_preferred_method: ROUND_ROBIN

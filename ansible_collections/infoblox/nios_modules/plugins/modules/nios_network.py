@@ -16,7 +16,7 @@ description:
   - Adds and/or removes instances of network objects from
     Infoblox NIOS servers.  This module manages NIOS C(network) objects
     using the Infoblox WAPI interface over REST.
-  - Supports both IPV4 and IPV6 internet protocols
+  - Supports both IPV4 and IPV6 internet protocols.
 requirements:
   - infoblox-client
 extends_documentation_fragment: infoblox.nios_modules.nios
@@ -102,7 +102,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a network ipv4
+- name: Configure a network ipv4
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
@@ -112,7 +112,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a network ipv6
+
+- name: Configure a network ipv6
   infoblox.nios_modules.nios_network:
     network: fe80::/64
     comment: this is a test comment
@@ -122,7 +123,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: set dhcp options for a network ipv4
+
+- name: Set dhcp options for a network ipv4
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
@@ -135,7 +137,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove a network ipv4
+
+- name: Remove a network ipv4
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     state: absent
@@ -144,7 +147,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a ipv4 network container
+
+- name: Configure an ipv4 network container
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     container: true
@@ -155,7 +159,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a ipv6 network container
+
+- name: Configure an ipv6 network container
   infoblox.nios_modules.nios_network:
     network: fe80::/64
     container: true
@@ -166,7 +171,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove a ipv4 network container
+
+- name: Remove an ipv4 network container
   infoblox.nios_modules.nios_network:
     networkr: 192.168.10.0/24
     container: true

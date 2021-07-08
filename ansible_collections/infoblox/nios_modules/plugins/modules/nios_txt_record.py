@@ -23,13 +23,13 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system
+        the system.
     required: true
     type: str
   view:
     description:
       - Sets the DNS view to associate this tst record with.  The DNS
-        view must already be configured on the system
+        view must already be configured on the system.
     default: default
     aliases:
       - dns_view
@@ -43,7 +43,7 @@ options:
     type: str
   ttl:
     description:
-      - Configures the TTL to be associated with this tst record
+      - Configures the TTL to be associated with this txt record.
     type: int
   extattrs:
     description:

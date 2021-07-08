@@ -25,13 +25,11 @@ options:
       - The name of the DNS PTR record in FQDN format to add or remove from
         the system.
         The field is required only for an PTR object in Forward Mapping Zone.
-    required: false
     type: str
   view:
     description:
       - Sets the DNS view to associate this a record with. The DNS
-        view must already be configured on the system
-    required: false
+        view must already be configured on the system.
     type: str
     aliases:
       - dns_view

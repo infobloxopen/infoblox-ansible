@@ -23,13 +23,13 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system
+        the system.
     type: str
     required: true
   view:
     description:
       - Sets the DNS view to associate this a record with.  The DNS
-        view must already be configured on the system
+        view must already be configured on the system.
     type: str
     default: default
     aliases:
@@ -46,7 +46,7 @@ options:
     type: int
   ttl:
     description:
-      - Configures the TTL to be associated with this host record
+      - Configures the TTL to be associated with this host record.
     type: int
   extattrs:
     description:
@@ -74,7 +74,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure an MX record
+- name: Configure an MX record
   infoblox.nios_modules.nios_mx_record:
     name: ansible.com
     mx: mailhost.ansible.com
@@ -86,7 +86,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to an existing MX record
+- name: Add a comment to an existing MX record
   infoblox.nios_modules.nios_mx_record:
     name: ansible.com
     mx: mailhost.ansible.com
@@ -99,7 +99,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove an MX record from the system
+- name: Remove an MX record from the system
   infoblox.nios_modules.nios_mx_record:
     name: ansible.com
     mx: mailhost.ansible.com

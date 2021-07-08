@@ -16,7 +16,7 @@ description:
   - A fixed address is a specific IP address that a DHCP server
     always assigns when a lease request comes from a particular
     MAC address of the client.
-  - Supports both IPV4 and IPV6 internet protocols
+  - Supports both IPV4 and IPV6 internet protocols.
 requirements:
   - infoblox-client
 extends_documentation_fragment: infoblox.nios_modules.nios
@@ -49,7 +49,6 @@ options:
       - Configures the name of the network view to associate with this
         configured instance.
     type: str
-    required: false
     default: default
   options:
     description:
@@ -109,7 +108,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure ipv4 dhcp fixed address
+- name: Configure an ipv4 dhcp fixed address
   infoblox.nios_modules.nios_fixed_address:
     name: ipv4_fixed
     ipaddr: 192.168.10.1
@@ -123,7 +122,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a ipv6 dhcp fixed address
+
+- name: Configure an ipv6 dhcp fixed address
   infoblox.nios_modules.nios_fixed_address:
     name: ipv6_fixed
     ipaddr: fe80::1/10
@@ -137,7 +137,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: set dhcp options for a ipv4 fixed address
+
+- name: Set dhcp options for an ipv4 fixed address
   infoblox.nios_modules.nios_fixed_address:
     name: ipv4_fixed
     ipaddr: 192.168.10.1
@@ -154,7 +155,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove a ipv4 dhcp fixed address
+
+- name: Remove an ipv4 dhcp fixed address
   infoblox.nios_modules.nios_fixed_address:
     name: ipv4_fixed
     ipaddr: 192.168.10.1
