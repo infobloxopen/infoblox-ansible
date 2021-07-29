@@ -42,14 +42,12 @@ options:
       - Allows for the configuration of Extensible Attributes on the
         instance of the object.  This argument accepts a set of key / value
         pairs for configuration.
-    required: false
     type: dict
   comment:
     description:
       - Configures a text string comment to be associated with the instance
         of this object.  The provided text string will be configured on the
         object instance.
-    required: false
     type: str
   state:
     description:
@@ -57,7 +55,6 @@ options:
         the NIOS server.  When this value is set to C(present), the object
         is configured on the device and when this value is set to C(absent)
         the value is removed (if necessary) from the device.
-    required: false
     default: present
     choices:
       - present
@@ -67,7 +64,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a new dns view instance
+- name: Configure a new dns view instance
   infoblox.nios_modules.nios_dns_view:
     name: ansible-dns
     state: present
@@ -76,7 +73,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: update the comment for dns view
+
+- name: Update the comment for dns view
   infoblox.nios_modules.nios_dns_view:
     name: ansible-dns
     comment: this is an example comment
@@ -86,7 +84,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove the dns view instance
+
+- name: Remove the dns view instance
   infoblox.nios_modules.nios_dns_view:
     name: ansible-dns
     state: absent
@@ -95,7 +94,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: update the dns view instance
+
+- name: Update the dns view instance
   infoblox.nios_modules.nios_dns_view:
     name: {new_name: ansible-dns-new, old_name: ansible-dns}
     state: present
@@ -111,6 +111,7 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_DNS_VIEW
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -129,7 +130,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

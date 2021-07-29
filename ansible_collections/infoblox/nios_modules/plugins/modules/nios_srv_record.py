@@ -23,13 +23,13 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system
+        the system.
     required: true
     type: str
   view:
     description:
       - Sets the DNS view to associate this a record with.  The DNS
-        view must already be configured on the system
+        view must already be configured on the system.
     default: default
     aliases:
       - dns_view
@@ -52,7 +52,7 @@ options:
     type: int
   ttl:
     description:
-      - Configures the TTL to be associated with this host record
+      - Configures the TTL to be associated with this host record.
     type: int
   extattrs:
     description:
@@ -80,7 +80,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure an SRV record
+- name: Configure an SRV record
   infoblox.nios_modules.nios_srv_record:
     name: _sip._tcp.service.ansible.com
     port: 5080
@@ -94,7 +94,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to an existing SRV record
+- name: Add a comment to an existing SRV record
   infoblox.nios_modules.nios_srv_record:
     name: _sip._tcp.service.ansible.com
     port: 5080
@@ -109,7 +109,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove an SRV record from the system
+- name: Remove an SRV record from the system
   infoblox.nios_modules.nios_srv_record:
     name: _sip._tcp.service.ansible.com
     port: 5080
@@ -130,6 +130,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_SRV_RECORD
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -156,7 +157,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

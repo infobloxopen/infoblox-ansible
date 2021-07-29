@@ -165,7 +165,7 @@ def member_normalize(member_spec):
                        'pre_provisioning', 'network_setting', 'v6_network_setting',
                        'ha_port_setting', 'lan_port_setting', 'lan2_physical_setting',
                        'lan_ha_port_setting', 'mgmt_network_setting', 'v6_mgmt_network_setting']
-    for key in member_spec.keys():
+    for key in list(member_spec.keys()):
         if key in member_elements and member_spec[key] is not None:
             member_spec[key] = member_spec[key][0]
         if isinstance(member_spec[key], dict):
@@ -177,6 +177,15 @@ def member_normalize(member_spec):
         elif member_spec[key] is None:
             del member_spec[key]
     return member_spec
+
+
+def normalize_ib_spec(ib_spec):
+    result = {}
+    for arg in ib_spec:
+        result[arg] = dict([(k, v)
+                            for k, v in iteritems(ib_spec[arg])
+                            if k not in ('ib_req', 'transform', 'update')])
+    return result
 
 
 class WapiBase(object):
@@ -364,19 +373,10 @@ class WapiModule(WapiBase):
 
                 if (ib_obj_type in (NIOS_A_RECORD, NIOS_AAAA_RECORD, NIOS_PTR_RECORD, NIOS_SRV_RECORD)):
                     # popping 'view' key as update of 'view' is not supported with respect to a:record/aaaa:record/srv:record/ptr:record
-                    if 'ipv4addrs' in proposed_object:
-                        if 'add' in proposed_object['ipv4addrs'][0]:
-                            run_update, proposed_object = self.check_if_add_remove_ip_arg_exists(proposed_object)
-                            if run_update:
-                                res = self.update_object(ref, proposed_object)
-                                result['changed'] = True
-                            else:
-                                res = ref
-                if (ib_obj_type in (NIOS_A_RECORD, NIOS_AAAA_RECORD)):
-                    # popping 'view' key as update of 'view' is not supported with respect to a:record/aaaa:record
                     proposed_object = self.on_update(proposed_object, ib_spec)
                     del proposed_object['view']
-                    res = self.update_object(ref, proposed_object)
+                    if not self.module.check_mode:
+                        res = self.update_object(ref, proposed_object)
                     result['changed'] = True
                 elif 'network_view' in proposed_object:
                     proposed_object.pop('network_view')
@@ -486,6 +486,9 @@ class WapiModule(WapiBase):
                 return False
 
             elif isinstance(proposed_item, list):
+                if key == 'aliases':
+                    if set(current_item) != set(proposed_item):
+                        return False
                 for subitem in proposed_item:
                     if not self.issubset(subitem, current_item):
                         return False
@@ -521,12 +524,12 @@ class WapiModule(WapiBase):
                 else:
                     test_obj_filter = dict([('name', old_name)])
                 # get the object reference
-                ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=ib_spec.keys())
+                ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=list(ib_spec.keys()))
                 if ib_obj:
                     obj_filter['name'] = new_name
                 else:
                     test_obj_filter['name'] = new_name
-                    ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=ib_spec.keys())
+                    ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=list(ib_spec.keys()))
                 update = True
                 return ib_obj, update, new_name
             if (ib_obj_type == NIOS_HOST_RECORD):
@@ -560,7 +563,7 @@ class WapiModule(WapiBase):
             # check if test_obj_filter is empty copy passed obj_filter
             else:
                 test_obj_filter = obj_filter
-            ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=ib_spec.keys())
+            ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
         elif (ib_obj_type == NIOS_A_RECORD):
             # resolves issue where multiple a_records with same name and different IP address
             test_obj_filter = obj_filter
@@ -585,7 +588,7 @@ class WapiModule(WapiBase):
             # del key 'restart_if_needed' as nios_zone get_object fails with the key present
             temp = ib_spec['restart_if_needed']
             del ib_spec['restart_if_needed']
-            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=ib_spec.keys())
+            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
             # reinstate restart_if_needed if ib_obj is none, meaning there's no existing nios_zone ref
             if not ib_obj:
                 ib_spec['restart_if_needed'] = temp
@@ -593,12 +596,12 @@ class WapiModule(WapiBase):
             # del key 'create_token' as nios_member get_object fails with the key present
             temp = ib_spec['create_token']
             del ib_spec['create_token']
-            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=ib_spec.keys())
+            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
             if temp:
                 # reinstate 'create_token' key
                 ib_spec['create_token'] = temp
         else:
-            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=ib_spec.keys())
+            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
         return ib_obj, update, new_name
 
     def on_update(self, proposed_object, ib_spec):

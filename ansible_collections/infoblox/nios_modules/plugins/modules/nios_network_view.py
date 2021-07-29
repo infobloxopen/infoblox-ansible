@@ -56,7 +56,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a new network view
+- name: Configure a new network view
   infoblox.nios_modules.nios_network_view:
     name: ansible
     state: present
@@ -65,7 +65,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: update the comment for network view
+
+- name: Update the comment for network view
   infoblox.nios_modules.nios_network_view:
     name: ansible
     comment: this is an example comment
@@ -75,7 +76,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove the network view
+
+- name: Remove the network view
   infoblox.nios_modules.nios_network_view:
     name: ansible
     state: absent
@@ -84,7 +86,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: update a existing network view
+
+- name: Update an existing network view
   infoblox.nios_modules.nios_network_view:
     name: {new_name: ansible-new, old_name: ansible}
     state: present
@@ -100,6 +103,7 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_NETWORK_VIEW
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -116,7 +120,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

@@ -57,7 +57,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a DTC Server
+- name: Configure a DTC Server
   infoblox.nios_modules.nios_dtc_server:
     name: a.example.com
     host: 192.168.10.1
@@ -68,7 +68,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to a DTC server
+- name: Add a comment to a DTC server
   infoblox.nios_modules.nios_dtc_server:
     name: a.example.com
     host: 192.168.10.1
@@ -80,7 +80,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove a DTC Server from the system
+- name: Remove a DTC Server from the system
   infoblox.nios_modules.nios_dtc_server:
     name: a.example.com
     host: 192.168.10.1
@@ -98,6 +98,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_DTC_SERVER
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -117,7 +118,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

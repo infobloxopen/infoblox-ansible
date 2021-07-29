@@ -22,13 +22,13 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system
+        the system.
     required: true
     type: str
   view:
     description:
       - Sets the DNS view to associate this AAAA record with.  The DNS
-        view must already be configured on the system
+        view must already be configured on the system.
     default: default
     aliases:
       - dns_view
@@ -41,7 +41,7 @@ options:
     type: str
   ttl:
     description:
-      - Configures the TTL to be associated with this AAAA record
+      - Configures the TTL to be associated with this AAAA record.
     type: int
   extattrs:
     description:
@@ -71,7 +71,7 @@ extends_documentation_fragment:
 '''
 
 EXAMPLES = '''
-- name: configure an AAAA record
+- name: Configure an AAAA record
   infoblox.nios_modules.nios_aaaa_record:
     name: aaaa.ansible.com
     ipv6: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
@@ -82,7 +82,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to an existing AAAA record
+- name: Add a comment to an existing AAAA record
   infoblox.nios_modules.nios_aaaa_record:
     name: aaaa.ansible.com
     ipv6: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
@@ -94,7 +94,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove an AAAA record from the system
+- name: Remove an AAAA record from the system
   infoblox.nios_modules.nios_aaaa_record:
     name: aaaa.ansible.com
     ipv6: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
@@ -105,7 +105,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: update an AAAA record name
+- name: Update an AAAA record name
   infoblox.nios_modules.nios_aaaa_record:
     name: {new_name: aaaa_new.ansible.com, old_name: aaaa.ansible.com}
     ipv6: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
@@ -123,6 +123,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_AAAA_RECORD
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -146,7 +147,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

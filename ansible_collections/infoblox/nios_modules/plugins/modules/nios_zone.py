@@ -67,7 +67,7 @@ options:
   restart_if_needed:
     description:
       - If set to true, causes the NIOS DNS service to restart and load the
-        new zone configuration
+        new zone configuration.
     type: bool
   zone_format:
     description:
@@ -103,7 +103,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a zone on the system using grid primary and secondaries
+- name: Configure a zone on the system using grid primary and secondaries
   infoblox.nios_modules.nios_zone:
     name: ansible.com
     grid_primary:
@@ -118,7 +118,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a zone on the system using a name server group
+
+- name: Configure a zone on the system using a name server group
   infoblox.nios_modules.nios_zone:
     name: ansible.com
     ns_group: examplensg
@@ -129,7 +130,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a reverse mapping zone on the system using IPV4 zone format
+
+- name: Configure a reverse mapping zone on the system using IPV4 zone format
   infoblox.nios_modules.nios_zone:
     name: 10.10.10.0/24
     zone_format: IPV4
@@ -139,7 +141,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a reverse mapping zone on the system using IPV6 zone format
+
+- name: Configure a reverse mapping zone on the system using IPV6 zone format
   infoblox.nios_modules.nios_zone:
     name: 100::1/128
     zone_format: IPV6
@@ -149,7 +152,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: update the comment and ext attributes for an existing zone
+
+- name: Update the comment and ext attributes for an existing zone
   infoblox.nios_modules.nios_zone:
     name: ansible.com
     comment: this is an example comment
@@ -161,7 +165,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove the dns zone
+
+- name: Remove the dns zone
   infoblox.nios_modules.nios_zone:
     name: ansible.com
     state: absent
@@ -170,7 +175,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove the reverse mapping dns zone from the system with IPV4 zone format
+
+- name: Remove the reverse mapping dns zone from the system with IPV4 zone format
   infoblox.nios_modules.nios_zone:
     name: 10.10.10.0/24
     zone_format: IPV4
@@ -187,6 +193,7 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_ZONE
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -215,7 +222,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

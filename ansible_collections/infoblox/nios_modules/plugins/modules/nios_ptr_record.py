@@ -25,13 +25,11 @@ options:
       - The name of the DNS PTR record in FQDN format to add or remove from
         the system.
         The field is required only for an PTR object in Forward Mapping Zone.
-    required: false
     type: str
   view:
     description:
       - Sets the DNS view to associate this a record with. The DNS
-        view must already be configured on the system
-    required: false
+        view must already be configured on the system.
     type: str
     aliases:
       - dns_view
@@ -111,6 +109,7 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_PTR_RECORD
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -133,7 +132,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     mutually_exclusive = [('ipv4addr', 'ipv6addr')]

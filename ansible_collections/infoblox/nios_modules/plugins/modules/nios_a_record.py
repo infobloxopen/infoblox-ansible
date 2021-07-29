@@ -23,13 +23,13 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system
+        the system.
     required: true
     type: str
   view:
     description:
       - Sets the DNS view to associate this A record with.  The DNS
-        view must already be configured on the system
+        view must already be configured on the system.
     default: default
     aliases:
       - dns_view
@@ -38,13 +38,13 @@ options:
     description:
       - Configures the IPv4 address for this A record. Users can dynamically
         allocate ipv4 address to A record by passing dictionary containing,
-        I(nios_next_ip) and I(CIDR network range). See example
+        I(nios_next_ip) and I(CIDR network range). See example.
     aliases:
       - ipv4
     type: str
   ttl:
     description:
-      - Configures the TTL to be associated with this A record
+      - Configures the TTL to be associated with this A record.
     type: int
   extattrs:
     description:
@@ -72,7 +72,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure an A record
+- name: Configure an A record
   infoblox.nios_modules.nios_a_record:
     name: a.ansible.com
     ipv4: 192.168.10.1
@@ -83,7 +83,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to an existing A record
+- name: Add a comment to an existing A record
   infoblox.nios_modules.nios_a_record:
     name: a.ansible.com
     ipv4: 192.168.10.1
@@ -95,7 +95,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove an A record from the system
+- name: Remove an A record from the system
   infoblox.nios_modules.nios_a_record:
     name: a.ansible.com
     ipv4: 192.168.10.1
@@ -106,7 +106,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: update an A record name
+- name: Update an A record name
   infoblox.nios_modules.nios_a_record:
     name: {new_name: a_new.ansible.com, old_name: a.ansible.com}
     ipv4: 192.168.10.1
@@ -117,7 +117,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: dynamically add a record to next available ip
+- name: Dynamically add a record to next available ip
   infoblox.nios_modules.nios_a_record:
     name: a.ansible.com
     ipv4: {nios_next_ip: 192.168.10.0/24}
@@ -137,6 +137,7 @@ from ansible.module_utils.six import iteritems
 # from ansible_collections.saileshgiri.test_col.plugins.module_utils.api import NIOS_A_RECORD
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_A_RECORD
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -160,7 +161,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,
