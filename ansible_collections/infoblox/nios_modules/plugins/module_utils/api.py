@@ -378,6 +378,12 @@ class WapiModule(WapiBase):
                     if not self.module.check_mode:
                         res = self.update_object(ref, proposed_object)
                     result['changed'] = True
+                if (ib_obj_type in (NIOS_ZONE)):
+                     # popping 'zone_format' key as update of 'zone_format' is not supported with respect to zone_auth
+                    proposed_object = self.on_update(proposed_object, ib_spec)
+                    del proposed_object['zone_format']
+                    self.update_object(ref, proposed_object)
+                    result['changed'] = True
                 elif 'network_view' in proposed_object:
                     proposed_object.pop('network_view')
                     result['changed'] = True
