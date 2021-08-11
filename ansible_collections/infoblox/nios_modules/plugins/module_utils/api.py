@@ -379,7 +379,7 @@ class WapiModule(WapiBase):
                         res = self.update_object(ref, proposed_object)
                     result['changed'] = True
                 if (ib_obj_type in (NIOS_ZONE)):
-                     # popping 'zone_format' key as update of 'zone_format' is not supported with respect to zone_auth
+                    # popping 'zone_format' key as update of 'zone_format' is not supported with respect to zone_auth
                     proposed_object = self.on_update(proposed_object, ib_spec)
                     del proposed_object['zone_format']
                     self.update_object(ref, proposed_object)
