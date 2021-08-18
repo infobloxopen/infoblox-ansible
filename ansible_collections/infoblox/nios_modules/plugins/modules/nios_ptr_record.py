@@ -31,6 +31,7 @@ options:
       - Sets the DNS view to associate this a record with. The DNS
         view must already be configured on the system.
     type: str
+    default: default
     aliases:
       - dns_view
   ipv4addr:
@@ -116,7 +117,7 @@ def main():
     # Module entry point
     ib_spec = dict(
         name=dict(required=False),
-        view=dict(aliases=['dns_view']),
+        view=dict(default='default', aliases=['dns_view']),
         ipv4addr=dict(aliases=['ipv4'], ib_req=True),
         ipv6addr=dict(aliases=['ipv6'], ib_req=True),
         ptrdname=dict(ib_req=True),
