@@ -371,8 +371,8 @@ class WapiModule(WapiBase):
                             else:
                                 res = ref
 
-                if (ib_obj_type in (NIOS_A_RECORD, NIOS_AAAA_RECORD, NIOS_PTR_RECORD, NIOS_SRV_RECORD)):
-                    # popping 'view' key as update of 'view' is not supported with respect to a:record/aaaa:record/srv:record/ptr:record
+                if (ib_obj_type in (NIOS_A_RECORD, NIOS_AAAA_RECORD, NIOS_PTR_RECORD, NIOS_SRV_RECORD, NIOS_NAPTR_RECORD)):
+                    # popping 'view' key as update of 'view' is not supported with respect to a:record/aaaa:record/srv:record/ptr:record/naptr:record
                     proposed_object = self.on_update(proposed_object, ib_spec)
                     del proposed_object['view']
                     if not self.module.check_mode:
@@ -525,8 +525,6 @@ class WapiModule(WapiBase):
             if old_name and new_name:
                 if (ib_obj_type == NIOS_HOST_RECORD):
                     test_obj_filter = dict([('name', old_name), ('view', obj_filter['view'])])
-                elif (ib_obj_type in (NIOS_AAAA_RECORD, NIOS_A_RECORD)):
-                    test_obj_filter = obj_filter
                 else:
                     test_obj_filter = dict([('name', old_name)])
                 # get the object reference
