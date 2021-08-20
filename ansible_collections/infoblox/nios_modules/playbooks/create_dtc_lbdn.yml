@@ -10,7 +10,7 @@
   connection: local
   tasks:
   - name: 'create DTC LBDN'
-    nios_dtc_lbdn:
+    infoblox.nios_modules.nios_dtc_lbdn:
       name: LBDN1
       lb_method: GLOBAL_AVAILABILITY
       pools:
