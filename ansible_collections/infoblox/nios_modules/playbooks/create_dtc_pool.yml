@@ -10,7 +10,7 @@
   connection: local
   tasks:
   - name: 'create DTC Pool'
-    nios_dtc_pool:
+    infoblox.nios_modules.nios_dtc_pool:
       name: Pool1
       lb_preferred_method: ROUND_ROBIN
       servers:
