@@ -10,7 +10,7 @@
   connection: local
   tasks:
   - name: 'create DTC server'
-    nios_dtc_server:
+    infoblox.nios_modules.nios_dtc_server:
       name: Server1
       host: 10.196.200.74
       comment: Created with Ansible
