@@ -21,9 +21,9 @@ requirements:
   - infoblox-client
 extends_documentation_fragment: infoblox.nios_modules.nios
 notes:
-    - The "mac" field is mandatory for all CRUD operations relating to 
+    - The "mac" field is mandatory for all CRUD operations relating to
       IPv4 Fixed address.
-    - The "duid" field is mandatory for all CRUD operations relating to 
+    - The "duid" field is mandatory for all CRUD operations relating to
       IPv6 Fixed address.
     - This module supports C(check_mode).
 options:
@@ -183,11 +183,25 @@ RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
-from ansible.errors import AnsibleError
+from ansible.module_utils.six import raise_from
 from ..module_utils.api import NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS
 from ..module_utils.api import WapiModule
 from ..module_utils.api import normalize_ib_spec
 from ..module_utils.network import validate_ip_address, validate_ip_v6_address
+import traceback
+
+try:
+    from ansible.errors import AnsibleError
+except ImportError:
+    HAS_ANSIBLE_ERROR = False
+    ANSIBLE_ERROR_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_ANSIBLE_ERROR = True
+
+if not HAS_ANSIBLE_ERROR:
+    module.fail_json(
+        msg=missing_required_lib('AnsibleError'),
+        exception=ANSIBLE_ERROR_IMPORT_ERROR)
 
 
 def options(module):
@@ -237,7 +251,7 @@ def validate_ip_addr_type(ip, arg_spec, module):
         module.params['ipv4addr'] = module.params.pop('ipaddr')
         del arg_spec['duid']
         del module.params['duid']
-        if module.params["mac"] == None:
+        if module.params["mac"] is None:
             raise AnsibleError("the 'mac' address of the object must be specified")
         module.params['mac'] = module.params['mac'].lower()
         return NIOS_IPV4_FIXED_ADDRESS, arg_spec, module
@@ -246,7 +260,7 @@ def validate_ip_addr_type(ip, arg_spec, module):
         module.params['ipv6addr'] = module.params.pop('ipaddr')
         del arg_spec['mac']
         del module.params['mac']
-        if module.params["duid"] == None:
+        if module.params["duid"] is None:
             raise AnsibleError("the 'duid' of the object must be specified")
         module.params['duid'] = module.params['duid'].lower()
         return NIOS_IPV6_FIXED_ADDRESS, arg_spec, module
