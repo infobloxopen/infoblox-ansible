@@ -37,6 +37,8 @@ options:
       - The MAC address of the interface.
     type: str
     required: true
+    aliases:
+      - duid
   network:
     description:
       - Specifies the network range in which ipaddr exists.
@@ -225,10 +227,13 @@ def validate_ip_addr_type(ip, arg_spec, module):
     if validate_ip_address(check_ip[0]) and 'ipaddr' in arg_spec:
         arg_spec['ipv4addr'] = arg_spec.pop('ipaddr')
         module.params['ipv4addr'] = module.params.pop('ipaddr')
+        module.params['mac'] = module.params['mac'].lower()
         return NIOS_IPV4_FIXED_ADDRESS, arg_spec, module
     elif validate_ip_v6_address(check_ip[0]) and 'ipaddr' in arg_spec:
         arg_spec['ipv6addr'] = arg_spec.pop('ipaddr')
         module.params['ipv6addr'] = module.params.pop('ipaddr')
+        arg_spec['duid'] = arg_spec.pop('mac')
+        module.params['duid'] = module.params.pop('mac').lower()
         return NIOS_IPV6_FIXED_ADDRESS, arg_spec, module
 
 
@@ -249,7 +254,7 @@ def main():
     ib_spec = dict(
         name=dict(required=True),
         ipaddr=dict(required=True, ib_req=True, type='str'),
-        mac=dict(required=True, ib_req=True, type='str'),
+        mac=dict(required=True, aliases=['duid'], ib_req=True, type='str'),
         network=dict(),
         network_view=dict(default='default'),
 
