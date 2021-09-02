@@ -542,8 +542,10 @@ class WapiModule(WapiBase):
                     test_obj_filter = dict([('name', name)])
                 else:
                     test_obj_filter = dict([('name', name), ('view', obj_filter['view'])])
-            elif (ib_obj_type == NIOS_IPV4_FIXED_ADDRESS or ib_obj_type == NIOS_IPV6_FIXED_ADDRESS and 'mac' in obj_filter):
+            elif (ib_obj_type == NIOS_IPV4_FIXED_ADDRESS and 'mac' in obj_filter):
                 test_obj_filter = dict([['mac', obj_filter['mac']]])
+            elif (ib_obj_type == NIOS_IPV6_FIXED_ADDRESS and 'duid' in obj_filter):
+                test_obj_filter = dict([['duid', obj_filter['duid']]])
             elif (ib_obj_type == NIOS_A_RECORD):
                 # resolves issue where a_record with uppercase name was returning null and was failing
                 test_obj_filter = obj_filter
