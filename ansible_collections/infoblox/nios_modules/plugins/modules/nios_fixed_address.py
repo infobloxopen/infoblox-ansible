@@ -20,6 +20,12 @@ description:
 requirements:
   - infoblox-client
 extends_documentation_fragment: infoblox.nios_modules.nios
+notes:
+    - The "mac" field is mandatory for all CRUD operations relating to
+      IPv4 Fixed address.
+    - The "duid" field is mandatory for all CRUD operations relating to
+      IPv6 Fixed address.
+    - This module supports C(check_mode).
 options:
   name:
     description:
@@ -34,9 +40,12 @@ options:
     required: true
   mac:
     description:
-      - The MAC address of the interface.
+      - The MAC address of the IPv4 interface.
     type: str
-    required: true
+  duid:
+    description:
+      - The DUID address of the IPv6 interface.
+    type: str
   network:
     description:
       - Specifies the network range in which ipaddr exists.
@@ -225,10 +234,20 @@ def validate_ip_addr_type(ip, arg_spec, module):
     if validate_ip_address(check_ip[0]) and 'ipaddr' in arg_spec:
         arg_spec['ipv4addr'] = arg_spec.pop('ipaddr')
         module.params['ipv4addr'] = module.params.pop('ipaddr')
+        del arg_spec['duid']
+        del module.params['duid']
+        if module.params["mac"] is None:
+            raise ValueError("the 'mac' address of the object must be specified")
+        module.params['mac'] = module.params['mac'].lower()
         return NIOS_IPV4_FIXED_ADDRESS, arg_spec, module
     elif validate_ip_v6_address(check_ip[0]) and 'ipaddr' in arg_spec:
         arg_spec['ipv6addr'] = arg_spec.pop('ipaddr')
         module.params['ipv6addr'] = module.params.pop('ipaddr')
+        del arg_spec['mac']
+        del module.params['mac']
+        if module.params["duid"] is None:
+            raise ValueError("the 'duid' of the object must be specified")
+        module.params['duid'] = module.params['duid'].lower()
         return NIOS_IPV6_FIXED_ADDRESS, arg_spec, module
 
 
@@ -249,7 +268,8 @@ def main():
     ib_spec = dict(
         name=dict(required=True),
         ipaddr=dict(required=True, ib_req=True, type='str'),
-        mac=dict(required=True, ib_req=True, type='str'),
+        mac=dict(ib_req=True, type='str'),
+        duid=dict(ib_req=True, type='str'),
         network=dict(),
         network_view=dict(default='default'),
 
