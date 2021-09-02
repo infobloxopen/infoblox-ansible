@@ -22,6 +22,8 @@ description:
     This module manages NIOS C(nsgroup) objects using the Infoblox. WAPI interface over REST.
 requirements:
   - infoblox_client
+notes:
+    - This module supports C(check_mode).
 options:
   name:
     description:
