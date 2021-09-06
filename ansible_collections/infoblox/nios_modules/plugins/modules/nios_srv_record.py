@@ -19,6 +19,8 @@ description:
 requirements:
   - infoblox-client
 extends_documentation_fragment: infoblox.nios_modules.nios
+notes:
+    - This module supports C(check_mode).
 options:
   name:
     description:
