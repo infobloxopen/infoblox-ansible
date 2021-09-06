@@ -45,6 +45,10 @@ EXAMPLES = """
   ansible.builtin.set_fact:
     ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', num=3, exclude=['192.168.10.1', '192.168.10.2'],
                 provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+
+- name: return next available IP address for network fd30:f52:2:12::/64
+  set_fact:
+    ipaddr: "{{ lookup('nios_next_ip', 'fd30:f52:2:12::/64', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 """
 
 RETURN = """
@@ -60,6 +64,7 @@ from ansible.plugins.lookup import LookupBase
 from ansible.module_utils._text import to_text
 from ansible.errors import AnsibleError
 from ..module_utils.api import WapiLookup
+import ipaddress
 
 
 class LookupModule(LookupBase):
@@ -73,7 +78,11 @@ class LookupModule(LookupBase):
         provider = kwargs.pop('provider', {})
         wapi = WapiLookup(provider)
 
-        network_obj = wapi.get_object('network', {'network': network})
+        if type(ipaddress.ip_network(network)) == ipaddress.IPv6Network:
+            network_obj = wapi.get_object('ipv6network', {'network': network})
+        else:
+            network_obj = wapi.get_object('network', {'network': network})
+
         if network_obj is None:
             raise AnsibleError('unable to find network object %s' % network)
 
