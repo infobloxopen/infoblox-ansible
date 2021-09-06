@@ -93,7 +93,7 @@ infoblox-client WAPI package, run the following command:
 $ pip install infoblox-client
 ```
 
-Installation of nios\_modules Collection
+Installation of nios_modules Collection
 ----------------------------------------
 
 The `nios_modules` collection can be installed either from Ansible Galaxy
@@ -101,48 +101,51 @@ or directly from git. It is recommended to install collections from
 Ansible Galaxy as those are more stable than the ones in the git
 branch.
 
-### Installation from Ansible Galaxy
+### Installation from [Ansible Galaxy](https://galaxy.ansible.com/infoblox/nios_modules)
+- To directly install the `nios_modules` collection from Ansible Galaxy, run the following command:
+    - ```shell
+       $ ansible-galaxy collection install infoblox.nios_modules
+      ```
+    - The collection folder would be installed at
+      `~/.ansible/collections/ansible_collections/infoblox/nios_modules`
+      
+- For offline installation on the Ansible control machine, download the required tar archive version of the collection from [Infoblox Nios Modules collections](https://galaxy.ansible.com/infoblox/nios_modules) and run the command given below in `~/.ansible` directory:
+    - ```shell
+      $ ansible-galaxy collection install infoblox-nios_modules-<version>.tar.gz -p ./collections
+      ```
 
-To directly install the `nios_modules` collection from Ansible Galaxy,
-run the following command:
+### Installation from [GitHub](https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules)
+- Install the collection directly from the github repository using the latest commit on the master branch:
+    - ```shell
+      $ ansible-galaxy collection install git+https://github.com/infobloxopen/infoblox-ansible.git#ansible_collections/infoblox/nios_modules
+      ```
 
-```shell
-$ ansible-galaxy collection install infoblox.nios_modules
-```
+- For offline installation on the Ansible control machine, to git clone and install from this repo, follow these steps:
 
-The collection folder would be installed at
-`~/.ansible/collections/ansible_collections/infoblox/nios_modules`
+    -   **Clone the repo:**
+        ```shell
+        $ git clone https://github.com/infobloxopen/infoblox-ansible.git
+        ```
+    -   **Build the collection:**\
+        To build a collection, run the following command from inside the
+        root directory of the collection:
+        ```shell
+        $ ansible-galaxy collection build
+        ```
+        This creates a tarball of the built collection in the current directory.
+    -   **Install the collection:**
+        ```shell
+        $ ansible-galaxy collection install infoblox-nios_modules-<version>.tar.gz -p ./collections
+        ```
 
-### Installation from Git
-
-To git clone and install from this repo, follow these steps:
-
--   **Clone the repo:**
-
-```shell
-$ git clone https://github.com/infobloxopen/infoblox-ansible.git
-```
-
--   **Build the collection:**
-
-    To build a collection, run the following command from inside the
-    root directory of the collection:
-    
-```shell
-$ ansible-galaxy collection build
-```
-
-This creates a tarball of the built collection in the current directory.
-
--   **Install the collection:**
-
-```shell
-$ ansible-galaxy collection install <collection-name>.tar.gz -p ./collections
-```
-
-Please refer to our Ansible [deployment
-guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
+Please refer to our Ansible [deployment 
+guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-automate-infoblox-infrastructure-using-ansible.pdf)
 for more details.
+
+Playbooks
+=========
+Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules/playbooks).
+
 
 Releasing
 =========
@@ -155,7 +158,7 @@ Dates TBD
 Current release
 ---------------
 
-1.1.0 on 14 April 2021
+1.1.1 on 7 September 2021
 
 Versioning
 =========
@@ -168,6 +171,12 @@ Deprecation
 -   Deprecations are done by version number (not by date).
 -   New deprecations can be added during every minor release, under the condition that they do not break backwards compatibility.
 
+Contributing
+============
+We welcome your contributions to Infoblox NiosModules Ansible modules. See 
+[CONTRIBUTING.md](https://github.com/infobloxopen/infoblox-ansible/blob/master/ansible_collections/infoblox/nios_modules/CONTRIBUTING.md) for
+more details.
+
 Resources
 =========
 
@@ -179,7 +188,7 @@ Resources
     Galaxy
 
 -   Infoblox Ansible [deployment
-    guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
+    guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-automate-infoblox-infrastructure-using-ansible.pdf)
 
 License
 =======

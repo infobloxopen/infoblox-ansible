@@ -97,3 +97,25 @@ releases:
       name: nios_restartservices
       namespace: ''
     release_date: '2021-04-12'
+  1.1.1:
+    changes:
+      bugfixes:
+      - Implemented the bugfixes provided by Ansible `community.general`
+      - Update name of existing A and AAAA records `#70 <https://github.com/infobloxopen/infoblox-ansible/pull/70>`_
+      - Update of comment field of SRV, PTR and NAPTR records failing with the following error `#70 <https://github.com/infobloxopen/infoblox-ansible/pull/70>`_
+      - PTR Record failed to update and raises KeyError for view field `#70 <https://github.com/infobloxopen/infoblox-ansible/pull/70>`_
+      - Update comment field and delete an existing Fixed Address `#73 <https://github.com/infobloxopen/infoblox-ansible/pull/73>`_
+      - GitHub issue fix - Lookup module for next available IPV6 `#31 <https://github.com/infobloxopen/infoblox-ansible/issues/31>`_
+      - GitHub issue fix - [nios_zone] changing a nios_zone does not work `#60 <https://github.com/infobloxopen/infoblox-ansible/issues/60>`_
+      - GitHub issue fix - Getting an error, running every module `#67 <https://github.com/infobloxopen/infoblox-ansible/issues/67>`_
+      - GitHub issue fix - Error - Dictionary Issues `#68 <https://github.com/infobloxopen/infoblox-ansible/issues/68>`_
+      - GitHub issue fix - Examples for lookups don't work as written `#72 <https://github.com/infobloxopen/infoblox-ansible/issues/72>`_
+      - Sanity fixes as per ansible guidelines to all modules
+      minor_changes:
+      - The modules are standardized as per ansible guidelines
+      release_summary:
+      - Support for creating IPv6 Fixed Address with DUID
+      - Support added to return the next available IP address for an IPv6 network
+      - Modules made compatible to work with ansible-core 2.11
+      - Issue fixes, and standardization of modules as per ansible guidelines
+    release_date: '2021-09-07'
