@@ -1,4 +1,4 @@
-# Infoblox Ansible Collections for vNIOS
+# Infoblox NIOS Modules for Ansible Collections
 
 About 
 ======
@@ -11,12 +11,12 @@ provides modules and plugins for managing the networks, IP addresses,
 and DNS records in NIOS. This collection is hosted on Ansible Galaxy
 under `infoblox.nios_modules`.
 
-Modules Overview:
+Modules Overview
 =================
 
 The `infoblox.nios_modules` collection has the following content:
 
-Modules:
+Modules
 --------
 
 -   `nios_a_record` – Configure Infoblox NIOS A records
@@ -59,7 +59,7 @@ Modules:
 
 -   `nios_zone` – Configure Infoblox NIOS DNS zones
 
-Plugins:
+Plugins
 --------
 
 -   `nios_inventory`: List all the hosts with records created in NIOS
@@ -77,17 +77,16 @@ Installation
 Dependencies
 ------------
 
--   Python version 2.7 and above
+-   Python version 2.7 or later
 
--   Ansible version 2.9.0 or above
+-   Ansible version 2.9.0 or later
 
--   NIOS 8.2.4 and above
+-   NIOS 8.2.4 or later
 
 Prerequisites
 -------------
 
-You need to install the infoblox-client package. To install
-infoblox-client WAPI package, run the following command:
+Install the infoblox-client WAPI package. To install, run the following command:
 
 ```shell
 $ pip install infoblox-client
@@ -101,8 +100,8 @@ or directly from git. It is recommended to install collections from
 Ansible Galaxy as those are more stable than the ones in the git
 branch.
 
-### Installation from [Ansible Galaxy](https://galaxy.ansible.com/infoblox/nios_modules)
-- To directly install the `nios_modules` collection from Ansible Galaxy, run the following command:
+### Installation from Ansible Galaxy
+- To directly install the `nios_modules` collection from [Ansible Galaxy](https://galaxy.ansible.com/infoblox/nios_modules), run the following command:
     - ```shell
        $ ansible-galaxy collection install infoblox.nios_modules
       ```
@@ -114,8 +113,8 @@ branch.
       $ ansible-galaxy collection install infoblox-nios_modules-<version>.tar.gz -p ./collections
       ```
 
-### Installation from [GitHub](https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules)
-- Install the collection directly from the github repository using the latest commit on the master branch:
+### Installation from GitHub
+- Install the collection directly from the [GitHub](https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules) repository using the latest commit on the master branch:
     - ```shell
       $ ansible-galaxy collection install git+https://github.com/infobloxopen/infoblox-ansible.git#ansible_collections/infoblox/nios_modules
       ```
@@ -169,11 +168,11 @@ Versioning
 Deprecation
 ===========
 -   Deprecations are done by version number (not by date).
--   New deprecations can be added during every minor release, under the condition that they do not break backwards compatibility.
+-   New deprecations can be added during every minor release, under the condition that they do not break backward compatibility.
 
 Contributing
 ============
-We welcome your contributions to Infoblox NiosModules Ansible modules. See 
+We welcome your contributions to Infoblox Nios Modules. See 
 [CONTRIBUTING.md](https://github.com/infobloxopen/infoblox-ansible/blob/master/ansible_collections/infoblox/nios_modules/CONTRIBUTING.md) for
 more details.
 
