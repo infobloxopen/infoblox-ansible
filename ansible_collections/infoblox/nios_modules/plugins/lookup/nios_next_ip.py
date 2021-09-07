@@ -47,8 +47,8 @@ EXAMPLES = """
                 provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return next available IP address for network fd30:f52:2:12::/64
-  set_fact:
-    ipaddr: "{{ lookup('nios_next_ip', 'fd30:f52:2:12::/64', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+  ansible.builtin.set_fact:
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', 'fd30:f52:2:12::/64', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 """
 
 RETURN = """
