@@ -48,20 +48,20 @@ EXAMPLES = """
 
 - name: fetch all host records and include extended attributes
   ansible.builtin.set_fact:
-    host_records: "{{ lookup('infoblox.nios_modules.nios', 'record:host', return_fields=['extattrs', 'name', 'view', 'comment']}) }}"
+    host_records: "{{ lookup('infoblox.nios_modules.nios_lookup', 'record:host', return_fields=['extattrs', 'name', 'view', 'comment']}) }}"
 
 
 - name: use env variables to pass credentials
   ansible.builtin.set_fact:
-    networkviews: "{{ lookup('infoblox.nios_modules.nios', 'networkview') }}"
+    networkviews: "{{ lookup('infoblox.nios_modules.nios_lookup', 'networkview') }}"
 
 - name: get a host record
   ansible.builtin.set_fact:
-    host: "{{ lookup('infoblox.nios_modules.nios', 'record:host', filter={'name': 'hostname.ansible.com'}) }}"
+    host: "{{ lookup('infoblox.nios_modules.nios_lookup', 'record:host', filter={'name': 'hostname.ansible.com'}) }}"
 
 - name: get the authoritative zone from a non default dns view
   ansible.builtin.set_fact:
-    host: "{{ lookup('infoblox.nios_modules.nios', 'zone_auth', filter={'fqdn': 'ansible.com', 'view': 'ansible-dns'}) }}"
+    host: "{{ lookup('infoblox.nios_modules.nios_lookup', 'zone_auth', filter={'fqdn': 'ansible.com', 'view': 'ansible-dns'}) }}"
 """
 
 RETURN = """

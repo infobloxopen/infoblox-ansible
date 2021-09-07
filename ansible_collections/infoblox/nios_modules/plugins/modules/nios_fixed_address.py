@@ -16,10 +16,16 @@ description:
   - A fixed address is a specific IP address that a DHCP server
     always assigns when a lease request comes from a particular
     MAC address of the client.
-  - Supports both IPV4 and IPV6 internet protocols
+  - Supports both IPV4 and IPV6 internet protocols.
 requirements:
   - infoblox-client
 extends_documentation_fragment: infoblox.nios_modules.nios
+notes:
+    - The "mac" field is mandatory for all CRUD operations relating to
+      IPv4 Fixed address.
+    - The "duid" field is mandatory for all CRUD operations relating to
+      IPv6 Fixed address.
+    - This module supports C(check_mode).
 options:
   name:
     description:
@@ -34,14 +40,16 @@ options:
     required: true
   mac:
     description:
-      - The MAC address of the interface.
+      - The MAC address of the IPv4 interface.
     type: str
-    required: true
+  duid:
+    description:
+      - The DUID address of the IPv6 interface.
+    type: str
   network:
     description:
       - Specifies the network range in which ipaddr exists.
     type: str
-    required: true
     aliases:
       - network
   network_view:
@@ -49,7 +57,6 @@ options:
       - Configures the name of the network view to associate with this
         configured instance.
     type: str
-    required: false
     default: default
   options:
     description:
@@ -109,7 +116,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure ipv4 dhcp fixed address
+- name: Configure an ipv4 dhcp fixed address
   infoblox.nios_modules.nios_fixed_address:
     name: ipv4_fixed
     ipaddr: 192.168.10.1
@@ -123,7 +130,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a ipv6 dhcp fixed address
+
+- name: Configure an ipv6 dhcp fixed address
   infoblox.nios_modules.nios_fixed_address:
     name: ipv6_fixed
     ipaddr: fe80::1/10
@@ -137,7 +145,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: set dhcp options for a ipv4 fixed address
+
+- name: Set dhcp options for an ipv4 fixed address
   infoblox.nios_modules.nios_fixed_address:
     name: ipv4_fixed
     ipaddr: 192.168.10.1
@@ -154,7 +163,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove a ipv4 dhcp fixed address
+
+- name: Remove an ipv4 dhcp fixed address
   infoblox.nios_modules.nios_fixed_address:
     name: ipv4_fixed
     ipaddr: 192.168.10.1
@@ -175,6 +185,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 from ..module_utils.api import NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS
 from ..module_utils.api import WapiModule
+from ..module_utils.api import normalize_ib_spec
 from ..module_utils.network import validate_ip_address, validate_ip_v6_address
 
 
@@ -223,10 +234,20 @@ def validate_ip_addr_type(ip, arg_spec, module):
     if validate_ip_address(check_ip[0]) and 'ipaddr' in arg_spec:
         arg_spec['ipv4addr'] = arg_spec.pop('ipaddr')
         module.params['ipv4addr'] = module.params.pop('ipaddr')
+        del arg_spec['duid']
+        del module.params['duid']
+        if module.params["mac"] is None:
+            raise ValueError("the 'mac' address of the object must be specified")
+        module.params['mac'] = module.params['mac'].lower()
         return NIOS_IPV4_FIXED_ADDRESS, arg_spec, module
     elif validate_ip_v6_address(check_ip[0]) and 'ipaddr' in arg_spec:
         arg_spec['ipv6addr'] = arg_spec.pop('ipaddr')
         module.params['ipv6addr'] = module.params.pop('ipaddr')
+        del arg_spec['mac']
+        del module.params['mac']
+        if module.params["duid"] is None:
+            raise ValueError("the 'duid' of the object must be specified")
+        module.params['duid'] = module.params['duid'].lower()
         return NIOS_IPV6_FIXED_ADDRESS, arg_spec, module
 
 
@@ -247,8 +268,9 @@ def main():
     ib_spec = dict(
         name=dict(required=True),
         ipaddr=dict(required=True, ib_req=True, type='str'),
-        mac=dict(required=True, ib_req=True, type='str'),
-        network=dict(required=True, ib_req=True),
+        mac=dict(ib_req=True, type='str'),
+        duid=dict(ib_req=True, type='str'),
+        network=dict(),
         network_view=dict(default='default'),
 
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
@@ -262,7 +284,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

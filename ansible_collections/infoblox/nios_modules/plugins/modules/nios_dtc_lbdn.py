@@ -19,6 +19,8 @@ description:
 requirements:
   - infoblox-client
 extends_documentation_fragment: infoblox.nios_modules.nios
+notes:
+    - This module supports C(check_mode).
 options:
   name:
     description:
@@ -115,7 +117,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a DTC LBDN
+- name: Configure a DTC LBDN
   infoblox.nios_modules.nios_dtc_lbdn:
     name: web.ansible.com
     lb_method: ROUND_ROBIN
@@ -128,7 +130,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to a DTC LBDN
+- name: Add a comment to a DTC LBDN
   infoblox.nios_modules.nios_dtc_lbdn:
     name: web.ansible.com
     lb_method: ROUND_ROBIN
@@ -140,7 +142,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove a DTC LBDN from the system
+- name: Remove a DTC LBDN from the system
   infoblox.nios_modules.nios_dtc_lbdn:
     name: web.ansible.com
     lb_method: ROUND_ROBIN
@@ -156,6 +158,7 @@ RETURN = ''' # '''
 
 from ..module_utils.api import NIOS_DTC_LBDN
 from ..module_utils.api import WapiModule
+from ..module_utils.api import normalize_ib_spec
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.basic import AnsibleModule
 
@@ -223,7 +226,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

@@ -19,17 +19,19 @@ description:
 requirements:
   - infoblox_client
 extends_documentation_fragment: infoblox.nios_modules.nios
+notes:
+    - This module supports C(check_mode).
 options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system
+        the system.
     required: true
     type: str
   view:
     description:
       - Sets the DNS view to associate this tst record with.  The DNS
-        view must already be configured on the system
+        view must already be configured on the system.
     default: default
     aliases:
       - dns_view
@@ -40,10 +42,11 @@ options:
         per substring, up to a total of 512 bytes. To enter leading,
         trailing, or embedded spaces in the text, add quotes around the
         text to preserve the spaces.
+    required: true
     type: str
   ttl:
     description:
-      - Configures the TTL to be associated with this tst record
+      - Configures the TTL to be associated with this txt record.
     type: int
   extattrs:
     description:
@@ -99,6 +102,7 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -108,7 +112,7 @@ def main():
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
         view=dict(default='default', aliases=['dns_view'], ib_req=True),
-        text=dict(type='str', ib_req=True),
+        text=dict(required=True, type='str', ib_req=True),
         ttl=dict(type='int'),
         extattrs=dict(type='dict'),
         comment=dict(),
@@ -119,7 +123,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

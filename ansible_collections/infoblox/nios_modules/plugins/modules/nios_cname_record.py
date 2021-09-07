@@ -19,17 +19,19 @@ description:
 requirements:
   - infoblox-client
 extends_documentation_fragment: infoblox.nios_modules.nios
+notes:
+    - This module supports C(check_mode).
 options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system
+        the system.
     required: true
     type: str
   view:
     description:
       - Sets the DNS view to associate this CNAME record with.  The DNS
-        view must already be configured on the system
+        view must already be configured on the system.
     default: default
     aliases:
       - dns_view
@@ -42,7 +44,7 @@ options:
     type: str
   ttl:
     description:
-      - Configures the TTL to be associated with this CNAME record
+      - Configures the TTL to be associated with this CNAME record.
     type: int
   extattrs:
     description:
@@ -70,7 +72,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a CNAME record
+- name: Configure a CNAME record
   infoblox.nios_modules.nios_cname_record:
     name: cname.ansible.com
     canonical: realhost.ansible.com
@@ -81,7 +83,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: add a comment to an existing CNAME record
+- name: Add a comment to an existing CNAME record
   infoblox.nios_modules.nios_cname_record:
     name: cname.ansible.com
     canonical: realhost.ansible.com
@@ -93,7 +95,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: remove a CNAME record from the system
+- name: Remove a CNAME record from the system
   infoblox.nios_modules.nios_cname_record:
     name: cname.ansible.com
     canonical: realhost.ansible.com
@@ -111,6 +113,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_CNAME_RECORD
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
@@ -134,7 +137,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,

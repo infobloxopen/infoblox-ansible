@@ -19,20 +19,21 @@ description:
 requirements:
   - infoblox_client
 extends_documentation_fragment: infoblox.nios_modules.nios
+notes:
+    - This module supports C(check_mode).
 options:
   name:
     description:
       - The name of the DNS PTR record in FQDN format to add or remove from
         the system.
         The field is required only for an PTR object in Forward Mapping Zone.
-    required: false
     type: str
   view:
     description:
       - Sets the DNS view to associate this a record with. The DNS
-        view must already be configured on the system
-    required: false
+        view must already be configured on the system.
     type: str
+    default: default
     aliases:
       - dns_view
   ipv4addr:
@@ -111,13 +112,14 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_PTR_RECORD
+from ..module_utils.api import normalize_ib_spec
 
 
 def main():
     # Module entry point
     ib_spec = dict(
         name=dict(required=False),
-        view=dict(aliases=['dns_view']),
+        view=dict(default='default', aliases=['dns_view']),
         ipv4addr=dict(aliases=['ipv4'], ib_req=True),
         ipv6addr=dict(aliases=['ipv6'], ib_req=True),
         ptrdname=dict(ib_req=True),
@@ -133,7 +135,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     mutually_exclusive = [('ipv4addr', 'ipv6addr')]

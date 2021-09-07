@@ -16,10 +16,12 @@ description:
   - Adds and/or removes instances of network objects from
     Infoblox NIOS servers.  This module manages NIOS C(network) objects
     using the Infoblox WAPI interface over REST.
-  - Supports both IPV4 and IPV6 internet protocols
+  - Supports both IPV4 and IPV6 internet protocols.
 requirements:
   - infoblox-client
 extends_documentation_fragment: infoblox.nios_modules.nios
+notes:
+    - This module supports C(check_mode).
 options:
   network:
     description:
@@ -102,7 +104,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: configure a network ipv4
+- name: Configure a network ipv4
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
@@ -112,7 +114,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a network ipv6
+
+- name: Configure a network ipv6
   infoblox.nios_modules.nios_network:
     network: fe80::/64
     comment: this is a test comment
@@ -122,7 +125,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: set dhcp options for a network ipv4
+
+- name: Set dhcp options for a network ipv4
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
@@ -135,7 +139,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove a network ipv4
+
+- name: Remove a network ipv4
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     state: absent
@@ -144,7 +149,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a ipv4 network container
+
+- name: Configure an ipv4 network container
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     container: true
@@ -155,7 +161,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: configure a ipv6 network container
+
+- name: Configure an ipv6 network container
   infoblox.nios_modules.nios_network:
     network: fe80::/64
     container: true
@@ -166,7 +173,8 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-- name: remove a ipv4 network container
+
+- name: Remove an ipv4 network container
   infoblox.nios_modules.nios_network:
     networkr: 192.168.10.0/24
     container: true
@@ -186,6 +194,7 @@ from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK
 from ..module_utils.api import NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER
+from ..module_utils.api import normalize_ib_spec
 from ..module_utils.network import validate_ip_address, validate_ip_v6_address
 
 
@@ -280,7 +289,7 @@ def main():
         state=dict(default='present', choices=['present', 'absent'])
     )
 
-    argument_spec.update(ib_spec)
+    argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
     module = AnsibleModule(argument_spec=argument_spec,
