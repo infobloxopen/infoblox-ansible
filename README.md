@@ -172,7 +172,7 @@ Deprecation
 
 Contributing
 ============
-We welcome your contributions to Infoblox Nios Modules. See 
+We welcome your contributions to Infoblox NIOS Modules for Ansible Collections. See 
 [CONTRIBUTING.md](https://github.com/infobloxopen/infoblox-ansible/blob/master/ansible_collections/infoblox/nios_modules/CONTRIBUTING.md) for
 more details.
 
