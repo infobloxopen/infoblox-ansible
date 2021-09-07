@@ -4,6 +4,35 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
+v1.1.1
+======
+Release Summary
+---------------
+- Support for creating IPv6 Fixed Address with DUID
+- Support added to return the next available IP address for an IPv6 network
+- Modules made compatible to work with ansible-core 2.11
+- Issue fixes and standardization of modules as per Ansible guidelines
+
+Minor Changes
+-------------
+- The modules are standardized as per Ansible guidelines
+
+Bugfixes
+-------------
+- Implemented the bugfixes provided by Ansible `community.general`
+- Update the name of existing A and AAAA records `#70 <https://github.com/infobloxopen/infoblox-ansible/pull/70>`_
+- Update of comment field of SRV, PTR and NAPTR records failing with the following error: 
+  ```[Err: fatal: [localhost]: FAILED! => {"changed": false, "code": "Client.Ibap.Proto", "msg": "Field is not allowed for update: view", "operation": "update_object", "type": "AdmConProtoError"}]``` 
+  `#70 <https://github.com/infobloxopen/infoblox-ansible/pull/70>`_
+- PTR Record failed to update and raises KeyError for view field `#70 <https://github.com/infobloxopen/infoblox-ansible/pull/70>`_
+- Update comment field and delete an existing Fixed Address `#73 <https://github.com/infobloxopen/infoblox-ansible/pull/73>`_
+- GitHub issue fix - Lookup module for next available IPV6 `#31 <https://github.com/infobloxopen/infoblox-ansible/issues/31>`_
+- GitHub issue fix - [nios_zone] changing a nios_zone does not work `#60 <https://github.com/infobloxopen/infoblox-ansible/issues/60>`_
+- GitHub issue fix - Getting an error, running every module `#67 <https://github.com/infobloxopen/infoblox-ansible/issues/67>`_
+- GitHub issue fix - Error - Dictionary Issues `#68 <https://github.com/infobloxopen/infoblox-ansible/issues/68>`_
+- GitHub issue fix - Examples for lookups don't work as written `#72 <https://github.com/infobloxopen/infoblox-ansible/issues/72>`_
+- Sanity fixes as per Ansible guidelines to all modules
+
 
 v1.1.0
 ======

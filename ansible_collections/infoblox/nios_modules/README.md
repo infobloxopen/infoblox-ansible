@@ -1,4 +1,4 @@
-# Infoblox Ansible Collections for vNIOS
+# Infoblox NIOS Modules for Ansible Collections
 
 About 
 ======
@@ -11,12 +11,12 @@ provides modules and plugins for managing the networks, IP addresses,
 and DNS records in NIOS. This collection is hosted on Ansible Galaxy
 under `infoblox.nios_modules`.
 
-Modules Overview:
+Modules Overview
 =================
 
 The `infoblox.nios_modules` collection has the following content:
 
-Modules:
+Modules
 --------
 
 -   `nios_a_record` – Configure Infoblox NIOS A records
@@ -59,7 +59,7 @@ Modules:
 
 -   `nios_zone` – Configure Infoblox NIOS DNS zones
 
-Plugins:
+Plugins
 --------
 
 -   `nios_inventory`: List all the hosts with records created in NIOS
@@ -77,23 +77,22 @@ Installation
 Dependencies
 ------------
 
--   Python version 2.7 and above
+-   Python version 2.7 or later
 
--   Ansible version 2.9.0 or above
+-   Ansible version 2.9.0 or later
 
--   NIOS 8.2.4 and above
+-   NIOS 8.2.4 or later
 
 Prerequisites
 -------------
 
-You need to install the infoblox-client package. To install
-infoblox-client WAPI package, run the following command:
+Install the infoblox-client WAPI package. To install, run the following command:
 
 ```shell
 $ pip install infoblox-client
 ```
 
-Installation of nios\_modules Collection
+Installation of nios_modules Collection
 ----------------------------------------
 
 The `nios_modules` collection can be installed either from Ansible Galaxy
@@ -102,47 +101,50 @@ Ansible Galaxy as those are more stable than the ones in the git
 branch.
 
 ### Installation from Ansible Galaxy
+- To directly install the `nios_modules` collection from [Ansible Galaxy](https://galaxy.ansible.com/infoblox/nios_modules), run the following command:
+    - ```shell
+       $ ansible-galaxy collection install infoblox.nios_modules
+      ```
+    - The collection folder would be installed at
+      `~/.ansible/collections/ansible_collections/infoblox/nios_modules`
+      
+- For offline installation on the Ansible control machine, download the required tar archive version of the collection from [Infoblox Nios Modules collections](https://galaxy.ansible.com/infoblox/nios_modules) and run the command given below in `~/.ansible` directory:
+    - ```shell
+      $ ansible-galaxy collection install infoblox-nios_modules-<version>.tar.gz -p ./collections
+      ```
 
-To directly install the `nios_modules` collection from Ansible Galaxy,
-run the following command:
+### Installation from GitHub
+- Install the collection directly from the [GitHub](https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules) repository using the latest commit on the master branch:
+    - ```shell
+      $ ansible-galaxy collection install git+https://github.com/infobloxopen/infoblox-ansible.git#ansible_collections/infoblox/nios_modules
+      ```
 
-```shell
-$ ansible-galaxy collection install infoblox.nios_modules
-```
+- For offline installation on the Ansible control machine, to git clone and install from this repo, follow these steps:
 
-The collection folder would be installed at
-`~/.ansible/collections/ansible_collections/infoblox/nios_modules`
+    -   **Clone the repo:**
+        ```shell
+        $ git clone https://github.com/infobloxopen/infoblox-ansible.git
+        ```
+    -   **Build the collection:**\
+        To build a collection, run the following command from inside the
+        root directory of the collection:
+        ```shell
+        $ ansible-galaxy collection build
+        ```
+        This creates a tarball of the built collection in the current directory.
+    -   **Install the collection:**
+        ```shell
+        $ ansible-galaxy collection install infoblox-nios_modules-<version>.tar.gz -p ./collections
+        ```
 
-### Installation from Git
-
-To git clone and install from this repo, follow these steps:
-
--   **Clone the repo:**
-
-```shell
-$ git clone https://github.com/infobloxopen/infoblox-ansible.git
-```
-
--   **Build the collection:**
-
-    To build a collection, run the following command from inside the
-    root directory of the collection:
-    
-```shell
-$ ansible-galaxy collection build
-```
-
-This creates a tarball of the built collection in the current directory.
-
--   **Install the collection:**
-
-```shell
-$ ansible-galaxy collection install <collection-name>.tar.gz -p ./collections
-```
-
-Please refer to our Ansible [deployment
-guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
+Please refer to our Ansible [deployment 
+guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-automate-infoblox-infrastructure-using-ansible.pdf)
 for more details.
+
+Playbooks
+=========
+Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules/playbooks).
+
 
 Releasing
 =========
@@ -155,7 +157,7 @@ Dates TBD
 Current release
 ---------------
 
-1.1.0 on 14 April 2021
+1.1.1 on 7 September 2021
 
 Versioning
 =========
@@ -166,7 +168,13 @@ Versioning
 Deprecation
 ===========
 -   Deprecations are done by version number (not by date).
--   New deprecations can be added during every minor release, under the condition that they do not break backwards compatibility.
+-   New deprecations can be added during every minor release, under the condition that they do not break backward compatibility.
+
+Contributing
+============
+We welcome your contributions to Infoblox Nios Modules. See 
+[CONTRIBUTING.md](https://github.com/infobloxopen/infoblox-ansible/blob/master/ansible_collections/infoblox/nios_modules/CONTRIBUTING.md) for
+more details.
 
 Resources
 =========
@@ -179,7 +187,7 @@ Resources
     Galaxy
 
 -   Infoblox Ansible [deployment
-    guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
+    guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-automate-infoblox-infrastructure-using-ansible.pdf)
 
 License
 =======
