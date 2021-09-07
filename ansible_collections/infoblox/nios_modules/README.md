@@ -3,7 +3,7 @@
 About 
 ======
 
-Infoblox Ansible Collection for vNIOS allows managing your NIOS objects
+Infoblox NIOS Modules for Ansible Collections allows managing your NIOS objects
 through APIs.
 It, thus, enables the DNS and IPAM automation of VM workloads that are
 deployed across multiple platforms. The `nios_modules` collection
