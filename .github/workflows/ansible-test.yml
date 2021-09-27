@@ -35,7 +35,7 @@ jobs:
       - name: Set up Python ${{ matrix.ansible }}
         uses: actions/setup-python@v2
         with:
-          python-version: '3.7'
+          python-version: '>=3.8'
 
       # Install the head of the given branch (devel, stable-2.10)
       - name: Install ansible-base (${{ matrix.ansible }})
