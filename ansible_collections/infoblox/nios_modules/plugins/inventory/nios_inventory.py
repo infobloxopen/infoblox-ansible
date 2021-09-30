@@ -54,6 +54,7 @@ from ansible.plugins.inventory import BaseInventoryPlugin
 from ..module_utils.api import WapiInventory
 from ..module_utils.api import normalize_extattrs, flatten_extattrs
 from ansible.module_utils.six import iteritems
+from ansible.errors import AnsibleError
 
 
 class InventoryModule(BaseInventoryPlugin):
@@ -73,9 +74,10 @@ class InventoryModule(BaseInventoryPlugin):
         extattrs = normalize_extattrs(self.get_option('extattrs'))
         return_fields = ['name', 'view', 'extattrs', 'ipv4addrs']
 
-        print(host_filter)
+        hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs, return_fields=return_fields) or []
 
-        hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs, return_fields=return_fields)
+        if hosts == []:
+            raise AnsibleError("host record is not present")
 
         for host in hosts:
             group_name = self.inventory.add_group(host['view'])
