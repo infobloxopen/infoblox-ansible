@@ -76,7 +76,7 @@ class InventoryModule(BaseInventoryPlugin):
 
         hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs, return_fields=return_fields) or []
 
-        if hosts == []:
+        if not hosts:
             raise AnsibleError("host record is not present")
 
         for host in hosts:
