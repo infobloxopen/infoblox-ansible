@@ -5,7 +5,7 @@ __metaclass__ = type
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 DOCUMENTATION = r'''
-    name: Infoblox
+    name: nios_inventory
     plugin_type: inventory
     author:
       - Will Tome (@willtome)
@@ -15,19 +15,31 @@ DOCUMENTATION = r'''
         - Infoblox inventory plugin
     options:
         host:
-            description: Infoblox server
+            description:
+              - Specifies the DNS host name or address for connecting to the remote
+                instance of NIOS WAPI over REST.
+              - Value can also be specified using C(INFOBLOX_HOST) environment
+                variable.
             type: string
             required: True
             env:
                 - name: INFOBLOX_HOST
         username:
-            description: username
+            description:
+              - Configures the username to use to authenticate the connection to
+                the remote instance of NIOS.
+              - Value can also be specified using C(INFOBLOX_USERNAME) environment
+                variable.
             type: string
             required: True
             env:
                 - name: INFOBLOX_USERNAME
         password:
-            description: password
+            description:
+              - Specifies the password to use to authenticate the connection to
+                the remote instance of NIOS.
+              - Value can also be specified using C(INFOBLOX_PASSWORD) environment
+                variable.
             type: string
             secret: true
             env:
@@ -35,16 +47,18 @@ DOCUMENTATION = r'''
         extattrs:
             description: restrict returned hosts by extensible attributes
             default: {}
+            type: dict
         hostfilter:
             description: restrict returned hosts
             default: {}
+            type: dict
     requirements:
         - python >= 3.4
         - infoblox-client
 '''
 
 EXAMPLES = r'''
-plugin: infoblox
+plugin: infoblox.nios_modules.nios_inventory
 host: blox.example.com
 username: admin
 '''
@@ -58,7 +72,7 @@ from ansible.errors import AnsibleError
 
 
 class InventoryModule(BaseInventoryPlugin):
-    NAME = 'infoblox'
+    NAME = 'nios_inventory'
 
     def parse(self, inventory, loader, path, cache=True):  # Plugin interface (2)
         super(InventoryModule, self).parse(inventory, loader, path)

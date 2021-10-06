@@ -23,12 +23,16 @@ options:
     _terms:
       description: The name of the object to return from NIOS
       required: True
+      type: str
     return_fields:
       description: The list of field names to return for the specified object.
+      type: list
     filter:
-      description: a dict object that is used to filter the return objects
+      description: A dict object that is used to filter the return objects.
+      type: dict
     extattrs:
-      description: a dict object that is used to filter on extattrs
+      description: A dict object that is used to filter on extattrs.
+      type: dict
 '''
 
 EXAMPLES = """
