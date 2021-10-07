@@ -28,10 +28,11 @@ options:
       description: The list of field names to return for the specified object.
       type: list
     filter:
-      description: A dict object that is used to filter the return objects.
+      description: 
+        - The name of the network object to be returned from the Infoblox appliance.
       type: dict
     extattrs:
-      description: A dict object that is used to filter on extattrs.
+      description: A dict object that is used to filter based on extattrs.
       type: dict
 '''
 

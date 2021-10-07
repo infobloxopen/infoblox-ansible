@@ -20,11 +20,11 @@ requirements:
 
 options:
     _terms:
-      description: The CIDR network to retrieve the next addresses from.
+      description: The CIDR network to retrieve the next address(es) from.
       required: True
       type: str
     num:
-      description: The number of IP addresses to return.
+      description: The number of IP address(es) to return.
       required: false
       default: 1
       type: int
