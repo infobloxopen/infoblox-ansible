@@ -12,7 +12,8 @@ DOCUMENTATION = r'''
     short_description: Infoblox inventory plugin
     version_added: "1.0.0"
     description:
-        - Infoblox inventory plugin
+        - This plugin allows you to query the Infoblox Grid for host records and 
+          use the response data to populate the inventory file.
     options:
         host:
             description:
@@ -45,11 +46,15 @@ DOCUMENTATION = r'''
             env:
                 - name: INFOBLOX_PASSWORD
         extattrs:
-            description: restrict returned hosts by extensible attributes
+            description:
+              - Allows you to filter the returned host record based on the 
+                extensible attributes assigned to them.
             default: {}
             type: dict
         hostfilter:
-            description: restrict returned hosts
+            description:
+              - This accepts a key/value pair and uses it to filter the 
+                host records to be returned.
             default: {}
             type: dict
     requirements:
