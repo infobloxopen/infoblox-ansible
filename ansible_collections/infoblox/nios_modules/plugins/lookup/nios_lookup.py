@@ -82,8 +82,6 @@ obj_type:
 """
 
 from ansible.plugins.lookup import LookupBase
-# from ansible_collections.community.general.plugins.module_utils.net_tools.nios.api import WapiLookup
-# from ansible_collections.community.general.plugins.module_utils.net_tools.nios.api import normalize_extattrs, flatten_extattrs
 from ansible.errors import AnsibleError
 from ..module_utils.api import WapiLookup
 from ..module_utils.api import normalize_extattrs, flatten_extattrs
