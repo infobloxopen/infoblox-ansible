@@ -252,10 +252,10 @@ def check_vendor_specific_dhcp_option(module, ib_spec):
     '''
     for key, value in iteritems(ib_spec):
         if isinstance(module.params[key], list):
-            temp_dict = module.params[key][0]
-            if 'num' in temp_dict:
-                if temp_dict['num'] in (43, 124, 125, 67):
-                    del module.params[key][0]['use_option']
+            for temp_dict in module.params[key]:
+                if 'num' in temp_dict:
+                    if temp_dict['num'] in (43, 124, 125, 67):
+                        del temp_dict['use_option']
     return ib_spec
 
 
