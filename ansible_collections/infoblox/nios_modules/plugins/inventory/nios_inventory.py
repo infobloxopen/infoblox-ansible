@@ -53,7 +53,7 @@ DOCUMENTATION = r'''
             type: dict
         hostfilter:
             description:
-              - This accepts a key/value pair and uses it to filter the
+              - Accepts a key/value pair and uses it to filter the
                 host records to be returned.
             default: {}
             type: dict
