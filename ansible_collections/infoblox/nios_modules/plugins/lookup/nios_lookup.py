@@ -21,18 +21,18 @@ requirements:
 
 options:
     _terms:
-      description: The name of the object to return from the NIOS.
+      description: 
+        - The name of the network object to be returned from the Infoblox appliance.
       required: True
       type: str
     return_fields:
       description: The list of field names to return for the specified object.
       type: list
     filter:
-      description: 
-        - The name of the network object to be returned from the Infoblox appliance.
+      description: A dict object that is used to filter the returned objects.
       type: dict
     extattrs:
-      description: A dict object that is used to filter based on extattrs.
+      description: A dict object that is used to filter based on extensible attributes.
       type: dict
 '''
 
