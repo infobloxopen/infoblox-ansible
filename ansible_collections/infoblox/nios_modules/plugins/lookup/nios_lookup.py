@@ -21,7 +21,7 @@ requirements:
 
 options:
     _terms:
-      description: 
+      description:
         - The name of the network object to be returned from the Infoblox appliance.
       required: True
       type: str
