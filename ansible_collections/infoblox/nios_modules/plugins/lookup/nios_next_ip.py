@@ -20,15 +20,18 @@ requirements:
 
 options:
     _terms:
-      description: The CIDR network to retrieve the next addresses from
+      description: The CIDR network to retrieve the next address(es) from.
       required: True
+      type: str
     num:
-      description: The number of IP addresses to return
+      description: The number of IP address(es) to return.
       required: false
       default: 1
+      type: int
     exclude:
-      description: List of IP's that need to be excluded from returned IP addresses
+      description: List of IP's that need to be excluded from returned IP addresses.
       required: false
+      type: list
 '''
 
 EXAMPLES = """
@@ -60,7 +63,6 @@ _list:
 """
 
 from ansible.plugins.lookup import LookupBase
-# from ansible_collections.community.general.plugins.module_utils.net_tools.nios.api import WapiLookup
 from ansible.module_utils._text import to_text
 from ansible.errors import AnsibleError
 from ..module_utils.api import WapiLookup

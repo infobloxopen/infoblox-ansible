@@ -5,46 +5,65 @@ __metaclass__ = type
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 DOCUMENTATION = r'''
-    name: Infoblox
+    name: nios_inventory
     plugin_type: inventory
     author:
       - Will Tome (@willtome)
     short_description: Infoblox inventory plugin
     version_added: "1.0.0"
     description:
-        - Infoblox inventory plugin
+        - This plugin allows you to query the Infoblox Grid for host records and
+          use the response data to populate the inventory file.
     options:
         host:
-            description: Infoblox server
+            description:
+              - Specifies the DNS host name or address for connecting to the remote
+                instance of NIOS WAPI over REST.
+              - Value can also be specified using C(INFOBLOX_HOST) environment
+                variable.
             type: string
             required: True
             env:
                 - name: INFOBLOX_HOST
         username:
-            description: username
+            description:
+              - Configures the username to use to authenticate the connection to
+                the remote instance of NIOS.
+              - Value can also be specified using C(INFOBLOX_USERNAME) environment
+                variable.
             type: string
             required: True
             env:
                 - name: INFOBLOX_USERNAME
         password:
-            description: password
+            description:
+              - Specifies the password to use to authenticate the connection to
+                the remote instance of NIOS.
+              - Value can also be specified using C(INFOBLOX_PASSWORD) environment
+                variable.
             type: string
             secret: true
             env:
                 - name: INFOBLOX_PASSWORD
         extattrs:
-            description: restrict returned hosts by extensible attributes
+            description:
+              - Allows you to filter the returned host record based on the
+                extensible attributes assigned to them.
             default: {}
+            type: dict
         hostfilter:
-            description: restrict returned hosts
+            description:
+              - Accepts a key/value pair and uses it to filter the
+                host records to be returned.
             default: {}
+            type: dict
     requirements:
         - python >= 3.4
         - infoblox-client
 '''
 
 EXAMPLES = r'''
-plugin: infoblox
+plugin: infoblox.nios_modules.nios_inventory
 host: blox.example.com
 username: admin
 '''
@@ -58,7 +77,7 @@ from ansible.errors import AnsibleError
 
 
 class InventoryModule(BaseInventoryPlugin):
-    NAME = 'infoblox'
+    NAME = 'nios_inventory'
 
     def parse(self, inventory, loader, path, cache=True):  # Plugin interface (2)
         super(InventoryModule, self).parse(inventory, loader, path)

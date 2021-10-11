@@ -23,20 +23,24 @@ options:
       description: The CIDR network to retrieve the next network from next available network within the specified
                    container.
       required: True
+      type: str
     cidr:
       description:
         - The CIDR of the network to retrieve the next network from next available network within the
           specified container. Also, Requested CIDR must be specified and greater than the parent CIDR.
       required: True
       default: 24
+      type: str
     num:
-      description: The number of network addresses to return from network-container
+      description: The number of network addresses to return from network-container.
       required: false
       default: 1
+      type: int
     exclude:
-      description: Network addresses returned from network-container excluding list of user's input network range
+      description: Network addresses returned from network-container excluding list of user's input network range.
       required: false
       default: ''
+      type: list
 '''
 
 EXAMPLES = """
@@ -65,7 +69,6 @@ _list:
 """
 
 from ansible.plugins.lookup import LookupBase
-# from ansible_collections.community.general.plugins.module_utils.net_tools.nios.api import WapiLookup
 from ansible.module_utils._text import to_text
 from ansible.errors import AnsibleError
 from ..module_utils.api import WapiLookup

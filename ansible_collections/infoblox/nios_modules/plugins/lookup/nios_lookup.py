@@ -21,24 +21,29 @@ requirements:
 
 options:
     _terms:
-      description: The name of the object to return from NIOS
+      description:
+        - The name of the network object to be returned from the Infoblox appliance.
       required: True
+      type: str
     return_fields:
       description: The list of field names to return for the specified object.
+      type: list
     filter:
-      description: a dict object that is used to filter the return objects
+      description: A dict object that is used to filter the returned objects.
+      type: dict
     extattrs:
-      description: a dict object that is used to filter on extattrs
+      description: A dict object that is used to filter based on extensible attributes.
+      type: dict
 '''
 
 EXAMPLES = """
 - name: fetch all networkview objects
   ansible.builtin.set_fact:
-    networkviews: "{{ lookup('infoblox.nios_modules.nios', 'networkview', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+    networkviews: "{{ lookup('infoblox.nios_modules.nios_lookup', 'networkview', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: fetch the default dns view
   ansible.builtin.set_fact:
-    dns_views: "{{ lookup('infoblox.nios_modules.nios', 'view', filter={'name': 'default'},
+    dns_views: "{{ lookup('infoblox.nios_modules.nios_lookup', 'view', filter={'name': 'default'},
                    provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 # all of the examples below use credentials that are  set using env variables
@@ -78,8 +83,6 @@ obj_type:
 """
 
 from ansible.plugins.lookup import LookupBase
-# from ansible_collections.community.general.plugins.module_utils.net_tools.nios.api import WapiLookup
-# from ansible_collections.community.general.plugins.module_utils.net_tools.nios.api import normalize_extattrs, flatten_extattrs
 from ansible.errors import AnsibleError
 from ..module_utils.api import WapiLookup
 from ..module_utils.api import normalize_extattrs, flatten_extattrs
