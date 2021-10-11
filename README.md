@@ -106,7 +106,9 @@ branch.
        $ ansible-galaxy collection install infoblox.nios_modules
       ```
     - The collection folder would be installed at
-      ```~/.ansible/collections/ansible_collections/infoblox/nios_modules```
+      ```
+       ~/.ansible/collections/ansible_collections/infoblox/nios_modules
+      ```
       
 - For offline installation on the Ansible control machine, download the required tar archive version of the collection from [Infoblox Nios Modules collections](https://galaxy.ansible.com/infoblox/nios_modules) and run the command given below in `~/.ansible` directory:
     - ```

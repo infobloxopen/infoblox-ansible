@@ -119,3 +119,15 @@ releases:
       - Modules made compatible to work with ansible-core 2.11
       - Issue fixes and standardization of modules as per Ansible guidelines
     release_date: '2021-09-07'
+  1.1.2:
+    changes:
+      bugfixes:
+      - Handle NoneType parsing in nios_inventory.py `#81 <https://github.com/infobloxopen/infoblox-ansible/pull/81>`
+      - Check all dhcp options, not just first one `#83 <https://github.com/infobloxopen/infoblox-ansible/pull/83>`
+      minor_changes:
+      - Changes in inventory and lookup plugins documentation `#85 <https://github.com/infobloxopen/infoblox-ansible/pull/85>`
+      - Directory restructure and added integration & unit tests `#87 <https://github.com/infobloxopen/infoblox-ansible/pull/87>`
+      release_summary:
+      - Issue fixes and standardization of inventory plugin and lookup modules as per Ansible guidelines
+      - Directory restructure and added integration & unit tests
+    release_date: '2021-10-12'

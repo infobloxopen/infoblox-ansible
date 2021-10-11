@@ -8,6 +8,24 @@ v1.1.1
 ======
 Release Summary
 ---------------
+- Issue fixes and standardization of inventory plugin and lookup modules as per Ansible guidelines
+- Directory restructure and added integration & unit tests
+
+Minor Changes
+-------------
+- Changes in inventory and lookup plugins documentation `#85 <https://github.com/infobloxopen/infoblox-ansible/pull/85>`
+- Directory restructure and added integration & unit tests `#87 <https://github.com/infobloxopen/infoblox-ansible/pull/87>`
+
+Bugfixes
+-------------
+- Handle NoneType parsing in nios_inventory.py `#81 <https://github.com/infobloxopen/infoblox-ansible/pull/81>`
+- Check all dhcp options, not just first one `#83 <https://github.com/infobloxopen/infoblox-ansible/pull/83>`
+
+
+v1.1.1
+======
+Release Summary
+---------------
 - Support for creating IPv6 Fixed Address with DUID
 - Support added to return the next available IP address for an IPv6 network
 - Modules made compatible to work with ansible-core 2.11
