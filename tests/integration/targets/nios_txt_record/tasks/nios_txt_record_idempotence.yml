@@ -59,6 +59,7 @@
 - name: remove a txt record from the system
   nios_txt_record:
     name: txt.ansible.com
+    text: mytext
     state: absent
     provider: "{{ nios_provider }}"
   register: txt_delete1
@@ -66,6 +67,7 @@
 - name: remove a txt record from the system
   nios_txt_record:
     name: txt.ansible.com
+    text: mytext
     state: absent
     provider: "{{ nios_provider }}"
   register: txt_delete2
