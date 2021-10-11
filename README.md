@@ -115,25 +115,28 @@ branch.
 
 ### Installation from GitHub
 - Install the collection directly from the [GitHub](https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules) repository using the latest commit on the master branch:
-    - ```shell
-      $ ansible-galaxy collection install git+https://github.com/infobloxopen/infoblox-ansible.git#ansible_collections/infoblox/nios_modules
+    - ```
+      $ ansible-galaxy collection install git+https://github.com/infobloxopen/infoblox-ansible.git,master
       ```
 
 - For offline installation on the Ansible control machine, to git clone and install from this repo, follow these steps:
 
     -   **Clone the repo:**
-        ```shell
+
+        ```
         $ git clone https://github.com/infobloxopen/infoblox-ansible.git
         ```
-    -   **Build the collection:**\
+    -   **Build the collection:**
+
         To build a collection, run the following command from inside the
         root directory of the collection:
-        ```shell
+        ```
         $ ansible-galaxy collection build
         ```
         This creates a tarball of the built collection in the current directory.
     -   **Install the collection:**
-        ```shell
+
+        ```
         $ ansible-galaxy collection install infoblox-nios_modules-<version>.tar.gz -p ./collections
         ```
 
@@ -157,7 +160,7 @@ Dates TBD
 Current release
 ---------------
 
-1.1.1 on 7 September 2021
+1.1.2 on 12 October 2021
 
 Versioning
 =========
