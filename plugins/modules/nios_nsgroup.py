@@ -11,12 +11,8 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: nios_nsgroup
-<<<<<<< HEAD:ansible_collections/infoblox/nios_modules/plugins/modules/nios_nsgroup.py
 short_description: Configure InfoBlox DNS Nameserver Authoritative Groups
-=======
-short_description: Configure InfoBlox DNS Nameserver Groups
 version_added: "1.0.0"
->>>>>>> upstream/master:plugins/modules/nios_nsgroup.py
 extends_documentation_fragment: infoblox.nios_modules.nios
 author:
   - Erich Birngruber (@ebirn)
