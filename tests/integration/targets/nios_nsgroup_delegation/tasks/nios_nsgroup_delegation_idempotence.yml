@@ -1,0 +1,71 @@
+- name: cleanup nsgroup delegation
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    state: absent
+    provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
+
+- name: configure a nsgroup delegation on the system
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    state: present
+    provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_delegation_create1
+
+- name: configure another nsgroup delegation on the system
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    state: present
+    provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
+  register: zone_create2
+
+- name: update the comment and ext attributes for an existing nsgroup delegation
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+  register: nsgroup_delegation_update1
+
+- name: update again the comment and ext attributes for an existing nsgroup delegation
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+  register: nsgroup_delegation_update2
+
+- name: remove the nsgroup delegation zone
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: nsgroup_delegation_delete1
+
+- name: remove again the dns nsgroup delegation
+  nios_zone:
+    name: ansible-nsgroup_delegation
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: nsgroup_delegation_delete2
+
+- assert:
+    that:
+      - "nsgroup_delegation_create1.changed"
+      - "not nsgroup_delegation_create2.changed"
+      - "nsgroup_delegation_update1.changed"
+      - "not nsgroup_delegation_update2.changed"
+      - "nsgroup_delegation_delete1.changed"
+      - "not nsgroup_delegation_delete2.changed"
