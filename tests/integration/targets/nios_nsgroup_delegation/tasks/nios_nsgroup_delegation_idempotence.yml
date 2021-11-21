@@ -53,7 +53,7 @@
         address: 192.168.0.1
   register: nsgroup_delegation_update2
 
-- name: remove the nsgroup delegation zone
+- name: remove the nsgroup delegation
   nios_nsgroup_delegation:
     name: ansible-nsgroup_delegation
     state: absent
@@ -63,11 +63,14 @@
         address: 192.168.0.1
   register: nsgroup_delegation_delete1
 
-- name: remove again the dns nsgroup delegation
-  nios_zone:
+- name: remove again the nsgroup delegation
+  nios_nsgroup_delegation:
     name: ansible-nsgroup_delegation
     state: absent
     provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
   register: nsgroup_delegation_delete2
 
 - assert:
