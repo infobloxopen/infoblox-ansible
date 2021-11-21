@@ -25,7 +25,7 @@
     delegate_to:
       - name: ns1
         address: 192.168.0.1
-  register: zone_create2
+  register: nsgroup_delegation_create2
 
 - name: update the comment and ext attributes for an existing nsgroup delegation
   nios_nsgroup_delegation:
@@ -35,6 +35,9 @@
       Site: west-dc
     state: present
     provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
   register: nsgroup_delegation_update1
 
 - name: update again the comment and ext attributes for an existing nsgroup delegation
@@ -45,6 +48,9 @@
       Site: west-dc
     state: present
     provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
   register: nsgroup_delegation_update2
 
 - name: remove the nsgroup delegation zone
@@ -52,6 +58,9 @@
     name: ansible-nsgroup_delegation
     state: absent
     provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
   register: nsgroup_delegation_delete1
 
 - name: remove again the dns nsgroup delegation
