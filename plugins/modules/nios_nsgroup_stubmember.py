@@ -100,7 +100,7 @@ def main():
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
         stub_members=dict(type='list', elements='dict', required=True, options=stub_members_spec),
-        extattrs=dict(),
+        extattrs=dict(type='dict'),
         comment=dict(),
     )
 

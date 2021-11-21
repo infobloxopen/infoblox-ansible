@@ -109,7 +109,7 @@ def main():
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
         external_servers=dict(type='list', elements='dict', required=True, options=external_servers_spec),
-        extattrs=dict(),
+        extattrs=dict(type='dict'),
         comment=dict(),
     )
 

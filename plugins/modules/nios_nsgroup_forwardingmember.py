@@ -155,7 +155,7 @@ def main():
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
         forwarding_servers=dict(type='list', elements='dict', required=True, options=forwarding_servers_spec),
-        extattrs=dict(),
+        extattrs=dict(type='dict'),
         comment=dict(),
     )
 

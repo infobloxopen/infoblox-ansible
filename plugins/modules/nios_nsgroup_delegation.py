@@ -109,7 +109,7 @@ def main():
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
         delegate_to=dict(type='list', elements='dict', required=True, options=delegate_to_spec),
-        extattrs=dict(),
+        extattrs=dict(type='dict'),
         comment=dict(),
     )
 
