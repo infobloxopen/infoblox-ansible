@@ -44,7 +44,7 @@ options:
         instance of the object.  This argument accepts a set of key / value
         pairs for configuration.
     required: false
-    type: str
+    type: dict
   comment:
     description:
       - Configures a text string comment to be associated with the instance
