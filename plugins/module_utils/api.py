@@ -550,7 +550,7 @@ class WapiModule(WapiBase):
                 # resolves issue where multiple a_records with same name and different IP address
                 try:
                     ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
-                    ipaddr = ipaddr_obj['old_ipv4addr']
+                    ipaddr = ipaddr_obj.get('old_ipv4addr')
                 except TypeError:
                     ipaddr = obj_filter['ipv4addr']
                 test_obj_filter['ipv4addr'] = ipaddr
@@ -572,7 +572,7 @@ class WapiModule(WapiBase):
             test_obj_filter = obj_filter
             try:
                 ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
-                ipaddr = ipaddr_obj['old_ipv4addr']
+                ipaddr = ipaddr_obj.get('old_ipv4addr')
             except TypeError:
                 ipaddr = obj_filter['ipv4addr']
             test_obj_filter['ipv4addr'] = ipaddr
