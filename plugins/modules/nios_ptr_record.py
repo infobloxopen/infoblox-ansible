@@ -51,6 +51,7 @@ options:
   ptrdname:
     description:
       - The domain name of the DNS PTR record in FQDN format.
+    required: true
     type: str
   ttl:
     description:
@@ -122,7 +123,7 @@ def main():
         view=dict(default='default', aliases=['dns_view']),
         ipv4addr=dict(aliases=['ipv4'], ib_req=True),
         ipv6addr=dict(aliases=['ipv6'], ib_req=True),
-        ptrdname=dict(ib_req=True),
+        ptrdname=dict(required=True, ib_req=True),
 
         ttl=dict(type='int'),
 
