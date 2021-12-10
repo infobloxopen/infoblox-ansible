@@ -43,6 +43,7 @@ options:
         I(nios_next_ip) and I(CIDR network range). See example.
     aliases:
       - ipv4
+    required: true
     type: str
   ttl:
     description:
@@ -135,8 +136,6 @@ RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
-# from ansible_collections.saileshgiri.test_col.plugins.module_utils.api import WapiModule
-# from ansible_collections.saileshgiri.test_col.plugins.module_utils.api import NIOS_A_RECORD
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_A_RECORD
 from ..module_utils.api import normalize_ib_spec
@@ -150,7 +149,7 @@ def main():
         name=dict(required=True, ib_req=True),
         view=dict(default='default', aliases=['dns_view'], ib_req=True),
 
-        ipv4addr=dict(aliases=['ipv4'], ib_req=True),
+        ipv4addr=dict(required=True, aliases=['ipv4'], ib_req=True),
 
         ttl=dict(type='int'),
 

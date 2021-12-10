@@ -124,7 +124,12 @@ jobs:
         run: ansible-galaxy collection install .cache/collection-tarball/*.tar.gz
         
       - name: Setup Integration test Pre-requisites
-        run: pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt       
+        run: pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
+
+      - name: Set environment variable
+        run: echo $ANSIBLE_NIOSSIM_CONTAINER
+        env:
+           ANSIBLE_NIOSSIM_CONTAINER: quay.io/ansible/nios-test-container:1.4.0
 
       # Run the integration tests
       - name: Run integration test

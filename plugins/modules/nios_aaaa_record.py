@@ -38,6 +38,7 @@ options:
       - Configures the IPv6 address for this AAAA record.
     aliases:
       - ipv6
+    required: true
     type: str
   ttl:
     description:
@@ -136,7 +137,7 @@ def main():
         name=dict(required=True, ib_req=True),
         view=dict(default='default', aliases=['dns_view'], ib_req=True),
 
-        ipv6addr=dict(aliases=['ipv6'], ib_req=True),
+        ipv6addr=dict(required=True, aliases=['ipv6'], ib_req=True),
 
         ttl=dict(type='int'),
 
