@@ -4,7 +4,7 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
-v1.0.2
+v1.2.1
 ======
 
 Release Summary
