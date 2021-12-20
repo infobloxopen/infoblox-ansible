@@ -4,6 +4,18 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
+v1.0.2
+======
+
+Release Summary
+---------------
+Added tags to support release on Ansible Automation Hub
+
+Minor Changes
+-------------
+Added tags 'cloud' and 'networking' in 'galaxy.yaml'
+
+
 v1.2.0
 ======
 Release Summary
