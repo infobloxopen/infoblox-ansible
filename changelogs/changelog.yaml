@@ -151,3 +151,9 @@ releases:
       - Added a new feature - Update canonical name of the CNAME Record
       - Updated the 'required' fields in modules 
     release_date: '2021-12-13'
+  1.2.1:
+    changes:
+      minor_changes:
+      - Added tags 'cloud' and 'networking' in 'galaxy.yaml'
+      release_summary: Added tags to support release on Ansible Automation Hub
+    release_date: '2021-12-20'
