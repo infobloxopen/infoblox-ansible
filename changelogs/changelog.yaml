@@ -131,3 +131,29 @@ releases:
       - Issue fixes and standardization of inventory plugin and lookup modules as per Ansible guidelines
       - Directory restructure and added integration & unit tests
     release_date: '2021-10-12'
+  1.2.0:
+    changes:
+      bugfixes:
+      - nios_a_record module - KeyError 'old_ipv4addr' `#79 <https://github.com/infobloxopen/infoblox-ansible/issues/79>`_
+      - Ansible playbook fails to update canonical name of CName Record `#97 <https://github.com/infobloxopen/infoblox-ansible/pull/97>`_  
+      minor_changes:
+      - Updated 'required' field in modules `#99 <https://github.com/infobloxopen/infoblox-ansible/pull/99>`_
+      - Following options are made required in the modules
+        | Record | Option made required |
+        | ------ | -------------------- |
+        | A | ipv4addr |
+        | AAAA | ipv6addr |
+        | CNAME | canonical |
+        | MX | mail_exchanger, preference |
+        | PTR | ptrdname |
+      release_summary:
+      - Issue fixes to update A Record using 'next_available_ip' function
+      - Added a new feature - Update canonical name of the CNAME Record
+      - Updated the 'required' fields in modules 
+    release_date: '2021-12-13'
+  1.2.1:
+    changes:
+      minor_changes:
+      - Added tags 'cloud' and 'networking' in 'galaxy.yaml'
+      release_summary: Added tags to support release on Ansible Automation Hub
+    release_date: '2021-12-20'

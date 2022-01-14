@@ -124,11 +124,15 @@ jobs:
         run: ansible-galaxy collection install .cache/collection-tarball/*.tar.gz
         
       - name: Setup Integration test Pre-requisites
-        run: pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt       
+        run: pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
 
       # Run the integration tests
       - name: Run integration test
-        run: ansible-test integration -v --color --retry-on-error --continue-on-error --diff --python ${{ matrix.python-version }} --docker --coverage
+        run: |
+             echo $ANSIBLE_NIOSSIM_CONTAINER
+             ansible-test integration -v --color --retry-on-error --continue-on-error --diff --python ${{ matrix.python-version }} --docker --coverage
+        env:
+           ANSIBLE_NIOSSIM_CONTAINER: quay.io/ansible/nios-test-container:1.4.0
         working-directory: /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/
 
         # ansible-test support producing code coverage date

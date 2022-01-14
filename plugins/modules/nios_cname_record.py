@@ -41,6 +41,7 @@ options:
       - Configures the canonical name for this CNAME record.
     aliases:
       - cname
+    required: true
     type: str
   ttl:
     description:
@@ -124,7 +125,7 @@ def main():
         name=dict(required=True, ib_req=True),
         view=dict(default='default', aliases=['dns_view'], ib_req=True),
 
-        canonical=dict(aliases=['cname'], ib_req=True),
+        canonical=dict(required=True, aliases=['cname'], ib_req=True),
 
         ttl=dict(type='int'),
 

@@ -124,7 +124,7 @@ branch.
       ```
 
 ### Installation from GitHub
-- Install the collection directly from the [GitHub](https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules) repository using the latest commit on the master branch:
+- Install the collection directly from the [GitHub](https://github.com/infobloxopen/infoblox-ansible) repository using the latest commit on the master branch:
     - ```
       $ ansible-galaxy collection install git+https://github.com/infobloxopen/infoblox-ansible.git,master
       ```
@@ -136,6 +136,7 @@ branch.
         ```
         $ git clone https://github.com/infobloxopen/infoblox-ansible.git
         ```
+
     -   **Build the collection:**
 
         To build a collection, run the following command from inside the
@@ -144,6 +145,7 @@ branch.
         $ ansible-galaxy collection build
         ```
         This creates a tarball of the built collection in the current directory.
+
     -   **Install the collection:**
 
         ```
@@ -156,7 +158,7 @@ for more details.
 
 Playbooks
 =========
-Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules/playbooks).
+Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/infoblox-ansible/tree/master/playbooks).
 
 
 Releasing
@@ -170,7 +172,7 @@ Dates TBD
 Current release
 ---------------
 
-1.1.2 on 12 October 2021
+1.2.1 on 21 December 2021
 
 Versioning
 =========
@@ -186,7 +188,7 @@ Deprecation
 Contributing
 ============
 We welcome your contributions to Infoblox Nios Modules. See 
-[CONTRIBUTING.md](https://github.com/infobloxopen/infoblox-ansible/blob/master/ansible_collections/infoblox/nios_modules/CONTRIBUTING.md) for
+[CONTRIBUTING.md](https://github.com/infobloxopen/infoblox-ansible/blob/master/CONTRIBUTING.md) for
 more details.
 
 Resources

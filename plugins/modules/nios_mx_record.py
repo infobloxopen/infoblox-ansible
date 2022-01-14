@@ -40,12 +40,14 @@ options:
     description:
       - Configures the mail exchanger FQDN for this MX record.
     type: str
+    required: true
     aliases:
       - mx
   preference:
     description:
       - Configures the preference (0-65535) for this MX record.
     type: int
+    required: true
   ttl:
     description:
       - Configures the TTL to be associated with this host record.
@@ -131,8 +133,8 @@ def main():
         name=dict(required=True, ib_req=True),
         view=dict(default='default', aliases=['dns_view'], ib_req=True),
 
-        mail_exchanger=dict(aliases=['mx'], ib_req=True),
-        preference=dict(type='int', ib_req=True),
+        mail_exchanger=dict(required=True, aliases=['mx'], ib_req=True),
+        preference=dict(required=True, type='int', ib_req=True),
 
         ttl=dict(type='int'),
 
