@@ -40,6 +40,7 @@ options:
       required: false
       default: ''
       type: list
+      elements: str
 '''
 
 EXAMPLES = """

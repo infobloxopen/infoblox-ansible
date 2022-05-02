@@ -28,6 +28,7 @@ options:
     return_fields:
       description: The list of field names to return for the specified object.
       type: list
+      elements: str
     filter:
       description: A dict object that is used to filter the returned objects.
       type: dict

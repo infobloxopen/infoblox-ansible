@@ -32,6 +32,7 @@ options:
       description: List of IP's that need to be excluded from returned IP addresses.
       required: false
       type: list
+      elements: str
 '''
 
 EXAMPLES = """
