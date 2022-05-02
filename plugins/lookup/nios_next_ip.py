@@ -81,7 +81,7 @@ class LookupModule(LookupBase):
         provider = kwargs.pop('provider', {})
         wapi = WapiLookup(provider)
 
-        if isinstance(ipaddress.ip_network(network)) == ipaddress.IPv6Network:
+        if isinstance(ipaddress.ip_network(network), ipaddress.IPv6Network):
             network_obj = wapi.get_object('ipv6network', {'network': network})
         else:
             network_obj = wapi.get_object('network', {'network': network})
