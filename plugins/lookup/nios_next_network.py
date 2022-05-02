@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-lookup: nios_next_network
+name: nios_next_network
 short_description: Return the next available network range for a network-container
 version_added: "1.0.0"
 description:
@@ -29,7 +29,6 @@ options:
         - The CIDR of the network to retrieve the next network from next available network within the
           specified container. Also, Requested CIDR must be specified and greater than the parent CIDR.
       required: True
-      default: 24
       type: str
     num:
       description: The number of network addresses to return from network-container.

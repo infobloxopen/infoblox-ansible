@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-lookup: nios
+name: nios_lookup
 short_description: Query Infoblox NIOS objects
 version_added: "1.0.0"
 description:
@@ -74,7 +74,7 @@ obj_type:
   description:
     - The object type specified in the terms argument
   returned: always
-  type: complex
+  type: list
   contains:
     obj_field:
       description:
