@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-lookup: nios_next_ip
+name: nios_next_ip
 short_description: Return the next available IP address for a network
 version_added: "1.0.0"
 description:
@@ -32,6 +32,7 @@ options:
       description: List of IP's that need to be excluded from returned IP addresses.
       required: false
       type: list
+      elements: str
 '''
 
 EXAMPLES = """
@@ -80,7 +81,7 @@ class LookupModule(LookupBase):
         provider = kwargs.pop('provider', {})
         wapi = WapiLookup(provider)
 
-        if type(ipaddress.ip_network(network)) == ipaddress.IPv6Network:
+        if isinstance(ipaddress.ip_network(network), ipaddress.IPv6Network):
             network_obj = wapi.get_object('ipv6network', {'network': network})
         else:
             network_obj = wapi.get_object('network', {'network': network})

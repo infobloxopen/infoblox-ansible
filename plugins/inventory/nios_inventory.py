@@ -6,7 +6,6 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
     name: nios_inventory
-    plugin_type: inventory
     author:
       - Will Tome (@willtome)
     short_description: Infoblox inventory plugin
@@ -42,7 +41,6 @@ DOCUMENTATION = r'''
               - Value can also be specified using C(INFOBLOX_PASSWORD) environment
                 variable.
             type: string
-            secret: true
             env:
                 - name: INFOBLOX_PASSWORD
         extattrs:
