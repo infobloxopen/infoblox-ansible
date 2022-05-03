@@ -73,6 +73,11 @@ options:
           - The name of the space this DHCP option is associated to
         type: str
         default: DHCP
+  template:
+    description:
+      - If set on creation, the network is created according to the values
+        specified in the selected template.
+    type: str
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
@@ -254,7 +259,7 @@ def check_vendor_specific_dhcp_option(module, ib_spec):
         if isinstance(module.params[key], list):
             for temp_dict in module.params[key]:
                 if 'num' in temp_dict:
-                    if temp_dict['num'] in (43, 124, 125, 67):
+                    if temp_dict['num'] in (43, 124, 125, 67, 60):
                         del temp_dict['use_option']
     return ib_spec
 
@@ -279,6 +284,7 @@ def main():
 
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
 
+        template=dict(type='str'),
         extattrs=dict(type='dict'),
         comment=dict(),
         container=dict(type='bool', ib_req=True)
