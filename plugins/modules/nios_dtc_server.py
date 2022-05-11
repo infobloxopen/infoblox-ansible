@@ -35,7 +35,7 @@ options:
     type: str
   disable:
     description:
-      - Determines whether the DTC Server is disabled or not. 
+      - Determines whether the DTC Server is disabled or not.
         When this is set to False, the fixed address is enabled.
     required: false
     type: bool
