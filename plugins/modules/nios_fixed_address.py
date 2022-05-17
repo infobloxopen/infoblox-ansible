@@ -16,7 +16,7 @@ description:
   - A fixed address is a specific IP address that a DHCP server
     always assigns when a lease request comes from a particular
     MAC address of the client.
-  - A fix address reservation is a specific IP address that a DHCP 
+  - A fix address reservation is a specific IP address that a DHCP
     server reserves and never assigns to a client.
   - Supports both IPV4 and IPV6 internet protocols.
 requirements:
@@ -43,7 +43,7 @@ options:
   mac:
     description:
       - The MAC address of the IPv4 interface. For a fix address reservation
-        specify mac address as: 00:00:00:00:00:00
+        specify mac address as 00:00:00:00:00:00
     type: str
   duid:
     description:
