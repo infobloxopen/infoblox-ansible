@@ -164,7 +164,7 @@ Dates TBD
 Current release
 ---------------
 
-1.2.1 on 21 December 2021
+1.2.2 on 20 May 2022
 
 Versioning
 =========
