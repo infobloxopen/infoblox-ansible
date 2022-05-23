@@ -51,13 +51,13 @@ tags:
 #dependencies: {}
 
 # The URL of the originating SCM repository
-repository: https://github.com/infobloxopen/infoblox-ansible
+repository: https://github.com/infobloxopen/infoblox-ansible/tree/master
 
 # The URL to any online docs
 documentation: https://github.com/infobloxopen/infoblox-ansible/blob/master/README.md
 
 # The URL to the homepage of the collection/project
-homepage: https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules
+homepage: https://github.com/infobloxopen/infoblox-ansible
 
 # The URL to the collection issue tracker
 issues: https://github.com/infobloxopen/infoblox-ansible/issues
