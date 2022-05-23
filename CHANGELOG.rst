@@ -4,6 +4,22 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
+v1.2.2
+======
+
+Release Summary
+---------------
+- Issue fixes to create PTR record in different network views
+- Support extended to determine whether the DTC server is disabled or not
+
+Minor Changes
+-------------
+- Fix to create PTR record in different network views `#103 <https://github.com/infobloxopen/infoblox-ansible/pull/103>`_
+- Remove use_option for DHCP option 60 `#104 <https://github.com/infobloxopen/infoblox-ansible/pull/104>`_
+- Allow specifying a template when creating a network `#105 <https://github.com/infobloxopen/infoblox-ansible/pull/105>`_
+- Fix unit and sanity test issues `#117 <https://github.com/infobloxopen/infoblox-ansible/pull/117>`_
+- Expanding for disable value `#119 <https://github.com/infobloxopen/infoblox-ansible/pull/119>`_
+
 v1.2.1
 ======
 
