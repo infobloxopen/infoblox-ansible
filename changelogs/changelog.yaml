@@ -169,4 +169,4 @@ releases:
       release_summary: 
       - Issue fixes to create PTR record in different network views
       - Support extended to determine whether the DTC server is disabled or not
-    release_date: '2022-05-20'
+    release_date: '2022-05-23'
