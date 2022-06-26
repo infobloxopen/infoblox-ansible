@@ -29,6 +29,7 @@ __metaclass__ = type
 #
 
 
+import json
 import os
 from functools import partial
 from ansible.module_utils._text import to_native
