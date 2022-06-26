@@ -35,7 +35,8 @@ from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import env_fallback
-from ansible.module_utils.common.validation import check_type_dict
+from ansible.module_utils.common.validation import check_type_dict, safe_eval
+from ansible.module_utils.six import string_types
 
 try:
     from infoblox_client.connector import Connector
@@ -313,6 +314,20 @@ class WapiModule(WapiBase):
         if (ib_obj_type == NIOS_MEMBER):
             proposed_object = member_normalize(proposed_object)
 
+        # checks if the 'text' field has to be updated for the TXT Record
+        if (ib_obj_type == NIOS_TXT_RECORD):
+            text_obj = proposed_object["text"]
+            if text_obj.startswith("{"):
+                try:
+                    text_obj = json.loads(text_obj)
+                    txt = text_obj['old_text']
+                except Exception:
+                    (result, exc) = safe_eval(text_obj, dict(), include_exceptions=True)
+                    if exc is not None:
+                        raise TypeError('unable to evaluate string as dictionary')
+                    txt = result['old_text']
+                proposed_object['text'] = txt
+
         # checks if the name's field has been updated
         if update and new_name:
             proposed_object['name'] = new_name
@@ -560,8 +575,18 @@ class WapiModule(WapiBase):
                 # resolves issue where multiple txt_records with same name and different text
                 test_obj_filter = obj_filter
                 try:
-                    text_obj = check_type_dict(obj_filter['text'])
-                    txt = text_obj['old_text']
+                    text_obj = obj_filter['text']
+                    if text_obj.startswith("{"):
+                        try:
+                            text_obj = json.loads(text_obj)
+                            txt = text_obj['old_text']
+                        except Exception:
+                            (result, exc) = safe_eval(text_obj, dict(), include_exceptions=True)
+                            if exc is not None:
+                                raise TypeError('unable to evaluate string as dictionary')
+                            txt = result['old_text']
+                    else:
+                        txt = text_obj
                 except TypeError:
                     txt = obj_filter['text']
                 test_obj_filter['text'] = txt
@@ -583,8 +608,18 @@ class WapiModule(WapiBase):
             # resolves issue where multiple txt_records with same name and different text
             test_obj_filter = obj_filter
             try:
-                text_obj = check_type_dict(obj_filter['text'])
-                txt = text_obj['old_text']
+                text_obj = obj_filter(['text'])
+                if text_obj.startswith("{"):
+                    try:
+                        text_obj = json.loads(text_obj)
+                        txt = text_obj['old_text']
+                    except Exception:
+                        (result, exc) = safe_eval(text_obj, dict(), include_exceptions=True)
+                        if exc is not None:
+                            raise TypeError('unable to evaluate string as dictionary')
+                        txt = result['old_text']
+                else:
+                    txt = text_obj
             except TypeError:
                 txt = obj_filter['text']
             test_obj_filter['text'] = txt
