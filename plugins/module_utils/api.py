@@ -320,12 +320,12 @@ class WapiModule(WapiBase):
             if text_obj.startswith("{"):
                 try:
                     text_obj = json.loads(text_obj)
-                    txt = text_obj['old_text']
+                    txt = text_obj['new_text']
                 except Exception:
                     (result, exc) = safe_eval(text_obj, dict(), include_exceptions=True)
                     if exc is not None:
                         raise TypeError('unable to evaluate string as dictionary')
-                    txt = result['old_text']
+                    txt = result['new_text']
                 proposed_object['text'] = txt
 
         # checks if the name's field has been updated
