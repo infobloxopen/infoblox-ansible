@@ -58,7 +58,7 @@ class TestNiosApi(unittest.TestCase):
             {
                 "comment": "test comment",
                 "_ref": "networkview/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
-                "name": self.mock_check_type_dict_obj().__getitem__(),
+                "name": self.mock_check_type_dict_obj().__getitem__().lower(),
                 "extattrs": {}
             }
         ]
@@ -146,7 +146,7 @@ class TestNiosApi(unittest.TestCase):
 
         kwargs = copy.deepcopy(test_object[0])
         kwargs['extattrs']['Site']['value'] = 'update'
-        kwargs['name'] = self.mock_check_type_dict_obj().__getitem__()
+        kwargs['name'] = self.mock_check_type_dict_obj().__getitem__().lower()
         del kwargs['_ref']
 
         wapi = self._get_wapi(test_object)
@@ -162,7 +162,7 @@ class TestNiosApi(unittest.TestCase):
         test_object = [{
             "comment": "test comment",
             "_ref": "networkview/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
-            "name": self.mock_check_type_dict_obj().__getitem__(),
+            "name": self.mock_check_type_dict_obj().__getitem__().lower(),
             "extattrs": {'Site': {'value': 'test'}}
         }]
 
@@ -193,7 +193,7 @@ class TestNiosApi(unittest.TestCase):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__()})
+        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower()})
 
     def test_wapi_delete(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'ansible',
@@ -243,7 +243,7 @@ class TestNiosApi(unittest.TestCase):
         kwargs = test_object[0].copy()
         ref = kwargs.pop('_ref')
         kwargs['comment'] = 'updated comment'
-        kwargs['name'] = self.mock_check_type_dict_obj().__getitem__()
+        kwargs['name'] = self.mock_check_type_dict_obj().__getitem__().lower()
         del kwargs['network_view']
         del kwargs['extattrs']
 
