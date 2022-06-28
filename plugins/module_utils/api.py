@@ -530,8 +530,8 @@ class WapiModule(WapiBase):
             # gets and returns the current object based on name/old_name passed
             try:
                 name_obj = check_type_dict(obj_filter['name'])
-                old_name = name_obj['old_name']
-                new_name = name_obj['new_name']
+                old_name = name_obj['old_name'].lower()
+                new_name = name_obj['new_name'].lower()
             except TypeError:
                 name = obj_filter['name']
 
