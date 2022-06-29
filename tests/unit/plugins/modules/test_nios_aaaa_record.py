@@ -79,7 +79,7 @@ class TestNiosAAAARecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__(),
+        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower(),
                                                                   'ipv6': '2001:0db8:85a3:0000:0000:8a2e:0370:7334'})
 
     def test_nios_aaaa_record_update_comment(self):
