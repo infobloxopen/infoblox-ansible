@@ -59,7 +59,7 @@ class TestNiosApi(unittest.TestCase):
             {
                 "comment": "test comment",
                 "_ref": "networkview/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
-                "name": self.mock_check_type_dict_obj().__getitem__().lower(),
+                "name": 'default',
                 "extattrs": {}
             }
         ]
@@ -147,7 +147,7 @@ class TestNiosApi(unittest.TestCase):
 
         kwargs = copy.deepcopy(test_object[0])
         kwargs['extattrs']['Site']['value'] = 'update'
-        kwargs['name'] = self.mock_check_type_dict_obj().__getitem__().lower()
+        kwargs['name'] = 'default'
         del kwargs['_ref']
 
         wapi = self._get_wapi(test_object)
@@ -163,7 +163,7 @@ class TestNiosApi(unittest.TestCase):
         test_object = [{
             "comment": "test comment",
             "_ref": "networkview/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
-            "name": self.mock_check_type_dict_obj().__getitem__().lower(),
+            "name": "default",
             "extattrs": {'Site': {'value': 'test'}}
         }]
 
@@ -244,7 +244,7 @@ class TestNiosApi(unittest.TestCase):
         kwargs = test_object[0].copy()
         ref = kwargs.pop('_ref')
         kwargs['comment'] = 'updated comment'
-        kwargs['name'] = self.mock_check_type_dict_obj().__getitem__().lower()
+        kwargs['name'] = 'ansible'
         del kwargs['network_view']
         del kwargs['extattrs']
 
