@@ -543,6 +543,7 @@ class WapiModule(WapiBase):
                     test_obj_filter = dict([('name', old_name)])
                 # get the object reference
                 ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=list(ib_spec.keys()))
+                print(old_name,new_name,check_type_dict(obj_filter['name']))
                 if ib_obj:
                     obj_filter['name'] = new_name
                 else:
