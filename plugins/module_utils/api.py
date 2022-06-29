@@ -600,10 +600,10 @@ class WapiModule(WapiBase):
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
 
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
-            if old_ipv4addr_exists and ib_obj == None:
+            if old_ipv4addr_exists and ib_obj is None:
                 raise Exception("A Record with ipv4addr: '%s' is not found" % (ipaddr))
             # prevents creation of a new TXT record with 'new_text' when TXT record with a particular 'old_text' is not found
-            if old_text_exists and ib_obj == None:
+            if old_text_exists and ib_obj is None:
                 raise Exception("TXT Record with text: '%s' is not found" % (txt))
         elif (ib_obj_type == NIOS_A_RECORD):
             # resolves issue where multiple a_records with same name and different IP address
@@ -616,11 +616,11 @@ class WapiModule(WapiBase):
                 ipaddr = obj_filter['ipv4addr']
             test_obj_filter['ipv4addr'] = ipaddr
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
-            if old_ipv4addr_exists and ib_obj == None:
+            if old_ipv4addr_exists and ib_obj is None:
                 raise Exception("A Record with ipv4addr: '%s' is not found" % (ipaddr))
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
-            if old_ipv4addr_exists and ib_obj == None:
+            if old_ipv4addr_exists and ib_obj is None:
                 raise Exception("A Record with ipv4addr: '%s' is not found" % (ipaddr))
         elif (ib_obj_type == NIOS_TXT_RECORD):
             # resolves issue where multiple txt_records with same name and different text
@@ -645,7 +645,7 @@ class WapiModule(WapiBase):
             test_obj_filter['text'] = txt
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
             # prevents creation of a new TXT record with 'new_text' when TXT record with a particular 'old_text' is not found
-            if old_text_exists and ib_obj == None:
+            if old_text_exists and ib_obj is None:
                 raise Exception("TXT Record with text: '%s' is not found" % (txt))
         elif (ib_obj_type == NIOS_ZONE):
             # del key 'restart_if_needed' as nios_zone get_object fails with the key present
