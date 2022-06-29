@@ -80,7 +80,7 @@ class TestNiosMXRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower(),
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'ansible.com',
                                                    'mx': 'mailhost.ansible.com', 'preference': 0})
 
     def test_nios_mx_record_update_comment(self):

@@ -77,7 +77,7 @@ class TestNiosNSGroupModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower()})
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'my-simple-group'})
 
     def test_nios_nsgroup_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'my-simple-group',

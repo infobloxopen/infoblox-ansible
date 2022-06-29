@@ -193,7 +193,7 @@ class TestNiosApi(unittest.TestCase):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower()})
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'ansible'})
 
     def test_wapi_delete(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'ansible',

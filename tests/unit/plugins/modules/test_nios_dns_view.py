@@ -78,7 +78,7 @@ class TestNiosDnsViewModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower()})
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'ansible-dns'})
 
     def test_nios_dns_view_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible-dns',

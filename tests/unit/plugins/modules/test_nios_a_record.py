@@ -79,7 +79,7 @@ class TestNiosARecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower(),
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'a.ansible.com',
                                                                   'ipv4': '192.168.10.1'})
 
     def test_nios_a_record_update_comment(self):

@@ -82,7 +82,7 @@ class TestNiosNAPTRRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower(),
+        wapi.create_object.assert_called_once_with('testobject', {'name': '*.subscriber-100.ansiblezone.com',
                                                                   'order': '1000', 'preference': '10',
                                                                   'replacement': 'replacement1.network.ansiblezone.com'})
 

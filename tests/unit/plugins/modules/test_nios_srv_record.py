@@ -83,7 +83,7 @@ class TestNiosSRVRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower(),
+        wapi.create_object.assert_called_once_with('testobject', {'name': '_sip._tcp.service.ansible.com',
                                                                   'port': 5080, 'target': 'service1.ansible.com', 'priority': 10, 'weight': 10})
 
     def test_nios_srv_record_update_comment(self):

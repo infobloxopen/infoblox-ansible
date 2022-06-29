@@ -61,7 +61,7 @@ class TestNiosCNameRecordModule(TestNiosModule):
         self.exec_command.return_value = (0, load_fixture('nios_result.txt').strip(), None)
         self.load_config.return_value = dict(diff=None, session='session')
 
-    def test_nios_a_record_create(self):
+    def test_nios_cname_record_create(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'cname.ansible.com',
                               'canonical': 'realhost.ansible.com', 'comment': None, 'extattrs': None}
 
@@ -79,10 +79,10 @@ class TestNiosCNameRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower(),
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'cname.ansible.com',
                                                                   'canonical': 'realhost.ansible.com'})
 
-    def test_nios_a_record_update_comment(self):
+    def test_nios_cname_record_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'cname.ansible.com',
                               'canonical': 'realhost.ansible.com', 'comment': 'updated comment', 'extattrs': None}
 
@@ -108,7 +108,7 @@ class TestNiosCNameRecordModule(TestNiosModule):
 
         self.assertTrue(res['changed'])
 
-    def test_nios_a_record_remove(self):
+    def test_nios_cname_record_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'cname.ansible.com',
                               'canonical': 'realhost.ansible.com', 'comment': None, 'extattrs': None}
 
