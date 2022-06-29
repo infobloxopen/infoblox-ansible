@@ -8,6 +8,7 @@ import copy
 
 from ansible_collections.infoblox.nios_modules.tests.unit.compat import unittest
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
+from ansible.module_utils.common.validation import check_type_dict
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 
 
@@ -22,7 +23,7 @@ class TestNiosApi(unittest.TestCase):
 
         self.mock_connector = patch('ansible_collections.infoblox.nios_modules.plugins.module_utils.api.get_connector')
         self.mock_connector.start()
-        self.mock_check_type_dict = patch('ansible_collections.infoblox.nios_modules.plugins.module_utils.api.check_type_dict')
+        self.mock_check_type_dict = patch('ansible.module_utils.common.validation.check_type_dict')
         self.mock_check_type_dict_obj = self.mock_check_type_dict.start()
 
     def tearDown(self):
