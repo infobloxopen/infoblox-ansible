@@ -23,6 +23,7 @@ __metaclass__ = type
 from ansible_collections.infoblox.nios_modules.plugins.modules import nios_cname_record
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
+from ansible.module_utils.common.validation import check_type_dict
 from .test_nios_module import TestNiosModule, load_fixture
 
 
@@ -40,7 +41,7 @@ class TestNiosCNameRecordModule(TestNiosModule):
         self.mock_wapi_run = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_cname_record.WapiModule.run')
         self.mock_wapi_run.start()
         self.load_config = self.mock_wapi_run.start()
-        self.mock_check_type_dict = patch('ansible_collections.infoblox.nios_modules.plugins.module_utils.api.check_type_dict')
+        self.mock_check_type_dict = patch('ansible.module_utils.common.validation.check_type_dict')
         self.mock_check_type_dict_obj = self.mock_check_type_dict.start()
 
     def tearDown(self):
@@ -61,7 +62,7 @@ class TestNiosCNameRecordModule(TestNiosModule):
         self.exec_command.return_value = (0, load_fixture('nios_result.txt').strip(), None)
         self.load_config.return_value = dict(diff=None, session='session')
 
-    def test_nios_a_record_create(self):
+    def test_nios_cname_record_create(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'cname.ansible.com',
                               'canonical': 'realhost.ansible.com', 'comment': None, 'extattrs': None}
 
@@ -79,10 +80,10 @@ class TestNiosCNameRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__().lower(),
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'cname.ansible.com',
                                                                   'canonical': 'realhost.ansible.com'})
 
-    def test_nios_a_record_update_comment(self):
+    def test_nios_cname_record_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'cname.ansible.com',
                               'canonical': 'realhost.ansible.com', 'comment': 'updated comment', 'extattrs': None}
 
@@ -108,7 +109,7 @@ class TestNiosCNameRecordModule(TestNiosModule):
 
         self.assertTrue(res['changed'])
 
-    def test_nios_a_record_remove(self):
+    def test_nios_cname_record_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'cname.ansible.com',
                               'canonical': 'realhost.ansible.com', 'comment': None, 'extattrs': None}
 

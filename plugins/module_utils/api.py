@@ -526,6 +526,7 @@ class WapiModule(WapiBase):
 
         update = False
         old_name = new_name = None
+        old_ipv4addr_exists = old_text_exists = False
         if ('name' in obj_filter):
             # gets and returns the current object based on name/old_name passed
             try:
@@ -545,8 +546,7 @@ class WapiModule(WapiBase):
                 if ib_obj:
                     obj_filter['name'] = new_name
                 else:
-                    test_obj_filter['name'] = new_name
-                    ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=list(ib_spec.keys()))
+                    raise Exception("object with name: '%s' is not found" % (old_name))
                 update = True
                 return ib_obj, update, new_name
             if (ib_obj_type == NIOS_HOST_RECORD):
@@ -569,6 +569,7 @@ class WapiModule(WapiBase):
                 try:
                     ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
                     ipaddr = ipaddr_obj.get('old_ipv4addr')
+                    old_ipv4addr_exists = True
                 except TypeError:
                     ipaddr = obj_filter['ipv4addr']
                 test_obj_filter['ipv4addr'] = ipaddr
@@ -581,11 +582,13 @@ class WapiModule(WapiBase):
                         try:
                             text_obj = json.loads(text_obj)
                             txt = text_obj['old_text']
+                            old_text_exists = True
                         except Exception:
                             (result, exc) = safe_eval(text_obj, dict(), include_exceptions=True)
                             if exc is not None:
                                 raise TypeError('unable to evaluate string as dictionary')
                             txt = result['old_text']
+                            old_text_exists = True
                     else:
                         txt = text_obj
                 except TypeError:
@@ -595,16 +598,30 @@ class WapiModule(WapiBase):
             else:
                 test_obj_filter = obj_filter
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
+
+            # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
+            if old_ipv4addr_exists and ib_obj is None:
+                raise Exception("A Record with ipv4addr: '%s' is not found" % (ipaddr))
+            # prevents creation of a new TXT record with 'new_text' when TXT record with a particular 'old_text' is not found
+            if old_text_exists and ib_obj is None:
+                raise Exception("TXT Record with text: '%s' is not found" % (txt))
         elif (ib_obj_type == NIOS_A_RECORD):
             # resolves issue where multiple a_records with same name and different IP address
             test_obj_filter = obj_filter
             try:
                 ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
                 ipaddr = ipaddr_obj.get('old_ipv4addr')
+                old_ipv4addr_exists = True
             except TypeError:
                 ipaddr = obj_filter['ipv4addr']
             test_obj_filter['ipv4addr'] = ipaddr
+            # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
+            if old_ipv4addr_exists and ib_obj is None:
+                raise Exception("A Record with ipv4addr: '%s' is not found" % (ipaddr))
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
+            # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
+            if old_ipv4addr_exists and ib_obj is None:
+                raise Exception("A Record with ipv4addr: '%s' is not found" % (ipaddr))
         elif (ib_obj_type == NIOS_TXT_RECORD):
             # resolves issue where multiple txt_records with same name and different text
             test_obj_filter = obj_filter
@@ -614,17 +631,22 @@ class WapiModule(WapiBase):
                     try:
                         text_obj = json.loads(text_obj)
                         txt = text_obj['old_text']
+                        old_text_exists = True
                     except Exception:
                         (result, exc) = safe_eval(text_obj, dict(), include_exceptions=True)
                         if exc is not None:
                             raise TypeError('unable to evaluate string as dictionary')
                         txt = result['old_text']
+                        old_text_exists = True
                 else:
                     txt = text_obj
             except TypeError:
                 txt = obj_filter['text']
             test_obj_filter['text'] = txt
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
+            # prevents creation of a new TXT record with 'new_text' when TXT record with a particular 'old_text' is not found
+            if old_text_exists and ib_obj is None:
+                raise Exception("TXT Record with text: '%s' is not found" % (txt))
         elif (ib_obj_type == NIOS_ZONE):
             # del key 'restart_if_needed' as nios_zone get_object fails with the key present
             temp = ib_spec['restart_if_needed']
