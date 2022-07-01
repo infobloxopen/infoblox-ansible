@@ -20,7 +20,7 @@ Major Changes
 
 Bugfixes
 ---------
-- Fix to createTXT record with equals sign `#128 <https://github.com/infobloxopen/infoblox-ansible/pull/128>`_
+- Fix to create TXT record with equals sign `#128 <https://github.com/infobloxopen/infoblox-ansible/pull/128>`_
 
   
 v1.2.2
