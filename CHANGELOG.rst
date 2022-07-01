@@ -9,7 +9,7 @@ v1.3.0
 
 Release Summary
 ---------------
-- Issue fixes to createTXT record with equals sign
+- Issue fixes to create TXT record with equals sign
 - For nonexistent record, update operation creates the new record
 - For nonexistent IPv4Address, update operation creates a new A record with new_ipv4addr
 
