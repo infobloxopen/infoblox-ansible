@@ -497,6 +497,9 @@ class WapiModule(WapiBase):
 
     def compare_objects(self, current_object, proposed_object):
         for key, proposed_item in iteritems(proposed_object):
+            if key == 'create_token':
+                continue
+
             current_item = current_object.get(key)
 
             # if proposed has a key that current doesn't then the objects are
