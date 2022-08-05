@@ -58,6 +58,10 @@ EXAMPLES = """
   ansible.builtin.set_fact:
     networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '192.168.10.0/24', cidr=25, exclude=['192.168.10.0/25'],
                         provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+                        
+- name: return next available Network from 2001:1:111:1::0/64    
+  set_fact:    
+    ip6net: "{{ lookup('infoblox.nios_modules.nios_next_network', '2001:1:111:1::0/64', cidr=126, provider=nios_provider) }}"   
 """
 
 RETURN = """
@@ -72,6 +76,7 @@ from ansible.plugins.lookup import LookupBase
 from ansible.module_utils._text import to_text
 from ansible.errors import AnsibleError
 from ..module_utils.api import WapiLookup
+import ipaddress
 
 
 class LookupModule(LookupBase):
@@ -88,8 +93,13 @@ class LookupModule(LookupBase):
 
         provider = kwargs.pop('provider', {})
         wapi = WapiLookup(provider)
-        network_obj = wapi.get_object('networkcontainer', {'network': network})
-
+       
+        '''The same patch as in nios_next_ip.py'''    
+        if isinstance(ipaddress.ip_network(network), ipaddress.IPv6Network):    
+            network_obj = wapi.get_object('ipv6networkcontainer', {'network': network})    
+        else:    
+            network_obj = wapi.get_object('networkcontainer', {'network': network})
+            
         if network_obj is None:
             raise AnsibleError('unable to find network-container object %s' % network)
         num = kwargs.get('num', 1)
