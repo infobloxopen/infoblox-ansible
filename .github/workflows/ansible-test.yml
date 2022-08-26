@@ -57,6 +57,8 @@ jobs:
             python-version: 2.7            
           - ansible-version: stable-2.9
             python-version: 3.9
+          - ansible-version: devel
+            python-version: 3.8
 
     steps:
       - name: Set up Python ${{ matrix.python-version }}
@@ -87,7 +89,7 @@ jobs:
 
       - name: Generate coverage report
         run: |
-          if [ "${{ matrix.ansible-version }}" == "devel" ]; then pip install coverage==6.3.3; fi
+          if [ "${{ matrix.ansible-version }}" == "devel" ]; then pip install coverage>=6.3.3; fi
           ansible-test coverage xml -v --group-by command --group-by version
         working-directory: /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/
 
@@ -109,6 +111,10 @@ jobs:
         exclude:
           - ansible-version: stable-2.9
             python-version: 3.9
+          - ansible-version: devel
+            python-version: 2.7
+          - ansible-version: devel
+            python-version: 3.8
     steps:
       - name: Check out code
         uses: actions/checkout@v2
