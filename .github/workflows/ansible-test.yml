@@ -56,7 +56,9 @@ jobs:
           - ansible-version: devel
             python-version: 3.8
           - ansible-version: stable-2.12
-            python-version: 2.7            
+            python-version: 2.7 
+          - ansible-version: stable-2.13
+            python-version: 2.7
           - ansible-version: stable-2.9
             python-version: 3.9
 
@@ -112,13 +114,13 @@ jobs:
           - ansible-version: stable-2.9
             python-version: 3.9
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
       - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
           python-version: 3.9
+          
+      - name: Check out code
+        uses: actions/checkout@v2
 
       - name: Install ansible-base (${{ matrix.ansible }})
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
