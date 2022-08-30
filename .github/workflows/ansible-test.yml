@@ -135,7 +135,9 @@ jobs:
         run: ansible-galaxy collection install .cache/collection-tarball/*.tar.gz
         
       - name: Setup Integration test Pre-requisites
-        run: pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
+        run: |
+             sudo apt install libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0
+             pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
 
       # Run the integration tests
       - name: Run integration test
