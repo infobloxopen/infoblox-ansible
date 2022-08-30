@@ -5,5 +5,5 @@ mock
 pytest-mock
 pytest-cov==2.8.0
 coverage
-libgirepository1.0-dev
+pygobject
 launchpadlib
