@@ -5,6 +5,5 @@ mock
 pytest-mock
 pytest-cov==2.8.0
 coverage
-pyproject.toml
-pygobject
+libgirepository1.0-dev
 launchpadlib
