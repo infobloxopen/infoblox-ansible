@@ -114,10 +114,10 @@ jobs:
           - ansible-version: stable-2.9
             python-version: 3.9
     steps:
-      - name: Set up Python 3.9
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.python-version }}
           
       - name: Check out code
         uses: actions/checkout@v2
