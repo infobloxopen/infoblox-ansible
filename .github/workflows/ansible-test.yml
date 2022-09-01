@@ -18,10 +18,10 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Install ansible (${{ matrix.ansible-version }})
         run: pip install pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
@@ -49,12 +49,16 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [2.7, 3.8, 3.9]
-        ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, devel]
+        ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, stable-2.13, devel]
         exclude:
           - ansible-version: devel
             python-version: 2.7
+          - ansible-version: devel
+            python-version: 3.8
           - ansible-version: stable-2.12
-            python-version: 2.7            
+            python-version: 2.7 
+          - ansible-version: stable-2.13
+            python-version: 2.7
           - ansible-version: stable-2.9
             python-version: 3.9
 
@@ -87,7 +91,7 @@ jobs:
 
       - name: Generate coverage report
         run: |
-          if [ "${{ matrix.ansible-version }}" == "devel" ]; then pip install coverage==6.3.3; fi
+          if [ "${{ matrix.ansible-version }}" == "devel" ]; then pip install coverage==6.4.3; fi
           ansible-test coverage xml -v --group-by command --group-by version
         working-directory: /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/
 
@@ -105,11 +109,16 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [2.7, 3.8, 3.9]
-        ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, devel]
+        ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, stable-2.13, devel]
         exclude:
           - ansible-version: stable-2.9
             python-version: 3.9
     steps:
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+          
       - name: Check out code
         uses: actions/checkout@v2
 
@@ -126,7 +135,9 @@ jobs:
         run: ansible-galaxy collection install .cache/collection-tarball/*.tar.gz
         
       - name: Setup Integration test Pre-requisites
-        run: pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
+        run: |
+             sudo apt install libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0
+             pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
 
       # Run the integration tests
       - name: Run integration test
@@ -159,15 +170,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, devel]
+        ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, stable-2.13, devel]
 
     steps:
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
           # it is just required to run that once as "ansible-test sanity" in the docker image
           # will run on all python versions it supports.
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Install ansible (${{ matrix.ansible-version }}) version
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check

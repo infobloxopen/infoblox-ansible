@@ -550,6 +550,8 @@ class WapiModule(WapiBase):
                 update = True
                 return ib_obj, update, new_name
             if (ib_obj_type == NIOS_HOST_RECORD):
+                # to fix the sanity issue
+                name = obj_filter['name']
                 # to check only by name if dns bypassing is set
                 if not obj_filter['configure_for_dns']:
                     test_obj_filter = dict([('name', name)])
