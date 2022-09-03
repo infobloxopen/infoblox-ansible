@@ -4,6 +4,25 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
+v1.3.0
+======
+
+Release Summary
+---------------
+- Issue fixes to create TXT record with equals sign
+- For nonexistent record, update operation creates the new record
+- For nonexistent IPv4Address, update operation creates a new A record with new_ipv4addr
+
+Major Changes
+-------------
+- Update operation using `old_name` and `new_name` for the object with dummy name in `old_name` (which does not exist in system) will not create a new object in the system. An error will be thrown stating the object does not exist in the system `#129 <https://github.com/infobloxopen/infoblox-ansible/pull/129>`_
+- Update `text` field of TXT Record `#128 <https://github.com/infobloxopen/infoblox-ansible/pull/128>`_
+
+Bugfixes
+---------
+- Fix to create TXT record with equals sign `#128 <https://github.com/infobloxopen/infoblox-ansible/pull/128>`_
+
+  
 v1.2.2
 ======
 
@@ -19,6 +38,7 @@ Minor Changes
 - Allow specifying a template when creating a network `#105 <https://github.com/infobloxopen/infoblox-ansible/pull/105>`_
 - Fix unit and sanity test issues `#117 <https://github.com/infobloxopen/infoblox-ansible/pull/117>`_
 - Expanding for disable value `#119 <https://github.com/infobloxopen/infoblox-ansible/pull/119>`_
+
 
 v1.2.1
 ======

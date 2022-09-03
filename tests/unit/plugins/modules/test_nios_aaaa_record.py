@@ -23,6 +23,7 @@ __metaclass__ = type
 from ansible_collections.infoblox.nios_modules.plugins.modules import nios_aaaa_record
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
+from ansible.module_utils.common.validation import check_type_dict
 from .test_nios_module import TestNiosModule, load_fixture
 
 
@@ -40,7 +41,7 @@ class TestNiosAAAARecordModule(TestNiosModule):
         self.mock_wapi_run = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_aaaa_record.WapiModule.run')
         self.mock_wapi_run.start()
         self.load_config = self.mock_wapi_run.start()
-        self.mock_check_type_dict = patch('ansible_collections.infoblox.nios_modules.plugins.module_utils.api.check_type_dict')
+        self.mock_check_type_dict = patch('ansible.module_utils.common.validation.check_type_dict')
         self.mock_check_type_dict_obj = self.mock_check_type_dict.start()
 
     def tearDown(self):
@@ -79,7 +80,7 @@ class TestNiosAAAARecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__(),
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'aaaa.ansible.com',
                                                                   'ipv6': '2001:0db8:85a3:0000:0000:8a2e:0370:7334'})
 
     def test_nios_aaaa_record_update_comment(self):

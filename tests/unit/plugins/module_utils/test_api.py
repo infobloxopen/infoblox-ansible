@@ -8,6 +8,7 @@ import copy
 
 from ansible_collections.infoblox.nios_modules.tests.unit.compat import unittest
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
+from ansible.module_utils.common.validation import check_type_dict
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 
 
@@ -22,7 +23,7 @@ class TestNiosApi(unittest.TestCase):
 
         self.mock_connector = patch('ansible_collections.infoblox.nios_modules.plugins.module_utils.api.get_connector')
         self.mock_connector.start()
-        self.mock_check_type_dict = patch('ansible_collections.infoblox.nios_modules.plugins.module_utils.api.check_type_dict')
+        self.mock_check_type_dict = patch('ansible.module_utils.common.validation.check_type_dict')
         self.mock_check_type_dict_obj = self.mock_check_type_dict.start()
 
     def tearDown(self):
@@ -58,7 +59,7 @@ class TestNiosApi(unittest.TestCase):
             {
                 "comment": "test comment",
                 "_ref": "networkview/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
-                "name": self.mock_check_type_dict_obj().__getitem__(),
+                "name": 'default',
                 "extattrs": {}
             }
         ]
@@ -146,7 +147,7 @@ class TestNiosApi(unittest.TestCase):
 
         kwargs = copy.deepcopy(test_object[0])
         kwargs['extattrs']['Site']['value'] = 'update'
-        kwargs['name'] = self.mock_check_type_dict_obj().__getitem__()
+        kwargs['name'] = 'default'
         del kwargs['_ref']
 
         wapi = self._get_wapi(test_object)
@@ -162,7 +163,7 @@ class TestNiosApi(unittest.TestCase):
         test_object = [{
             "comment": "test comment",
             "_ref": "networkview/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
-            "name": self.mock_check_type_dict_obj().__getitem__(),
+            "name": "default",
             "extattrs": {'Site': {'value': 'test'}}
         }]
 
@@ -193,7 +194,7 @@ class TestNiosApi(unittest.TestCase):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__()})
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'ansible'})
 
     def test_wapi_delete(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'ansible',
@@ -243,7 +244,7 @@ class TestNiosApi(unittest.TestCase):
         kwargs = test_object[0].copy()
         ref = kwargs.pop('_ref')
         kwargs['comment'] = 'updated comment'
-        kwargs['name'] = self.mock_check_type_dict_obj().__getitem__()
+        kwargs['name'] = 'ansible'
         del kwargs['network_view']
         del kwargs['extattrs']
 
