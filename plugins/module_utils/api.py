@@ -182,11 +182,11 @@ def member_normalize(member_spec):
 
 
 def convert_members_to_struct(member_spec):
-    ''' Transforms the members list of the Network module arguments into a 
-    valid WAPI struct. This function will change arguments into the valid 
+    ''' Transforms the members list of the Network module arguments into a
+    valid WAPI struct. This function will change arguments into the valid
     wapi structure of the format:
         {
-            network: 10.1.1.0/24 
+            network: 10.1.1.0/24
             members:
                 [
                     {'_struct': 'dhcpmember', 'name': 'member_name1'},
@@ -194,7 +194,6 @@ def convert_members_to_struct(member_spec):
                     {'_struct': 'dhcpmember', 'name': '...'}
                 ]
         }
-    
     '''
     if 'members' in member_spec.keys(): 
         member_spec['members'] = [{'_struct': 'dhcpmember', 'name': k['name']} for k in member_spec['members']]
