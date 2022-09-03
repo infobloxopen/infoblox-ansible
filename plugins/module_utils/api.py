@@ -195,9 +195,9 @@ def convert_members_to_struct(member_spec):
                 ]
         }
     '''
-    if 'members' in member_spec.keys(): 
+    if 'members' in member_spec.keys():
         member_spec['members'] = [{'_struct': 'dhcpmember', 'name': k['name']} for k in member_spec['members']]
-    return member_spec 
+    return member_spec
 
 
 def normalize_ib_spec(ib_spec):
