@@ -95,6 +95,17 @@ options:
       - If set to true it'll create the network container to be added or removed
         from the system.
     type: bool
+  members:
+    description:
+      - Configures the Nios Menber assignment for the configured network instance.  
+        This argument accepts a list of member names (see suboptions).
+    type: list
+    elements: dict
+    suboptions:
+      name:
+        description:
+          - The name of the Nios member to be assigned to this network.
+        type: str
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -124,6 +135,20 @@ EXAMPLES = '''
   infoblox.nios_modules.nios_network:
     network: fe80::/64
     comment: this is a test comment
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Create network with member assignment for a network ipv4
+  infoblox.nios_modules.nios_network:
+    network: 192.168.10.0/24
+    comment: this is a test comment
+    members:
+      - name: member1.infoblox
+      - name: member2.infoblox
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -289,7 +314,8 @@ def main():
         template=dict(type='str'),
         extattrs=dict(type='dict'),
         comment=dict(),
-        container=dict(type='bool', ib_req=True)
+        container=dict(type='bool', ib_req=True),
+        members=dict(type='list', elements='dict')
     )
 
     argument_spec = dict(

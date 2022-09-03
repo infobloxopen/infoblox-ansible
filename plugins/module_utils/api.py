@@ -181,6 +181,26 @@ def member_normalize(member_spec):
     return member_spec
 
 
+def convert_members_to_struct(member_spec):
+    ''' Transforms the members list of the Network module arguments into a 
+    valid WAPI struct. This function will change arguments into the valid 
+    wapi structure of the format:
+        {
+            network: 10.1.1.0/24 
+            members:
+                [
+                    {'_struct': 'dhcpmember', 'name': 'member_name1'},
+                    {'_struct': 'dhcpmember', 'name': 'member_name2'}
+                    {'_struct': 'dhcpmember', 'name': '...'}
+                ]
+        }
+    
+    '''
+    if 'members' in member_spec.keys(): 
+        member_spec['members'] = [{'_struct': 'dhcpmember', 'name': k['name']} for k in member_spec['members']]
+    return member_spec 
+
+
 def normalize_ib_spec(ib_spec):
     result = {}
     for arg in ib_spec:
@@ -314,6 +334,9 @@ class WapiModule(WapiBase):
         # checks if the object type is member to normalize the attributes being passed
         if (ib_obj_type == NIOS_MEMBER):
             proposed_object = member_normalize(proposed_object)
+
+        if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
+            proposed_object = convert_members_to_struct(proposed_object)
 
         # checks if the 'text' field has to be updated for the TXT Record
         if (ib_obj_type == NIOS_TXT_RECORD):
