@@ -145,7 +145,7 @@ EXAMPLES = '''
 - name: Create network with member assignment for a network ipv4
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
-    comment: this is a test comment
+    comment: This is a test comment
     members:
       - name: member1.infoblox
       - name: member2.infoblox
