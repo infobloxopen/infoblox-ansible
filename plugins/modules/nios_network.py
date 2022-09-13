@@ -238,7 +238,6 @@ def check_ip_addr_type(obj_filter, ib_spec):
         check_ip = ip.split('/')
         del ib_spec['container']  # removing the container key from post arguments
         del ib_spec['options']  # removing option argument as for network container it's not supported
-        del ib_spec['template']  # removing template argument as it is not searchable argument
         if validate_ip_address(check_ip[0]):
             return NIOS_IPV4_NETWORK_CONTAINER, ib_spec
         elif validate_ip_v6_address(check_ip[0]):
@@ -246,7 +245,6 @@ def check_ip_addr_type(obj_filter, ib_spec):
     else:
         check_ip = ip.split('/')
         del ib_spec['container']  # removing the container key from post arguments
-        del ib_spec['template']  # removing template argument as it is not searchable argument
         if validate_ip_address(check_ip[0]):
             return NIOS_IPV4_NETWORK, ib_spec
         elif validate_ip_v6_address(check_ip[0]):
