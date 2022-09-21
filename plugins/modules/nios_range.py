@@ -298,8 +298,8 @@ def main():
         member=dict(type='str'),
         failover_association=dict(type='str'),
         ms_server=dict(type='str'),
-        server_association_type=dict(type='str', 
-                                      default= 'NONE', 
+        server_association_type=dict(type='str',
+                                      default= 'NONE',
                                       choices=['NONE', 'FAILOVER', 'MEMBER', 'MS_FAILOVER', 'MS_SERVER']),
         extattrs=dict(type='dict'),
         comment=dict()

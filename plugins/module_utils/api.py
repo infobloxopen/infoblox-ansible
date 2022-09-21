@@ -182,44 +182,25 @@ def member_normalize(member_spec):
     return member_spec
 
 
-def convert_members_to_struct(member_spec):
-    ''' Transforms the members list of the Network module arguments into a 
-    valid WAPI struct. This function will change arguments into the valid 
-    wapi structure of the format:
-        {
-            network: 10.1.1.0/24 
-            members:
-                [
-                    {'_struct': 'dhcpmember', 'name': 'member_name1'},
-                    {'_struct': 'dhcpmember', 'name': 'member_name2'}
-                    {'_struct': 'dhcpmember', 'name': '...'}
-                ]
-        }
-    
-    '''
-    if 'members' in member_spec.keys(): 
-        member_spec['members'] = [{'_struct': 'dhcpmember', 'name': k['name']} for k in member_spec['members']]
-    return member_spec 
-
-
 def convert_range_member_to_struct(member_spec):
     # Error checking that only one member type was defined
-    if len(set(member_spec.keys()).intersection(['member', 'failover_association', 'ms_server'])) < 1:
+    opts = set(member_spec.keys()).intersection(['member', 'failover_association', 'ms_server'])
+    if len(opts) < 1:
         raise AttributeError("'%s' can not be defined when '%s' is defined!" %(opts[0], opts[1]))
 
     # A member node was passed in. Ehsure the correct type and struct
-    if 'member' in member_spec.keys(): 
+    if 'member' in member_spec.keys():
         member_spec['member'] = {'_struct': 'dhcpmember', 'name': member_spec['member']}
         member_spec['server_association_type'] == 'MEMBER'
     # A FO association was passed in. Ensure the correct type is set
-    elif 'failover_association' in member_spec.keys(): 
+    elif 'failover_association' in member_spec.keys():
         member_spec['server_association_type'] == 'FAILOVER'
     # MS server was passed in. Ensure the correct type and struct
-    elif 'ms_server' in member_spec.keys(): 
+    elif 'ms_server' in member_spec.keys():
         member_spec['ms_server'] = {'_struct': 'msdhcpserver', 'ipv4addr': member_spec['ms_server']}
         member_spec['server_association_type'] == 'MS_SERVER'
 
-    return member_spec 
+    return member_spec
 
 
 def normalize_ib_spec(ib_spec):
