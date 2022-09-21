@@ -688,6 +688,14 @@ class WapiModule(WapiBase):
             if temp:
                 # reinstate 'create_token' key
                 ib_spec['create_token'] = temp
+        elif (ib_obj_type in (NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK, NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER)):
+            # del key 'template' as nios_network get_object fails with the key present
+            temp = ib_spec['template']
+            del ib_spec['template']
+            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
+            if temp:
+                # reinstate 'template' key
+                ib_spec['template'] = temp
         else:
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
         return ib_obj, update, new_name
