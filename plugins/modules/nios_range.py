@@ -227,9 +227,9 @@ RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
-from module_utils.api import WapiModule
-from module_utils.api import NIOS_RANGE
-from module_utils.api import normalize_ib_spec
+from ..module_utils.api import WapiModule
+from ..module_utils.api import NIOS_RANGE
+from ..module_utils.api import normalize_ib_spec
 
 
 def options(module):
