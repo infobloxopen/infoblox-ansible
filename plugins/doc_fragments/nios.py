@@ -44,7 +44,7 @@ options:
           - Value can also be specified using C(INFOBLOX_CERT) environment
             variable.
         type: str
-     key:
+      key:
         description:
           - Specifies private key file for encryption with the certificate 
             in order to connect with remote instance of NIOS.
