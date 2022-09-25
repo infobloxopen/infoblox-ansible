@@ -51,6 +51,8 @@ Modules
 
 -   `nios_ptr_record` – Configure Infoblox NIOS PTR records
 
+-   `nios_range` - Configure Infoblox NIOS Network Range object
+
 -   `nios_restartservices` - Controlled restart of Infoblox NIOS services
 
 -   `nios_srv_record` – Configure Infoblox NIOS SRV records

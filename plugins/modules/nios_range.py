@@ -91,7 +91,7 @@ options:
       - Configures IP address this object instance is to begin from.
     type: str
     required: true
-    aliases: 
+    aliases:
       - start
       - first_addr
       - first
@@ -100,7 +100,7 @@ options:
       - Configures IP address this object instance is to end at.
     type: str
     required: true
-    aliases: 
+    aliases:
       - end
       - last_addr
       - last
@@ -160,7 +160,7 @@ EXAMPLES = '''
     network: 192.168.10.0/24
     start: 192.168.10.10
     end: 192.168.10.20
-    name: Test Range 1 
+    name: Test Range 1
     comment: this is a test comment
     state: present
     provider:
@@ -174,7 +174,7 @@ EXAMPLES = '''
     network: 192.168.10.0/24
     start: 192.168.10.10
     end: 192.168.10.20
-    name: Test Range 1 
+    name: Test Range 1
     member: infoblox1.localdomain
     comment: this is a test comment
     state: present
@@ -189,7 +189,7 @@ EXAMPLES = '''
     network: 192.168.10.0/24
     start: 192.168.10.10
     end: 192.168.10.20
-    name: Test Range 1 
+    name: Test Range 1
     failover_association: fo_association_01
     comment: this is a test comment
     state: present
@@ -204,7 +204,7 @@ EXAMPLES = '''
     network: 192.168.10.0/24
     start: 192.168.10.10
     end: 192.168.10.20
-    name: Test Range 1 
+    name: Test Range 1
     ms_server: dc01.ad.localdomain
     comment: this is a test comment
     state: present
@@ -290,24 +290,20 @@ def main():
         member=dict(type='str'),
         failover_association=dict(type='str'),
         ms_server=dict(type='str'),
-        server_association_type=dict(type='str',
-                                      default= 'NONE',
-                                      choices=['NONE', 'FAILOVER', 'MEMBER', 'MS_FAILOVER', 'MS_SERVER']),
+        server_association_type=dict(type='str', default= 'NONE', choices=['NONE', 'FAILOVER', 'MEMBER', 'MS_FAILOVER', 'MS_SERVER']),
         extattrs=dict(type='dict'),
         comment=dict()
     )
 
     argument_spec = dict(
         provider=dict(required=True),
-        state=dict(default='present', 
-                    choices=['present', 'absent'])
+        state=dict(default='present', choices=['present', 'absent'])
     )
 
     argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
-    module = AnsibleModule(argument_spec=argument_spec,
-                           supports_check_mode=True)
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     wapi = WapiModule(module)
     # to check for vendor specific dhcp option
