@@ -337,8 +337,8 @@ class WapiModule(WapiBase):
         if (ib_obj_type == NIOS_MEMBER):
             proposed_object = member_normalize(proposed_object)
 
-        if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
-            proposed_object = convert_members_to_struct(proposed_object)
+        if (ib_obj_type == NIOS_RANGE):
+            proposed_object = convert_range_member_to_struct(proposed_object)
 
         # checks if the 'text' field has to be updated for the TXT Record
         if (ib_obj_type == NIOS_TXT_RECORD):
