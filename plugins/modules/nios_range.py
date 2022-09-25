@@ -86,7 +86,6 @@ options:
         of this object.  The provided text string will be configured on the
         object instance.
     type: str
-
   start_addr:
     description:
       - Configures IP address this object instance is to begin from.
@@ -96,7 +95,6 @@ options:
       - start
       - first_addr
       - first
-
   end_addr:
     description:
       - Configures IP address this object instance is to end at.
@@ -106,7 +104,6 @@ options:
       - end
       - last_addr
       - last
-
   member:
     description:
       - The hostname of the Nios member which will be configured to server
@@ -114,7 +111,6 @@ options:
         'failover_association' are configured.
     type: str
     required: false
-
   failover_association:
     description:
       - The name of the DHCP failover association which will be configured
@@ -123,7 +119,6 @@ options:
         'member' are configured.
     type: str
     required: false
-
   ms_server:
     description:
       - The hostname of the MS member which will be configured to server
@@ -131,7 +126,6 @@ options:
         'failover_association' are configured.
     type: str
     required: false
-
   server_association_type
     description:
       - Configured the type of server association that will be assigned to
@@ -146,7 +140,6 @@ options:
       - MEMBER
       - FAILOVER_MS
       - MS_SERVER
-
   state:
     description:
       - Configures the intended state of the instance of the object on
