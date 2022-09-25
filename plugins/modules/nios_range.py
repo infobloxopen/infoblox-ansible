@@ -11,7 +11,7 @@ DOCUMENTATION = '''
 module: nios_range
 author: "Matthew Dennett (@matthewdennett)"
 short_description: Configure Infoblox NIOS network range object
-version_added: "1.0.0"
+version_added: "1.3.1"
 description:
   - Adds and/or removes instances of range objects from
     Infoblox NIOS servers.  This module manages NIOS DHCP range objects
@@ -289,7 +289,7 @@ def main():
         member=dict(type='str'),
         failover_association=dict(type='str'),
         ms_server=dict(type='str'),
-        server_association_type=dict(type='str', default= 'NONE', choices=['NONE', 'FAILOVER', 'MEMBER', 'MS_FAILOVER', 'MS_SERVER']),
+        server_association_type=dict(type='str', default='NONE', choices=['NONE', 'FAILOVER', 'MEMBER', 'MS_FAILOVER', 'MS_SERVER']),
         extattrs=dict(type='dict'),
         comment=dict()
     )
