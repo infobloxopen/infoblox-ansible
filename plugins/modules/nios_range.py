@@ -11,7 +11,7 @@ DOCUMENTATION = '''
 module: nios_range
 author: "Matthew Dennett (@matthewdennett)"
 short_description: Configure Infoblox NIOS network range object
-version_added: "1.3.1"
+version_added: "1.4.0"
 description:
   - Adds and/or removes instances of range objects from
     Infoblox NIOS servers.  This module manages NIOS DHCP range objects
@@ -30,7 +30,6 @@ options:
     type: str
     required: true
     aliases:
-      - name
       - cidr
   network_view:
     description:
@@ -125,7 +124,7 @@ options:
         'failover_association' are configured.
     type: str
     required: false
-  server_association_type
+  server_association_type:
     description:
       - Configured the type of server association that will be assigned to
         serve this object instance. This value is not required and will be
@@ -150,6 +149,18 @@ options:
     choices:
       - present
       - absent
+  disable:
+    description:
+      - Configures the enabled of discbeled for DHCP state for the instance
+        of the object on the NIOS server. When this value is set to true, the
+        object is configured in the disabled for DHCP state.
+    type: bool
+    default: false
+  name:
+    description:
+      - Congifured the name of the Microsoft scope for the instance of the
+        object on the NIOS server.
+    type: str
 '''
 
 EXAMPLES = '''
@@ -277,19 +288,17 @@ def main():
 
     # This is what gets posted to the WAPI API
     ib_spec = dict(
-        network=dict(required=True, aliases=['name', 'cidr']),
+        network=dict(required=True, aliases=['cidr']),
         network_view=dict(default='default', ib_req=True),
-
         start_addr=dict(required=True, aliases=['start', 'first_addr', 'first'], type='str', ib_req=True),
         end_addr=dict(required=True, aliases=['end', 'last_addr', 'last'], type='str', ib_req=True),
         name=dict(type='str'),
         disable=dict(type='bool', default='false',),
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
-        # template=dict(type='str'),
         member=dict(type='str'),
         failover_association=dict(type='str'),
         ms_server=dict(type='str'),
-        server_association_type=dict(type='str', default='NONE', choices=['NONE', 'FAILOVER', 'MEMBER', 'MS_FAILOVER', 'MS_SERVER']),
+        server_association_type=dict(type='str', default='NONE', choices=['NONE', 'FAILOVER', 'MEMBER', 'FAILOVER_MS', 'MS_SERVER']),
         extattrs=dict(type='dict'),
         comment=dict()
     )
