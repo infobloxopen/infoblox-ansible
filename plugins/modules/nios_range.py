@@ -12,7 +12,6 @@ module: nios_range
 author: "Matthew Dennett (@matthewdennett)"
 short_description: Configure Infoblox NIOS network range object
 version_added: "1.0.0"
-
 description:
   - Adds and/or removes instances of range objects from
     Infoblox NIOS servers.  This module manages NIOS DHCP range objects
