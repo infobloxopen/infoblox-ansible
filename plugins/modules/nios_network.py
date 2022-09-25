@@ -97,7 +97,7 @@ options:
     type: bool
   members:
     description:
-      - Configures the Nios Menber assignment for the configured network instance.  
+      - Configures the Nios Menber assignment for the configured network instance.
         This argument accepts a list of member names (see suboptions).
     type: list
     elements: dict

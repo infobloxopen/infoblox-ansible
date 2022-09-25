@@ -114,7 +114,7 @@ options:
   failover_association:
     description:
       - The name of the DHCP failover association which will be configured
-        to server this object instance. A failover of MS or Nios members 
+        to server this object instance. A failover of MS or Nios members
         can be configured. Can not be configured when 'ms_server' or
         'member' are configured.
     type: str
@@ -129,8 +129,8 @@ options:
   server_association_type
     description:
       - Configured the type of server association that will be assigned to
-        serve this object instance. This value is not required and will be 
-        set as needed automatically during module execution. 
+        serve this object instance. This value is not required and will be
+        set as needed automatically during module execution.
     type: str
     required: false
     default: NONE
@@ -155,7 +155,7 @@ options:
 
 EXAMPLES = '''
 
-- name: Configure a ipv4 reserved range 
+- name: Configure a ipv4 reserved range
   infoblox.nios_modules.nios_range:
     network: 192.168.10.0/24
     start: 192.168.10.10
@@ -213,7 +213,6 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-
 '''
 
 RETURN = ''' # '''
@@ -300,7 +299,8 @@ def main():
 
     argument_spec = dict(
         provider=dict(required=True),
-        state=dict(default='present', choices=['present', 'absent'])
+        state=dict(default='present', 
+                    choices=['present', 'absent'])
     )
 
     argument_spec.update(normalize_ib_spec(ib_spec))
