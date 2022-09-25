@@ -209,7 +209,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: Configure a ipv4 range served by a failover association
+- name: Configure a ipv4 range served by a MS Server
   infoblox.nios_modules.nios_range:
     network: 192.168.10.0/24
     start: 192.168.10.10
