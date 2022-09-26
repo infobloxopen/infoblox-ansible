@@ -184,10 +184,8 @@ def member_normalize(member_spec):
 
 def convert_range_member_to_struct(member_spec):
     # Error checking that only one member type was defined
-
-    # BUG - 
     opts = list(set(member_spec.keys()).intersection(['member', 'failover_association', 'ms_server']))
-    if len(opts) < 1:
+    if len(opts) > 1:
         raise AttributeError("'%s' can not be defined when '%s' is defined!" % (opts[0], opts[1]))
 
     # A member node was passed in. Ehsure the correct type and struct
