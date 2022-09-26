@@ -39,14 +39,14 @@ options:
         type: str
       cert:
         description:
-          - Specifies the client certificate file with digest of x509 configuration
+          - Specifies the client certificate file with digest of x509 config
             for extra layer secure connection the remote instance of NIOS.
           - Value can also be specified using C(INFOBLOX_CERT) environment
             variable.
         type: str
       key:
         description:
-          - Specifies private key file for encryption with the certificate 
+          - Specifies private key file for encryption with the certificate
             in order to connect with remote instance of NIOS.
           - Value can also be specified using C(INFOBLOX_KEY) environment
             variable.
