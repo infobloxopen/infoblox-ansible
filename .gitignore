@@ -101,3 +101,6 @@ ENV/
 # mypy
 .mypy_cache/
 infoblox-ansible.code-workspace
+
+# Ansible sanity test ouput
+**/ansible-test-sanity-*.json

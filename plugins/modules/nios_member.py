@@ -366,6 +366,13 @@ options:
       - Flag for initiating a create token request for pre-provisioned members.
     type: bool
     default: False
+  master_candidate:
+    description:
+      - Configures the instance of this object to be enabled as a Grid Master
+        Candidate or a regulare member node. 
+      - True enables the member as a Master Candidate
+    type: bool
+    default: false
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -553,6 +560,7 @@ def main():
         pre_provisioning=dict(type='list', elements='dict', options=pre_prov_spec),
         extattrs=dict(type='dict'),
         create_token=dict(type='bool', default=False),
+        master_candidate=dict(type='bool', default=False)
     )
 
     argument_spec = dict(
