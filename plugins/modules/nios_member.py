@@ -369,7 +369,7 @@ options:
   master_candidate:
     description:
       - Configures the instance of this object to be enabled as a Grid Master
-        Candidate or a regulare member node. 
+        Candidate or a regulare member node.
       - True enables the member as a Master Candidate
     type: bool
     default: false
