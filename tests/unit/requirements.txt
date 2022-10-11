@@ -6,4 +6,4 @@ pytest-xdist
 mock
 pytest-mock
 pytest-cov
-coverage==6.5.0
+coverage==4.5.4
