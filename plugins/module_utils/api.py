@@ -76,6 +76,8 @@ NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
     'username': dict(fallback=(env_fallback, ['INFOBLOX_USERNAME'])),
     'password': dict(fallback=(env_fallback, ['INFOBLOX_PASSWORD']), no_log=True),
+    'cert': dict(fallback=(env_fallback, ['INFOBLOX_CERT'])),
+    'key': dict(fallback=(env_fallback, ['INFOBLOX_KEY']), no_log=True),
     'validate_certs': dict(type='bool', default=False, fallback=(env_fallback, ['INFOBLOX_SSL_VERIFY']), aliases=['ssl_verify']),
     'silent_ssl_warnings': dict(type='bool', default=True),
     'http_request_timeout': dict(type='int', default=10, fallback=(env_fallback, ['INFOBLOX_HTTP_REQUEST_TIMEOUT'])),
@@ -665,6 +667,14 @@ class WapiModule(WapiBase):
             if temp:
                 # reinstate 'create_token' key
                 ib_spec['create_token'] = temp
+        elif (ib_obj_type in (NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK, NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER)):
+            # del key 'template' as nios_network get_object fails with the key present
+            temp = ib_spec['template']
+            del ib_spec['template']
+            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
+            if temp:
+                # reinstate 'template' key
+                ib_spec['template'] = temp
         else:
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
         return ib_obj, update, new_name

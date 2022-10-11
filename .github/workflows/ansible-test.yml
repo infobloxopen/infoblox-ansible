@@ -91,7 +91,7 @@ jobs:
 
       - name: Generate coverage report
         run: |
-          if [ "${{ matrix.ansible-version }}" == "devel" ]; then pip install coverage==6.4.3; fi
+          if [ "${{ matrix.ansible-version }}" == "devel" ]; then pip install coverage==6.5.0; fi
           ansible-test coverage xml -v --group-by command --group-by version
         working-directory: /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/
 
