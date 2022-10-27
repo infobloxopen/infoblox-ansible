@@ -369,7 +369,7 @@ options:
   master_candidate:
     description:
       - Configures the instance of this object to be enabled as a Grid Master
-        Candidate or a regulare member node.
+        Candidate or a regular member node.
       - True enables the member as a Master Candidate
     type: bool
     default: false
@@ -390,6 +390,24 @@ EXAMPLES = '''
 - name: Add a member to the grid with IPv4 address
   infoblox.nios_modules.nios_member:
     host_name: member01.localdomain
+    vip_setting:
+      - address: 192.168.1.100
+        subnet_mask: 255.255.255.0
+        gateway: 192.168.1.1
+    config_addr_type: IPV4
+    platform: VNIOS
+    comment: "Created by Ansible"
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Add a Grid Master Candidate to the grid with IPv4 address
+  infoblox.nios_modules.nios_member:
+    host_name: member01.localdomain
+    master_candidate: true
     vip_setting:
       - address: 192.168.1.100
         subnet_mask: 255.255.255.0
