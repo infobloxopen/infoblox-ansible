@@ -405,7 +405,7 @@ def main():
         enable_preferred_primaries=dict(type='bool', default=False),
         grid_replicate=dict(type='bool', default=False),
         lead=dict(type='bool', default=False),
-        preferred_primaries=dict(type='list', elements='dict', options=extserver_spec, default=[]),
+        preferred_primaries=dict(type='list', elements='dict', options=extserver_spec, default=None),
         stealth=dict(type='bool', default=False),
     )
 
