@@ -107,7 +107,11 @@ class LookupModule(LookupBase):
         network_view = kwargs.get('network_view', 'default')
 
         try:
-            ref = [network['_ref'] for network in network_obj if network['network_view'] == network_view][0]
+            ref_list = [network['_ref'] for network in network_obj if network['network_view'] == network_view]
+            if not ref_list:
+                raise AnsibleError('no records found')
+            else:
+                ref = ref_list[0]
             avail_nets = wapi.call_func('next_available_network', ref, {'cidr': cidr, 'num': num, 'exclude': exclude_ip})
             return [avail_nets['networks']]
         except Exception as exc:
