@@ -185,3 +185,16 @@ releases:
       release_summary: 'For ansible module, added certificate authentication feature,
         Few bugs fix in ansible module nios network'
     release_date: '2022-10-12'
+  1.4.1:
+    changes:
+      minor_changes:
+      - Fix to specify network_view in lookup modules to return absolute network and ip `#157 <https://github.com/infobloxopen/infoblox-ansible/pull/157>`_
+      - Fix to camelcase issue for updating 'nios_network_view' name `#163 <https://github.com/infobloxopen/infoblox-ansible/pull/163>`_
+      - Fix to allocate ip to a_record dynamically `#163 <https://github.com/infobloxopen/infoblox-ansible/pull/163>`_
+      - Fix to update 'nios_a_record' name with multiple ips having same name `#164 <https://github.com/infobloxopen/infoblox-ansible/pull/164>`_
+      - Fix to changelog yaml file with linting issues `#161 <https://github.com/infobloxopen/infoblox-ansible/pull/161>`_
+      release_summary: 'Ansible Lookup modules can specify network_view to which a network/ip belongs,
+        Fixes camelCase issue while updating `nios_network_view` with `new_name`,
+        Fixes issue to allocate ip to a_record dynamically,
+        Updates `nios_a_record` name with multiple ips having same name'
+    release_date: '2022-11-24'
