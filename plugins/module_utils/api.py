@@ -38,7 +38,6 @@ from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.common.validation import check_type_dict, safe_eval
 from ansible.module_utils.six import string_types
-from ansible.errors import AnsibleError
 
 try:
     from infoblox_client.connector import Connector
@@ -230,6 +229,11 @@ class WapiLookup(WapiBase):
 
 class WapiInventory(WapiBase):
     ''' Implements WapiBase for dynamic inventory script '''
+    pass
+
+
+class AnsibleError(Exception):
+    '''Implements raising exceptions'''
     pass
 
 
