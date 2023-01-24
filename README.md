@@ -1,66 +1,74 @@
-**Infoblox Ansible Collections for vNIOS**
+# Infoblox NIOS Modules for Ansible Collections
 
 About 
 ======
 
-Infoblox Ansible Collection for vNIOS allows managing your NIOS objects
-through APIs.\
+Infoblox NIOS Modules for Ansible Collections allows managing your NIOS objects
+through APIs.
 It, thus, enables the DNS and IPAM automation of VM workloads that are
-deployed across multiple platforms. The nios\_modules collection
+deployed across multiple platforms. The `nios_modules` collection
 provides modules and plugins for managing the networks, IP addresses,
 and DNS records in NIOS. This collection is hosted on Ansible Galaxy
-under infoblox.nios\_modules.
+under `infoblox.nios_modules`.
 
-Modules Overview:
+Modules Overview
 =================
 
-The infoblox.nios\_modules collection has the following content:
+The `infoblox.nios_modules` collection has the following content:
 
-Modules:
+Modules
 --------
 
--   nios\_a\_record – Configure Infoblox NIOS A records
+-   `nios_a_record` – Configure Infoblox NIOS A records
 
--   nios\_aaaa\_record – Configure Infoblox NIOS AAAA records
+-   `nios_aaaa_record` – Configure Infoblox NIOS AAAA records
 
--   nios\_cname\_record – Configure Infoblox NIOS CNAME records
+-   `nios_cname_record` – Configure Infoblox NIOS CNAME records
 
--   nios\_dns\_view – Configure Infoblox NIOS DNS views
+-   `nios_dns_view` – Configure Infoblox NIOS DNS views
 
--   nios\_fixed\_address – Configure Infoblox NIOS DHCP Fixed Address
+-   `nios_dtc_lbdn` – Configure Infoblox NIOS DTC LBDN records
 
--   nios\_host\_record – Configure Infoblox NIOS host records
+-   `nios_dtc_pool` – Configure Infoblox NIOS DTC pools
 
--   nios\_member – Configure Infoblox NIOS members
+-   `nios_dtc_server` – Configure Infoblox NIOS DTC server records
 
--   nios\_mx\_record – Configure Infoblox NIOS MX records
+-   `nios_fixed_address` – Configure Infoblox NIOS DHCP Fixed Address
 
--   nios\_naptr\_record – Configure Infoblox NIOS NAPTR records
+-   `nios_host_record` – Configure Infoblox NIOS host records
 
--   nios\_network – Configure Infoblox NIOS network object
+-   `nios_member` – Configure Infoblox NIOS members
 
--   nios\_network\_view – Configure Infoblox NIOS network views
+-   `nios_mx_record` – Configure Infoblox NIOS MX records
 
--   nios\_nsgroup – Configure Infoblox DNS Nameserver Groups
+-   `nios_naptr_record` – Configure Infoblox NIOS NAPTR records
 
--   nios\_ptr\_record – Configure Infoblox NIOS PTR records
+-   `nios_network` – Configure Infoblox NIOS network object
 
--   nios\_srv\_record – Configure Infoblox NIOS SRV records
+-   `nios_network_view` – Configure Infoblox NIOS network views
 
--   nios\_txt\_record – Configure Infoblox NIOS txt records
+-   `nios_nsgroup` – Configure Infoblox DNS Nameserver Groups
 
--   nios\_zone – Configure Infoblox NIOS DNS zones
+-   `nios_ptr_record` – Configure Infoblox NIOS PTR records
 
-Plugins:
+-   `nios_restartservices` - Controlled restart of Infoblox NIOS services
+
+-   `nios_srv_record` – Configure Infoblox NIOS SRV records
+
+-   `nios_txt_record` – Configure Infoblox NIOS txt records
+
+-   `nios_zone` – Configure Infoblox NIOS DNS zones
+
+Plugins
 --------
 
--   nios\_inventory: List all the hosts with records created in NIOS
+-   `nios_inventory`: List all the hosts with records created in NIOS
 
--   nios\_lookup: Look up queries for NIOS database objects
+-   `nios_lookup`: Look up queries for NIOS database objects
 
--   nios\_next\_ip: Returns the next available IP address for a network
+-   `nios_next_ip`: Returns the next available IP address for a network
 
--   nios\_next\_network: Returns the next available network addresses
+-   `nios_next_network`: Returns the next available network addresses
     for a given network CIDR
 
 Installation 
@@ -69,64 +77,111 @@ Installation
 Dependencies
 ------------
 
--   Python version 2.7 and above
+-   Python version 2.7 or later
 
--   Ansible version 2.9.0 or above
+-   Ansible version 2.9.0 or later
 
--   NIOS 8.2.4 and above
+-   NIOS 8.2.4 or later
 
 Prerequisites
 -------------
 
-You need to install the infoblox-client package. To install
-infoblox-client WAPI package, run the following command:
+Install the infoblox-client WAPI package. To install, run the following command:
 
-\$ pip install infoblox-client
+```shell
+$ pip install infoblox-client
+```
 
-Installation of nios\_modules Collection
+Installation of nios_modules Collection
 ----------------------------------------
 
-The nios\_modules collection can be installed either from Ansible Galaxy
+The `nios_modules` collection can be installed either from Ansible Galaxy
 or directly from git. It is recommended to install collections from
-Ansible Galaxy are those are more stable than the ones in the git
+Ansible Galaxy as those are more stable than the ones in the git
 branch.
 
 ### Installation from Ansible Galaxy
+- To directly install the `nios_modules` collection from [Ansible Galaxy](https://galaxy.ansible.com/infoblox/nios_modules), run the following command:
+    - ```
+       $ ansible-galaxy collection install infoblox.nios_modules
+      ```
+    - The collection folder would be installed at
+      ```
+       ~/.ansible/collections/ansible_collections/infoblox/nios_modules
+      ```
+      
+- For offline installation on the Ansible control machine, download the required tar archive version of the collection from [Infoblox Nios Modules collections](https://galaxy.ansible.com/infoblox/nios_modules) and run the command given below in `~/.ansible` directory:
+    - ```
+      $ ansible-galaxy collection install infoblox-nios_modules-<version>.tar.gz -p ./collections
+      ```
 
-To directly install the nios\_modules collection from Ansible Galaxy,
-run the following command:
+### Installation from GitHub
+- Install the collection directly from the [GitHub](https://github.com/infobloxopen/infoblox-ansible) repository using the latest commit on the master branch:
+    - ```
+      $ ansible-galaxy collection install git+https://github.com/infobloxopen/infoblox-ansible.git,master
+      ```
 
-\$ ansible-galaxy collection install infoblox.nios\_modules
+- For offline installation on the Ansible control machine, to git clone and install from this repo, follow these steps:
 
-The collection folder would be installed at
-\~/.ansible/collections/ansible\_collections/infoblox/nios\_modules
+    -   **Clone the repo:**
 
-### Installation from Git
+        ```
+        $ git clone https://github.com/infobloxopen/infoblox-ansible.git
+        ```
 
-To git clone and install from this repo, follow these steps:
+    -   **Build the collection:**
 
--   **Clone the repo:**
+        To build a collection, run the following command from inside the
+        root directory of the collection:
+        ```
+        $ ansible-galaxy collection build
+        ```
+        This creates a tarball of the built collection in the current directory.
 
-\$ git clone
-https://github.com/infobloxopen/infoblox-ansible/nios\_modules.git
+    -   **Install the collection:**
 
--   **Build the collection: **
+        ```
+        $ ansible-galaxy collection install infoblox-nios_modules-<version>.tar.gz -p ./collections
+        ```
 
-    To build a collection, run the following command from inside the
-    root directory of the collection:
-
-\$ ansible-galaxy collection build
-
-This creates a tarball of the built collection in the current directory.
-
--   **Install the collection:**
-
-\$ ansible-galaxy collection install &lt;collection-name&gt;.tar.gz -p
-./collections
-
-Please refer to our Ansible [deployment
-guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
+Please refer to our Ansible [deployment 
+guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-automate-infoblox-infrastructure-using-ansible.pdf)
 for more details.
+
+Playbooks
+=========
+Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/infoblox-ansible/tree/master/playbooks).
+
+
+Releasing
+=========
+
+Next release
+---------------
+
+Dates TBD
+
+Current release
+---------------
+
+1.4.1 on 24 November 2022
+
+Versioning
+=========
+
+-   galaxy.yml in the master branch will always contain the version of the current major or minor release. It will be updated right after a release.
+-   version_added needs to be used for every new feature and module/plugin, and needs to coincide with the next minor/major release version. (This will eventually be enforced by CI.)
+
+Deprecation
+===========
+-   Deprecations are done by version number (not by date).
+-   New deprecations can be added during every minor release, under the condition that they do not break backward compatibility.
+
+Contributing
+============
+We welcome your contributions to Infoblox Nios Modules. See 
+[CONTRIBUTING.md](https://github.com/infobloxopen/infoblox-ansible/blob/master/CONTRIBUTING.md) for
+more details.
 
 Resources
 =========
@@ -139,18 +194,16 @@ Resources
     Galaxy
 
 -   Infoblox Ansible [deployment
-    guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-infoblox-and-ansible-integration.pdf)
+    guide](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-guide-automate-infoblox-infrastructure-using-ansible.pdf)
 
 License
 =======
 
-This code is published under GPL v3.0
+This code is published under `GPL v3.0`
 
 [COPYING](https://github.com/infobloxopen/infoblox-ansible/blob/master/COPYING)
 
-Support
-=======
-
-Infoblox supports the existing modules in the collections. You can open
-an issue or request for enhancement
+Issues or RFEs
+===============
+You can open an issue or request for enhancement
 [here](https://github.com/infobloxopen/infoblox-ansible/issues)

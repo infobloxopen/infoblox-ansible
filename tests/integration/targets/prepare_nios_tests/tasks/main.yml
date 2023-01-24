@@ -1,0 +1,1 @@
+- include: prepare_nios_tests_idempotence.yml

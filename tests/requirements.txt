@@ -1,0 +1,9 @@
+infoblox-client
+pytest
+pytest-xdist
+mock
+pytest-mock
+pytest-cov==2.8.0
+coverage
+pygobject
+launchpadlib

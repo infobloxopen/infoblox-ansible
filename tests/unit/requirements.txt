@@ -1,0 +1,8 @@
+infoblox-client
+pytest
+pytest-forked
+pytest-xdist
+mock
+pytest-mock
+pytest-cov
+coverage==4.5.4
