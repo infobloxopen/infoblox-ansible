@@ -78,6 +78,27 @@ options:
       - If set on creation, the network is created according to the values
         specified in the selected template.
     type: str
+  vlans:
+    description:
+      - Configures the set of vlans to be included as part of
+        the configured network instance.  This argument accepts a list
+        of values (see suboptions).  When configuring suboptions at
+        least one of C(name) or C(id) must be specified.
+    type: list
+    elements: dict
+    suboptions:
+      name:
+        description:
+          - The name of the vlan.
+        type: str
+      id:
+        description:
+          - The id of the vlan.
+        type: int
+      parent:
+        description:
+          - The name of the parent vlanview or vlanrange.
+        type: str
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
@@ -190,6 +211,21 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
+
+- name: Configure a network ipv4 and assign vlans
+  infoblox.nios_modules.nios_network:
+    network: 192.168.10.0/24
+    comment: this is a test comment
+    vlans:
+     - name: ansiblevlan
+       parent: ansiblevlanview
+     - id: 10
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
 '''
 
 RETURN = ''' # '''
@@ -267,6 +303,34 @@ def check_vendor_specific_dhcp_option(module, ib_spec):
 def main():
     ''' Main entry point for module execution
     '''
+    def vlans(module):
+        vlans_list = list()
+        if module.params['vlans']:
+            for vlan in module.params['vlans']:
+
+                vlan_filtered = dict((k, v) for k, v in iteritems(vlan) if v is not None)
+                if 'name' not in vlan_filtered and 'id' not in vlan_filtered:
+                    module.fail_json(msg='one of `name` or `id` is required for vlans value')
+
+                if 'parent' in vlan_filtered:
+                    obj_vlanview = wapi.get_object('vlanview', {'name': vlan_filtered['parent']})
+                    obj_vlanrange = wapi.get_object('vlanrange', {'name': vlan_filtered['parent']})
+                if obj_vlanview and not obj_vlanrange:
+                    vlan_filtered['parent'] = obj_vlanview[0]['_ref']
+                elif not obj_vlanview and obj_vlanrange:
+                    vlan_filtered['parent'] = obj_vlanrange[0]['_ref']
+                else:
+                    module.fail_json(msg='VLAN View/Range \'%s\' cannot be found.' % vlan_filtered['parent'])
+                    
+                obj_vlan = wapi.get_object('vlan', vlan_filtered)
+
+                if obj_vlan:
+                    vlans_list.append({'vlan': obj_vlan[0]['_ref']})
+                else:
+                    module.fail_json(msg='VLAN  `%s` cannot be found.' % vlan['name'])
+
+        return vlans_list
+    
     option_spec = dict(
         # one of name or num is required; enforced by the function options()
         name=dict(),
@@ -278,11 +342,18 @@ def main():
         vendor_class=dict(default='DHCP')
     )
 
+    vlans_spec = dict(
+        id=dict(type='int'),
+        name=dict(),
+        parent=dict(default='default')
+    )
+
     ib_spec = dict(
         network=dict(required=True, aliases=['name', 'cidr'], ib_req=True),
         network_view=dict(default='default', ib_req=True),
 
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
+        vlans=dict(type='list', elements='dict', options=vlans_spec, transform=vlans),
 
         template=dict(type='str'),
         extattrs=dict(type='dict'),
