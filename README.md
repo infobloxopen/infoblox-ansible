@@ -57,6 +57,8 @@ Modules
 
 -   `nios_txt_record` – Configure Infoblox NIOS txt records
 
+-   `nios_vlan` – Configure Infoblox NIOS vlan
+
 -   `nios_zone` – Configure Infoblox NIOS DNS zones
 
 Plugins
