@@ -30,18 +30,12 @@ options:
         object instance.
     type: str
 
-
   default_value:
     description:
       - Configures the default value which is prepopulated in the GUI when 
         this attribute is used. Email, URL and string types the value is a 
         with a maximum of 256 characters. 
     type: str
-
-
-  list_values:
-    description: #TODO
-
 
   max:#TODO 
   min:#TODO 
@@ -55,7 +49,8 @@ options:
 
   type:
     description: 
-      - Configures the type for this attribute object definition. 
+      - Configures the intended type for this attribute object definition 
+        on the NIOS server. 
     type: str
     required: true
     default: STRING
@@ -81,9 +76,10 @@ options:
 '''
 # TODO - Create examples of the task
 EXAMPLES = '''
-- name: Configure a network ipv4
-  infoblox.nios_modules.nios_network:
-    network: 192.168.10.0/24
+- name: Configure an extensible attribute
+  infoblox.nios_modules.nios_extensible_attribute:
+    name: test1
+    type: STRING
     comment: this is a test comment
     state: present
     provider:
@@ -92,6 +88,28 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Update an extensible attribute
+  infoblox.nios_modules.nios_extensible_attribute:
+    name: test1
+    type: INTEGER
+    comment: This is an updated comment
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Remove a extensible attribute
+  infoblox.nios_modules.nios_extensible_attribute:
+    name: test1
+    type: INTEGER
+    state: absent
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
 '''
 
 RETURN = ''' # '''
@@ -137,7 +155,6 @@ def main():
     ib_spec = dict(
         comment=dict(type='str'),
         default_value=dict(type='str'),
-        list_values=dict(type='dict'),
         max=dict(type='int'),
         min=dict(type='int'),
         name=dict(type='list', ib_req=True),
