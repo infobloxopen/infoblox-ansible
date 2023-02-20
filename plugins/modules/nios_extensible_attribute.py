@@ -29,28 +29,45 @@ options:
         of this object.  The provided text string will be configured on the
         object instance.
     type: str
-
   default_value:
     description:
-      - Configures the default value which is prepopulated in the GUI when 
-        this attribute is used. Email, URL and string types the value is a 
-        with a maximum of 256 characters. 
+      - Configures the default value which is prepopulated in the GUI when
+        this attribute is used. Email, URL and string types the value is a
+        with a maximum of 256 characters.
     type: str
-
-  max:#TODO 
-  min:#TODO 
-  
+  list_values:
+    descriptions:
+      - Configures a list of preset values associated with the instance of this
+      object. Only applicable when the attribute type is set to ENUM.
+    type: list
+  max:
+    description:
+      - Configures the maximum value to be associated with the instance of
+        this object. When provided for an extensible attribute of type
+        STRING the value represents the maximum number of characters the string
+        can contain. When provided for an extensible attribute of type INTEGER
+        the value represents the maximum integer value permitted.Not
+        applicable for other attributes types.
+      type: str
+  min:
+    description:
+      - Configures the minimum value to be associated with the instance of
+        this object. When provided for an extensible attribute of type
+        STRING the value represents the minimum number of characters the string
+        can contain. When provided for an extensible attribute of type INTEGER
+        the value represents the minimum integer value permitted. Not
+        applicable for other attributes types.
+      type: str
   name:
-    description: 
-      - Configures the intended name of the instance of the object on the 
-        NIOS server. 
+    description:
+      - Configures the intended name of the instance of the object on the
+        NIOS server.
     type: str
     required: true
-
   type:
-    description: 
-      - Configures the intended type for this attribute object definition 
-        on the NIOS server. 
+    description:
+      - Configures the intended type for this attribute object definition
+        on the NIOS server.
     type: str
     required: true
     default: STRING
@@ -61,7 +78,6 @@ options:
       - INTEGER
       - STRING
       - URL
-
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -78,21 +94,9 @@ options:
 EXAMPLES = '''
 - name: Configure an extensible attribute
   infoblox.nios_modules.nios_extensible_attribute:
-    name: test1
+    name: my_string
     type: STRING
-    comment: this is a test comment
-    state: present
-    provider:
-      host: "{{ inventory_hostname_short }}"
-      username: admin
-      password: admin
-  connection: local
-
-- name: Update an extensible attribute
-  infoblox.nios_modules.nios_extensible_attribute:
-    name: test1
-    type: INTEGER
-    comment: This is an updated comment
+    comment: Created by ansible
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -102,7 +106,7 @@ EXAMPLES = '''
 
 - name: Remove a extensible attribute
   infoblox.nios_modules.nios_extensible_attribute:
-    name: test1
+    name: my_string
     type: INTEGER
     state: absent
     provider:
@@ -110,6 +114,51 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
+
+- name: Create INT extensible attribute
+  infoblox.nios_modules.nios_extensible_attribute:
+    name: my_int
+    type: INTEGER
+    comment: Created by ansible
+    min: 10
+    max: 20
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Update an extensible attribute
+  infoblox.nios_modules.nios_extensible_attribute:
+    name: my_int
+    type: INTEGER
+    comment: Updated by ansible
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Create an list extensible attribute
+  infoblox.nios_modules.nios_extensible_attribute:
+    name: my_list
+    type: ENUM
+    state: present
+      list_values:
+        - _struct: extensibleattributedef:listvalues
+          value: one
+        - _struct: extensibleattributedef:listvalues
+          value: two
+        - _struct: extensibleattributedef:listvalues
+          value: three
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
 '''
 
 RETURN = ''' # '''
@@ -117,10 +166,7 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
-from ..module_utils.api import NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK
-from ..module_utils.api import NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER
 from ..module_utils.api import normalize_ib_spec
-from ..module_utils.network import validate_ip_address, validate_ip_v6_address
 
 
 def options(module):
@@ -155,10 +201,11 @@ def main():
     ib_spec = dict(
         comment=dict(type='str'),
         default_value=dict(type='str'),
+        list_values=dict(type='list'),
         max=dict(type='int'),
         min=dict(type='int'),
-        name=dict(type='list', ib_req=True),
-        type=dict(type='list', ib_req=True)
+        name=dict(type='str', ib_req=True),
+        type=dict(type='str')
     )
 
     argument_spec = dict(
