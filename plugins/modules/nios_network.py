@@ -98,8 +98,11 @@ options:
   members:
     description:
       - Configures the Nios Menber assignment for the configured network instance.
-        This argument accepts a list of member names (see suboptions).
+        This argument accepts a list of member names (see suboptions). When omitted
+        a default value of an empty list is used. If the field 'container' is set to
+        true this field is ignored.
     type: list
+    default: []
     elements: dict
     suboptions:
       name:
@@ -149,6 +152,17 @@ EXAMPLES = '''
     members:
       - name: member1.infoblox
       - name: member2.infoblox
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Remove member assignment form ipv4 network
+  infoblox.nios_modules.nios_network:
+    network: 192.168.10.0/24
+    comment: This is a test comment
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -313,7 +327,7 @@ def main():
         extattrs=dict(type='dict'),
         comment=dict(),
         container=dict(type='bool', ib_req=True),
-        members=dict(type='list', elements='dict')
+        members=dict(type='list', elements='dict', default=[])
     )
 
     argument_spec = dict(

@@ -557,12 +557,23 @@ class WapiModule(WapiBase):
                 if key == 'aliases':
                     if set(current_item) != set(proposed_item):
                         return False
+                # If the lists are of a different length the objects can not be
+                # equal and False will be returned before comparing the lists items
+                if len(proposed_item) != len(current_item):
+                    return False
+
                 for subitem in proposed_item:
                     if not self.issubset(subitem, current_item):
                         return False
 
             elif isinstance(proposed_item, dict):
-                return self.compare_objects(current_item, proposed_item)
+                # Compare the items of the dict to see if they are equal. A
+                # difference stops the comparison and returns false. If they
+                # are equal move on to the next item
+                if self.compare_objects(current_item, proposed_item) is False:
+                    return False
+                else:
+                    continue
 
             else:
                 if current_item != proposed_item:
@@ -718,10 +729,17 @@ class WapiModule(WapiBase):
             # del key 'template' as nios_network get_object fails with the key present
             temp = ib_spec['template']
             del ib_spec['template']
+
+            if (ib_obj_type in (NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER)):
+                # del key 'members' as nios_network get_object fails with the key present
+                # Don't reinstate the field after as it is not valid for network containers
+                del ib_spec['members']
+
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
+            # reinstate the 'template' and 'members' key
             if temp:
-                # reinstate 'template' key
                 ib_spec['template'] = temp
+
         else:
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
         return ib_obj, update, new_name

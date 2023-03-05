@@ -104,3 +104,6 @@ infoblox-ansible.code-workspace
 
 # Ansible sanity test ouput
 **/ansible-test-sanity-*.json
+
+# Dev tools
+.vscode/

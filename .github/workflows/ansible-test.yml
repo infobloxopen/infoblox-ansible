@@ -34,7 +34,7 @@ jobs:
         with:
           name: collection
           path: .cache/collection-tarballs
-          
+
 
 ###
 # Unit tests
@@ -48,7 +48,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [2.7, 3.8, 3.9]
+        python-version: [3.8, 3.9]
         ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, stable-2.13, devel]
         exclude:
           - ansible-version: devel
@@ -108,7 +108,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [2.7, 3.8, 3.9]
+        python-version: [3.8, 3.9]
         ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, stable-2.13, devel]
         exclude:
           - ansible-version: stable-2.9
@@ -118,7 +118,7 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.9
-          
+
       - name: Check out code
         uses: actions/checkout@v2
 
@@ -130,10 +130,10 @@ jobs:
         with:
           name: collection
           path: .cache/collection-tarball
-          
+
       - name: Install the collection tarball
         run: ansible-galaxy collection install .cache/collection-tarball/*.tar.gz
-        
+
       - name: Setup Integration test Pre-requisites
         run: |
              sudo apt install libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0
@@ -156,8 +156,8 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           fail_ci_if_error: false
-        
-        
+
+
 ###
 # Sanity tests (REQUIRED)
 #
