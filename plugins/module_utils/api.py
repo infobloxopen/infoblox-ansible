@@ -601,6 +601,7 @@ class WapiModule(WapiBase):
                 # resolves issue where a_record with uppercase name was returning null and was failing
                 test_obj_filter = obj_filter
                 test_obj_filter['name'] = test_obj_filter['name'].lower()
+                next_ip_exists = False
                 # resolves issue where multiple a_records with same name and different IP address
                 try:
                     ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
