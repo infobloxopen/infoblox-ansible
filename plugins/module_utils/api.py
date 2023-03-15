@@ -442,31 +442,17 @@ class WapiModule(WapiBase):
             if obj_host_name == ref_host_name and current_ip_addr != proposed_ip_addr:
                 self.create_object(ib_obj_type, proposed_object)
 
-    def check_next_available_ip(self, ipaddr_obj, view):
-        try:
-            network = ipaddr_obj["nios_next_ip"]
-        except IndexError:
-            raise AnsibleError('missing argument in the form of A.B.C.D/E')
+    def check_network_view_exists(self, proposed_object, ip_range):
+        ''' Check if ipv4addr associated with network_view ,
+             if not assign the same network_view to given dns
+             view '''
 
-        network_obj = self.get_object('network', {'network': network})
-
-        if network_obj is None:
-            raise AnsibleError('unable to find network object %s' % network)
-
-        num = 1
-        exclude_ip = []
-        network_view = view
-
-        try:
-            ref_list = [network['_ref'] for network in network_obj if network['network_view'] == network_view]
-            if not ref_list:
-                raise AnsibleError('no records found')
-            else:
-                ref = ref_list[0]
-            avail_ips = self.call_func('next_available_ip', ref, {'num': num, 'exclude': exclude_ip})
-            return avail_ips['ips'][0]
-        except Exception as exc:
-            raise AnsibleError(to_text(exc))
+        if 'network_view' in proposed_object['ipv4addr']:
+            netview = check_type_dict(proposed_object['ipv4addr'])['network_view']
+            if netview == "":
+                netview = "default"
+            proposed_object['ipv4addr'] = NIOS_NEXT_AVAILABLE_IP + ':' + ip_range + "," + netview
+        return proposed_object['ipv4addr']
 
     def check_if_nios_next_ip_exists(self, proposed_object):
         ''' Check if nios_next_ip argument is passed in ipaddr while creating
@@ -479,11 +465,21 @@ class WapiModule(WapiBase):
                 ip_range = check_type_dict(proposed_object['ipv4addrs'][0]['ipv4addr'])['nios_next_ip']
                 proposed_object['ipv4addrs'][0]['ipv4addr'] = NIOS_NEXT_AVAILABLE_IP + ':' + ip_range
         elif 'ipv4addr' in proposed_object:
-            if 'nios_next_ip' in proposed_object['ipv4addr']:
+            if 'nios_next_ip' in proposed_object['ipv4addr'] and 'network_view' in proposed_object['ipv4addr']:
+                ip_range = check_type_dict(proposed_object['ipv4addr'])['nios_next_ip']
+                proposed_object['ipv4addr'] = self.check_network_view_exists(proposed_object, ip_range)
+            elif 'nios_next_ip' in proposed_object['ipv4addr']:
                 ip_range = check_type_dict(proposed_object['ipv4addr'])['nios_next_ip']
                 proposed_object['ipv4addr'] = NIOS_NEXT_AVAILABLE_IP + ':' + ip_range
-
         return proposed_object
+
+    def check_next_ip_status(self, obj_filter):
+        ''' Checks if nios next ip argument exists if True returns true
+            else returns false'''
+        if 'ipv4addr' in obj_filter:
+            if 'nios_next_ip' in obj_filter['ipv4addr']:
+                return True
+        return False
 
     def check_if_add_remove_ip_arg_exists(self, proposed_object):
         '''
@@ -608,14 +604,17 @@ class WapiModule(WapiBase):
                 # resolves issue where multiple a_records with same name and different IP address
                 try:
                     ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
-                    if ("nios_next_ip" in ipaddr_obj):
-                        ipaddr = self.check_next_available_ip(ipaddr_obj, test_obj_filter['view'])
-                    else:
-                        ipaddr = ipaddr_obj.get('old_ipv4addr')
+                    ipaddr = ipaddr_obj.get('old_ipv4addr')
                     old_ipv4addr_exists = True if ipaddr else False
+                    if not old_ipv4addr_exists:
+                        next_ip_exists = self.check_next_ip_status(test_obj_filter)
                 except TypeError:
                     ipaddr = obj_filter['ipv4addr']
-                test_obj_filter['ipv4addr'] = ipaddr
+                if not next_ip_exists:
+                    test_obj_filter['ipv4addr'] = ipaddr
+                else:
+                    # resolves issue to pass the ipv4addr with next available ip
+                    del test_obj_filter['ipv4addr']
             elif (ib_obj_type == NIOS_TXT_RECORD):
                 # resolves issue where multiple txt_records with same name and different text
                 test_obj_filter = obj_filter
