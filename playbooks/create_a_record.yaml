@@ -17,3 +17,13 @@
        comment: Created with Ansible
        state: present
        provider: "{{ nios_provider }}"
+  
+   - name: Add Dynamic Ip to Create A Record
+     infoblox.nios_modules.nios_a_record:
+       name: v55.ansibletestzone.com
+       view: nondefault_view
+       ipv4: {nios_next_ip: 120.0.0.0/24, network_view: custom}
+       comment: this is a sample comment
+       state: present
+       provider: "{{ nios_provider }}"
+       

@@ -84,7 +84,7 @@ NIOS_PROVIDER_SPEC = {
     'http_pool_connections': dict(type='int', default=10),
     'http_pool_maxsize': dict(type='int', default=10),
     'max_retries': dict(type='int', default=3, fallback=(env_fallback, ['INFOBLOX_MAX_RETRIES'])),
-    'wapi_version': dict(default='2.1', fallback=(env_fallback, ['INFOBLOX_WAP_VERSION'])),
+    'wapi_version': dict(default='2.12', fallback=(env_fallback, ['INFOBLOX_WAP_VERSION'])),
     'max_results': dict(type='int', default=1000, fallback=(env_fallback, ['INFOBLOX_MAX_RETRIES']))
 }
 
@@ -333,7 +333,10 @@ class WapiModule(WapiBase):
 
         # checks if the name's field has been updated
         if update and new_name:
-            proposed_object['name'] = new_name
+            if (ib_obj_type == NIOS_MEMBER):
+                proposed_object['host_name'] = new_name
+            else:
+                proposed_object['name'] = new_name
 
         check_remove = []
         if (ib_obj_type == NIOS_HOST_RECORD):
@@ -665,13 +668,36 @@ class WapiModule(WapiBase):
             if not ib_obj:
                 ib_spec['restart_if_needed'] = temp
         elif (ib_obj_type == NIOS_MEMBER):
-            # del key 'create_token' as nios_member get_object fails with the key present
-            temp = ib_spec['create_token']
-            del ib_spec['create_token']
-            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
-            if temp:
-                # reinstate 'create_token' key
-                ib_spec['create_token'] = temp
+            # gets and returns current_object as per old_name/host_name passed
+            test_obj_filter = obj_filter
+            try:
+                name_obj = check_type_dict(test_obj_filter['host_name'])
+                old_name = name_obj['old_name']
+                new_name = name_obj['new_name']
+            except TypeError:
+                host_name = obj_filter['host_name']
+
+            if old_name and new_name:
+                test_obj_filter['host_name'] = old_name
+                temp = ib_spec['create_token']
+                del ib_spec['create_token']
+                ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
+                if temp:
+                    # reinstate 'create_token' key
+                    ib_spec['create_token'] = temp
+                if ib_obj:
+                    obj_filter['host_name'] = new_name
+                else:
+                    raise Exception("object with name: '%s' is not found" % (old_name))
+                update = True
+            else :
+                # del key 'create_token' as nios_member get_object fails with the key present
+                temp = ib_spec['create_token']
+                del ib_spec['create_token']
+                ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
+                if temp:
+                    # reinstate 'create_token' key
+                    ib_spec['create_token'] = temp
         elif (ib_obj_type in (NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK, NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER)):
             # del key 'template' as nios_network get_object fails with the key present
             temp = ib_spec['template']
