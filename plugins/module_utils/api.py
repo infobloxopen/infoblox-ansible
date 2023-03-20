@@ -690,7 +690,7 @@ class WapiModule(WapiBase):
                 else:
                     raise Exception("object with name: '%s' is not found" % (old_name))
                 update = True
-            else :
+            else:
                 # del key 'create_token' as nios_member get_object fails with the key present
                 temp = ib_spec['create_token']
                 del ib_spec['create_token']
