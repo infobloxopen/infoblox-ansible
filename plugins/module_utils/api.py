@@ -338,7 +338,7 @@ class WapiModule(WapiBase):
                     if each.get('ipv4addr') and each.get('ipv4addr') == proposed_object.get('ipv4addr'):
                         current_object = each
                     # To check for existing Host_record with same name with input Host_record by IP
-                    elif each.get('ipv4addrs')[0].get('ipv4addr') and each.get('ipv4addrs')[0].get('ipv4addr')\
+                    elif each.get('ipv4addrs') and each.get('ipv4addrs')[0].get('ipv4addr')\
                             == proposed_object.get('ipv4addrs')[0].get('ipv4addr'):
                         current_object = each
                     # Else set the current_object with input value
@@ -591,8 +591,13 @@ class WapiModule(WapiBase):
             # gets and returns the current object based on name/old_name passed
             try:
                 name_obj = check_type_dict(obj_filter['name'])
-                old_name = name_obj['old_name'].lower()
-                new_name = name_obj['new_name'].lower()
+                # check if network_view allows searching and updating with camelCase
+                if (ib_obj_type == NIOS_NETWORK_VIEW):
+                    old_name = name_obj['old_name']
+                    new_name = name_obj['new_name']
+                else:
+                    old_name = name_obj['old_name'].lower()
+                    new_name = name_obj['new_name'].lower()
             except TypeError:
                 name = obj_filter['name']
 
@@ -631,7 +636,7 @@ class WapiModule(WapiBase):
                 try:
                     ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
                     ipaddr = ipaddr_obj.get('old_ipv4addr')
-                    old_ipv4addr_exists = True
+                    old_ipv4addr_exists = True if ipaddr else False
                 except TypeError:
                     ipaddr = obj_filter['ipv4addr']
                 test_obj_filter['ipv4addr'] = ipaddr
@@ -673,7 +678,7 @@ class WapiModule(WapiBase):
             try:
                 ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
                 ipaddr = ipaddr_obj.get('old_ipv4addr')
-                old_ipv4addr_exists = True
+                old_ipv4addr_exists = True if ipaddr else False
             except TypeError:
                 ipaddr = obj_filter['ipv4addr']
             test_obj_filter['ipv4addr'] = ipaddr

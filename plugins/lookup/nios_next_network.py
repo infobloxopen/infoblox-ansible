@@ -41,12 +41,22 @@ options:
       default: ''
       type: list
       elements: str
+    network_view:
+      description: The network view to retrieve the CIDR network from.
+      required: false
+      default: default
+      type: str
 '''
 
 EXAMPLES = """
 - name: return next available network for network-container 192.168.10.0/24
   ansible.builtin.set_fact:
     networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '192.168.10.0/24', cidr=25,
+                        provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+
+- name: return next available network for network-container 192.168.10.0/24 in a non-default network view
+  ansible.builtin.set_fact:
+    networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '192.168.10.0/24', cidr=25, network_view='ansible'
                         provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return the next 2 available network addresses for network-container 192.168.10.0/24
@@ -94,9 +104,14 @@ class LookupModule(LookupBase):
             raise AnsibleError('unable to find network-container object %s' % network)
         num = kwargs.get('num', 1)
         exclude_ip = kwargs.get('exclude', [])
+        network_view = kwargs.get('network_view', 'default')
 
         try:
-            ref = network_obj[0]['_ref']
+            ref_list = [network['_ref'] for network in network_obj if network['network_view'] == network_view]
+            if not ref_list:
+                raise AnsibleError('no records found')
+            else:
+                ref = ref_list[0]
             avail_nets = wapi.call_func('next_available_network', ref, {'cidr': cidr, 'num': num, 'exclude': exclude_ip})
             return [avail_nets['networks']]
         except Exception as exc:
