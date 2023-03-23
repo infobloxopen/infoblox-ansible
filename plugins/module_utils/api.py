@@ -184,27 +184,6 @@ def member_normalize(member_spec):
     return member_spec
 
 
-def convert_range_member_to_struct(member_spec):
-    # Error checking that only one member type was defined
-    opts = list(set(member_spec.keys()).intersection(['member', 'failover_association', 'ms_server']))
-    if len(opts) > 1:
-        raise AttributeError("'%s' can not be defined when '%s' is defined!" % (opts[0], opts[1]))
-
-    # A member node was passed in. Ehsure the correct type and struct
-    if 'member' in member_spec.keys():
-        member_spec['member'] = {'_struct': 'dhcpmember', 'name': member_spec['member']}
-        member_spec['server_association_type'] == 'MEMBER'
-    # A FO association was passed in. Ensure the correct type is set
-    elif 'failover_association' in member_spec.keys():
-        member_spec['server_association_type'] == 'FAILOVER'
-    # MS server was passed in. Ensure the correct type and struct
-    elif 'ms_server' in member_spec.keys():
-        member_spec['ms_server'] = {'_struct': 'msdhcpserver', 'ipv4addr': member_spec['ms_server']}
-        member_spec['server_association_type'] == 'MS_SERVER'
-
-    return member_spec
-
-
 def convert_members_to_struct(member_spec):
     ''' Transforms the members list of the Network module arguments into a
     valid WAPI struct. This function will change arguments into the valid
@@ -318,6 +297,17 @@ class WapiModule(WapiBase):
 
         # get object reference
         ib_obj_ref, update, new_name = self.get_object_ref(self.module, ib_obj_type, obj_filter, ib_spec)
+
+        # When a range update is defined, check for a range that matches the target range definition as well
+        # to allows for idempotence
+        if ib_obj_type == NIOS_RANGE and len(ib_obj_ref) == 0 and \
+                (True for v in ('new_start_addr', 'new_end_addr') if v in ib_spec.keys()):
+            if self.module.params.get('new_start_addr'):
+                obj_filter['start_addr'] = self.module.params.get('new_start_addr')
+            if self.module.params.get('new_end_addr'):
+                obj_filter['end_addr'] = self.module.params.get('new_end_addr')
+            ib_obj_ref, update, new_name = self.get_object_ref(self.module, ib_obj_type, obj_filter, ib_spec)
+
         proposed_object = {}
         for key, value in iteritems(ib_spec):
             if self.module.params[key] is not None:
@@ -362,7 +352,12 @@ class WapiModule(WapiBase):
             proposed_object = convert_members_to_struct(proposed_object)
 
         if (ib_obj_type == NIOS_RANGE):
-            proposed_object = convert_range_member_to_struct(proposed_object)
+            if proposed_object.get('new_start_addr'):
+                proposed_object['start_addr'] = proposed_object.get('new_start_addr')
+                del proposed_object['new_start_addr']
+            if proposed_object.get('new_end_addr'):
+                proposed_object['end_addr'] = proposed_object.get('new_end_addr')
+                del proposed_object['new_end_addr']
 
         # checks if the 'text' field has to be updated for the TXT Record
         if (ib_obj_type == NIOS_TXT_RECORD):
@@ -744,6 +739,19 @@ class WapiModule(WapiBase):
             # reinstate the 'template' and 'members' key
             if temp:
                 ib_spec['template'] = temp
+
+        elif (ib_obj_type in (NIOS_RANGE)):
+            # Delete the update keys to find the original range object
+            new_start = ib_spec.get('new_start_addr')
+            new_end = ib_spec.get('new_end_addr')
+            del ib_spec['new_start_addr']
+            del ib_spec['new_end_addr']
+            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
+            # Restore the keys to the object.
+            if new_start:
+                ib_spec['new_start_addr'] = new_start
+            if new_end:
+                ib_spec['new_end_addr'] = new_end
 
         else:
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
