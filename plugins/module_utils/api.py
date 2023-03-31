@@ -358,6 +358,9 @@ class WapiModule(WapiBase):
         # Checks if nios_next_ip param is passed in ipv4addrs/ipv4addr args
         proposed_object = self.check_if_nios_next_ip_exists(proposed_object)
 
+        # Checks if 'new_ipv4addr' param exists in ipv4addr args
+        proposed_object = self.check_for_new_ipv4addr(proposed_object)
+
         if state == 'present':
             if ref is None:
                 if not self.module.check_mode:
@@ -451,6 +454,16 @@ class WapiModule(WapiBase):
             if 'nios_next_ip' in proposed_object['ipv4addr']:
                 ip_range = check_type_dict(proposed_object['ipv4addr'])['nios_next_ip']
                 proposed_object['ipv4addr'] = NIOS_NEXT_AVAILABLE_IP + ':' + ip_range
+
+        return proposed_object
+
+    def check_for_new_ipv4addr(self, proposed_object):
+        ''' Checks if new_ipv4addr parameter is passed in the argument
+            while updating the record with new ipv4addr with static allocation'''
+        if 'ipv4addr' in proposed_object:
+            if 'new_ipv4addr' in proposed_object['ipv4addr']:
+                new_ipv4 = check_type_dict(proposed_object['ipv4addr'])['new_ipv4addr']
+                proposed_object['ipv4addr'] = new_ipv4
 
         return proposed_object
 
@@ -609,7 +622,7 @@ class WapiModule(WapiBase):
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
 
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
-            if old_ipv4addr_exists and ib_obj is None:
+            if old_ipv4addr_exists and (ib_obj is None or len(ib_obj) == 0):
                 raise Exception("A Record with ipv4addr: '%s' is not found" % (ipaddr))
             # prevents creation of a new TXT record with 'new_text' when TXT record with a particular 'old_text' is not found
             if old_text_exists and ib_obj is None:
