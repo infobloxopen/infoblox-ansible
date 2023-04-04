@@ -9,7 +9,9 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: nios_member
-author: "Krishna Vasudevan (@krisvasudevan)"
+author:
+  - "Krishna Vasudevan (@krisvasudevan)"
+  - "Matthew Dennett (@matthewdennett)"
 short_description: Configure Infoblox NIOS members
 version_added: "1.0.0"
 description:

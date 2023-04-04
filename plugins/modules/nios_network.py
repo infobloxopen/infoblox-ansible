@@ -9,7 +9,9 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: nios_network
-author: "Peter Sprygada (@privateip)"
+author:
+  - "Peter Sprygada (@privateip)"
+  - "Matthew Dennett (@matthewdennett)"
 short_description: Configure Infoblox NIOS network object
 version_added: "1.0.0"
 description:
