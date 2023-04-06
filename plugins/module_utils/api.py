@@ -347,6 +347,11 @@ class WapiModule(WapiBase):
         # checks if the object type is member to normalize the attributes being passed
         if (ib_obj_type == NIOS_MEMBER):
             proposed_object = member_normalize(proposed_object)
+            # The WAPI API will never return the "create_token" field that causes a difference
+            # with the defaults of the module. To prevent this we remove the "create_token" option
+            # if it has not been set to true.
+            if(proposed_object.get("create_token") is not True):
+                proposed_object.pop("create_token")
 
         if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
             proposed_object = convert_members_to_struct(proposed_object)
@@ -406,7 +411,7 @@ class WapiModule(WapiBase):
                     self.create_object(ib_obj_type, proposed_object)
                 result['changed'] = True
             # Check if NIOS_MEMBER and the flag to call function create_token is set
-            elif (ib_obj_type == NIOS_MEMBER) and (proposed_object['create_token']):
+            elif (ib_obj_type == NIOS_MEMBER) and (proposed_object.get("create_token") is True):
                 proposed_object = None
                 # the function creates a token that can be used by a pre-provisioned member to join the grid
                 result['api_results'] = self.call_func('create_token', ref, proposed_object)
