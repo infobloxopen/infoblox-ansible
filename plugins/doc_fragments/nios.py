@@ -81,7 +81,7 @@ options:
             variable.
           - Until ansible 2.8 the default WAPI was 1.4
         type: str
-        default: '2.11'
+        default: '2.3'
       max_results:
         description:
           - Specifies the maximum number of objects to be returned,
