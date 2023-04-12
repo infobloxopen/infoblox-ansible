@@ -583,7 +583,7 @@ class WapiModule(WapiBase):
                 # difference stops the comparison and returns false. If they
                 # are equal move on to the next item
 
-                #Checks if extattrs existing in proposed object
+                # Checks if extattrs existing in proposed object
                 if key == 'extattrs':
                     current_extattrs = current_object.get(key)
                     proposed_extattrs = proposed_object.get(key)
