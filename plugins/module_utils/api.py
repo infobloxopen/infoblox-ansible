@@ -37,7 +37,6 @@ from ansible.module_utils.six import iteritems
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.common.validation import check_type_dict, safe_eval
-from ansible.module_utils.six import string_types
 
 try:
     from infoblox_client.connector import Connector
@@ -350,7 +349,7 @@ class WapiModule(WapiBase):
             # The WAPI API will never return the "create_token" field that causes a difference
             # with the defaults of the module. To prevent this we remove the "create_token" option
             # if it has not been set to true.
-            if(proposed_object.get("create_token") is not True):
+            if (proposed_object.get("create_token") is not True):
                 proposed_object.pop("create_token")
 
         if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
@@ -544,6 +543,19 @@ class WapiModule(WapiBase):
                 if item in obj:
                     return True
 
+    def compare_extattrs(self, current_extattrs, proposed_extattrs):
+        '''Compare current extensible attributes to given extensible
+           attribute, if length is not equal returns false , else
+           checks the value of keys in proposed extattrs'''
+        if len(current_extattrs) != len(proposed_extattrs):
+            return False
+        else:
+            for key, proposed_item in iteritems(proposed_extattrs):
+                current_item = current_extattrs.get(key)
+                if current_item != proposed_item:
+                    return False
+            return True
+
     def compare_objects(self, current_object, proposed_object):
         for key, proposed_item in iteritems(proposed_object):
             current_item = current_object.get(key)
@@ -570,6 +582,14 @@ class WapiModule(WapiBase):
                 # Compare the items of the dict to see if they are equal. A
                 # difference stops the comparison and returns false. If they
                 # are equal move on to the next item
+
+                #Checks if extattrs existing in proposed object
+                if key == 'extattrs':
+                    current_extattrs = current_object.get(key)
+                    proposed_extattrs = proposed_object.get(key)
+                    if not self.compare_extattrs(current_extattrs, proposed_extattrs):
+                        return False
+
                 if self.compare_objects(current_item, proposed_item) is False:
                     return False
                 else:
