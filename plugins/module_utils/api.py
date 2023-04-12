@@ -51,6 +51,7 @@ NIOS_DNS_VIEW = 'view'
 NIOS_NETWORK_VIEW = 'networkview'
 NIOS_HOST_RECORD = 'record:host'
 NIOS_IPV4_NETWORK = 'network'
+NIOS_RANGE = 'range'
 NIOS_IPV6_NETWORK = 'ipv6network'
 NIOS_ZONE = 'zone_auth'
 NIOS_PTR_RECORD = 'record:ptr'
@@ -183,6 +184,25 @@ def member_normalize(member_spec):
     return member_spec
 
 
+def convert_members_to_struct(member_spec):
+    ''' Transforms the members list of the Network module arguments into a
+    valid WAPI struct. This function will change arguments into the valid
+    wapi structure of the format:
+        {
+            network: 10.1.1.0/24
+            members:
+                [
+                    {'_struct': 'dhcpmember', 'name': 'member_name1'},
+                    {'_struct': 'dhcpmember', 'name': 'member_name2'}
+                    {'_struct': 'dhcpmember', 'name': '...'}
+                ]
+        }
+    '''
+    if 'members' in member_spec.keys():
+        member_spec['members'] = [{'_struct': 'dhcpmember', 'name': k['name']} for k in member_spec['members']]
+    return member_spec
+
+
 def normalize_ib_spec(ib_spec):
     result = {}
     for arg in ib_spec:
@@ -277,6 +297,17 @@ class WapiModule(WapiBase):
 
         # get object reference
         ib_obj_ref, update, new_name = self.get_object_ref(self.module, ib_obj_type, obj_filter, ib_spec)
+
+        # When a range update is defined, check for a range that matches the target range definition as well
+        # to allows for idempotence
+        if ib_obj_type == NIOS_RANGE and len(ib_obj_ref) == 0 and \
+                (True for v in ('new_start_addr', 'new_end_addr') if v in ib_spec.keys()):
+            if self.module.params.get('new_start_addr'):
+                obj_filter['start_addr'] = self.module.params.get('new_start_addr')
+            if self.module.params.get('new_end_addr'):
+                obj_filter['end_addr'] = self.module.params.get('new_end_addr')
+            ib_obj_ref, update, new_name = self.get_object_ref(self.module, ib_obj_type, obj_filter, ib_spec)
+
         proposed_object = {}
         for key, value in iteritems(ib_spec):
             if self.module.params[key] is not None:
@@ -316,6 +347,22 @@ class WapiModule(WapiBase):
         # checks if the object type is member to normalize the attributes being passed
         if (ib_obj_type == NIOS_MEMBER):
             proposed_object = member_normalize(proposed_object)
+            # The WAPI API will never return the "create_token" field that causes a difference
+            # with the defaults of the module. To prevent this we remove the "create_token" option
+            # if it has not been set to true.
+            if(proposed_object.get("create_token") is not True):
+                proposed_object.pop("create_token")
+
+        if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
+            proposed_object = convert_members_to_struct(proposed_object)
+
+        if (ib_obj_type == NIOS_RANGE):
+            if proposed_object.get('new_start_addr'):
+                proposed_object['start_addr'] = proposed_object.get('new_start_addr')
+                del proposed_object['new_start_addr']
+            if proposed_object.get('new_end_addr'):
+                proposed_object['end_addr'] = proposed_object.get('new_end_addr')
+                del proposed_object['new_end_addr']
 
         # checks if the 'text' field has to be updated for the TXT Record
         if (ib_obj_type == NIOS_TXT_RECORD):
@@ -364,7 +411,7 @@ class WapiModule(WapiBase):
                     self.create_object(ib_obj_type, proposed_object)
                 result['changed'] = True
             # Check if NIOS_MEMBER and the flag to call function create_token is set
-            elif (ib_obj_type == NIOS_MEMBER) and (proposed_object['create_token']):
+            elif (ib_obj_type == NIOS_MEMBER) and (proposed_object.get("create_token") is True):
                 proposed_object = None
                 # the function creates a token that can be used by a pre-provisioned member to join the grid
                 result['api_results'] = self.call_func('create_token', ref, proposed_object)
@@ -399,7 +446,7 @@ class WapiModule(WapiBase):
                     del proposed_object['zone_format']
                     self.update_object(ref, proposed_object)
                     result['changed'] = True
-                elif 'network_view' in proposed_object and (ib_obj_type not in (NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS)):
+                elif 'network_view' in proposed_object and (ib_obj_type not in (NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS, NIOS_RANGE)):
                     proposed_object.pop('network_view')
                     result['changed'] = True
                 if not self.module.check_mode and res is None:
@@ -510,12 +557,23 @@ class WapiModule(WapiBase):
                 if key == 'aliases':
                     if set(current_item) != set(proposed_item):
                         return False
+                # If the lists are of a different length the objects can not be
+                # equal and False will be returned before comparing the lists items
+                if len(proposed_item) != len(current_item):
+                    return False
+
                 for subitem in proposed_item:
                     if not self.issubset(subitem, current_item):
                         return False
 
             elif isinstance(proposed_item, dict):
-                return self.compare_objects(current_item, proposed_item)
+                # Compare the items of the dict to see if they are equal. A
+                # difference stops the comparison and returns false. If they
+                # are equal move on to the next item
+                if self.compare_objects(current_item, proposed_item) is False:
+                    return False
+                else:
+                    continue
 
             else:
                 if current_item != proposed_item:
@@ -676,10 +734,30 @@ class WapiModule(WapiBase):
             # del key 'template' as nios_network get_object fails with the key present
             temp = ib_spec['template']
             del ib_spec['template']
+
+            if (ib_obj_type in (NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER)):
+                # del key 'members' as nios_network get_object fails with the key present
+                # Don't reinstate the field after as it is not valid for network containers
+                del ib_spec['members']
+
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
+            # reinstate the 'template' and 'members' key
             if temp:
-                # reinstate 'template' key
                 ib_spec['template'] = temp
+
+        elif (ib_obj_type in (NIOS_RANGE)):
+            # Delete the update keys to find the original range object
+            new_start = ib_spec.get('new_start_addr')
+            new_end = ib_spec.get('new_end_addr')
+            del ib_spec['new_start_addr']
+            del ib_spec['new_end_addr']
+            ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
+            # Restore the keys to the object.
+            if new_start:
+                ib_spec['new_start_addr'] = new_start
+            if new_end:
+                ib_spec['new_end_addr'] = new_end
+
         else:
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
         return ib_obj, update, new_name

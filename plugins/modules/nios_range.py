@@ -8,15 +8,13 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: nios_network
-author:
-  - "Peter Sprygada (@privateip)"
-  - "Matthew Dennett (@matthewdennett)"
-short_description: Configure Infoblox NIOS network object
-version_added: "1.0.0"
+module: nios_range
+author: "Matthew Dennett (@matthewdennett)"
+short_description: Configure Infoblox NIOS network range object
+version_added: "1.4.0"
 description:
-  - Adds and/or removes instances of network objects from
-    Infoblox NIOS servers.  This module manages NIOS C(network) objects
+  - Adds and/or removes instances of range objects from
+    Infoblox NIOS servers.  This module manages NIOS DHCP range objects
     using the Infoblox WAPI interface over REST.
   - Supports both IPV4 and IPV6 internet protocols.
 requirements:
@@ -27,12 +25,11 @@ notes:
 options:
   network:
     description:
-      - Specifies the network to add or remove from the system.  The value
+      - Specifies the network to add or remove DHCP range to.  The value
         should use CIDR notation.
     type: str
     required: true
     aliases:
-      - name
       - cidr
   network_view:
     description:
@@ -75,11 +72,6 @@ options:
           - The name of the space this DHCP option is associated to
         type: str
         default: DHCP
-  template:
-    description:
-      - If set on creation, the network is created according to the values
-        specified in the selected template.
-    type: str
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
@@ -92,25 +84,81 @@ options:
         of this object.  The provided text string will be configured on the
         object instance.
     type: str
-  container:
+  start_addr:
     description:
-      - If set to true it'll create the network container to be added or removed
-        from the system.
-    type: bool
-  members:
+      - Configures IP address this object instance is to begin from. If
+        'new_start_addr' is defined during a create operation this value is
+        overridden with the value of 'new_start_addr'
+    type: str
+    required: true
+    aliases:
+      - start
+      - first_addr
+      - first
+  new_start_addr:
     description:
-      - Configures the Nios Menber assignment for the configured network instance.
-        This argument accepts a list of member names (see suboptions). When omitted
-        a default value of an empty list is used. If the field 'container' is set to
-        true this field is ignored.
-    type: list
-    default: []
-    elements: dict
-    suboptions:
-      name:
-        description:
-          - The name of the Nios member to be assigned to this network.
-        type: str
+      - Configures IP address to update this object instance to begin from.
+    type: str
+    required: false
+    aliases:
+      - new_start
+      - new_first_addr
+      - new_first
+  end_addr:
+    description:
+      - Configures IP address this object instance is to end at. If
+        'new_end_addr' is defined during a create operation this value is
+        overridden with the value of 'new_end_addr'
+    type: str
+    required: true
+    aliases:
+      - end
+      - last_addr
+      - last
+  new_end_addr:
+    description:
+      - Configures IP address to update this object instance to end at.
+    type: str
+    required: false
+    aliases:
+      - new_end
+      - new_last_addr
+      - new_last
+  member:
+    description:
+      - The hostname of the Nios member which will be configured to server
+        this object instance. Can not be configured when 'ms_server' or
+        'failover_association' are configured.
+    type: str
+    required: false
+  failover_association:
+    description:
+      - The name of the DHCP failover association which will be configured
+        to server this object instance. A failover of MS or Nios members
+        can be configured. Can not be configured when 'ms_server' or
+        'member' are configured.
+    type: str
+    required: false
+  ms_server:
+    description:
+      - The hostname of the MS member which will be configured to server
+        this object instance. Can not be configured when 'member' or
+        'failover_association' are configured.
+    type: str
+    required: false
+  server_association_type:
+    description:
+      - Configured the type of server association that will be assigned to
+        serve this object instance. This value is not required and will be
+        set as needed automatically during module execution.
+    type: str
+    required: false
+    choices:
+      - NONE
+      - FAILOVER
+      - MEMBER
+      - FAILOVER_MS
+      - MS_SERVER
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -122,12 +170,28 @@ options:
     choices:
       - present
       - absent
+  disable:
+    description:
+      - Configures the enabled of discbeled for DHCP state for the instance
+        of the object on the NIOS server. When this value is set to true, the
+        object is configured in the disabled for DHCP state.
+    type: bool
+    default: false
+  name:
+    description:
+      - Congifured the name of the Microsoft scope for the instance of the
+        object on the NIOS server.
+    type: str
 '''
 
 EXAMPLES = '''
-- name: Configure a network ipv4
-  infoblox.nios_modules.nios_network:
+
+- name: Configure a ipv4 reserved range
+  infoblox.nios_modules.nios_range:
     network: 192.168.10.0/24
+    start: 192.168.10.10
+    end: 192.168.10.20
+    name: Test Range 1
     comment: this is a test comment
     state: present
     provider:
@@ -136,9 +200,14 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: Configure a network ipv6
-  infoblox.nios_modules.nios_network:
-    network: fe80::/64
+- name: Upadtes a ipv4 reserved range
+  infoblox.nios_modules.nios_range:
+    network: 192.168.10.0/24
+    start: 192.168.10.10
+    new_start: 192.168.10.5
+    end: 192.168.10.20
+    new_end: 192.168.10.50
+    name: Test Range 1
     comment: this is a test comment
     state: present
     provider:
@@ -147,38 +216,14 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: Create network with member assignment for a network ipv4
-  infoblox.nios_modules.nios_network:
+- name: Configure a ipv4 range served by a member
+  infoblox.nios_modules.nios_range:
     network: 192.168.10.0/24
-    comment: This is a test comment
-    members:
-      - name: member1.infoblox
-      - name: member2.infoblox
-    state: present
-    provider:
-      host: "{{ inventory_hostname_short }}"
-      username: admin
-      password: admin
-  connection: local
-
-- name: Remove member assignment form ipv4 network
-  infoblox.nios_modules.nios_network:
-    network: 192.168.10.0/24
-    comment: This is a test comment
-    state: present
-    provider:
-      host: "{{ inventory_hostname_short }}"
-      username: admin
-      password: admin
-  connection: local
-
-- name: Set dhcp options for a network ipv4
-  infoblox.nios_modules.nios_network:
-    network: 192.168.10.0/24
+    start: 192.168.10.10
+    end: 192.168.10.20
+    name: Test Range 1
+    member: infoblox1.localdomain
     comment: this is a test comment
-    options:
-      - name: domain-name
-        value: ansible.com
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -186,46 +231,30 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: Remove a network ipv4
-  infoblox.nios_modules.nios_network:
+- name: Configure a ipv4 range served by a failover association
+  infoblox.nios_modules.nios_range:
     network: 192.168.10.0/24
-    state: absent
+    start: 192.168.10.10
+    end: 192.168.10.20
+    name: Test Range 1
+    failover_association: fo_association_01
+    comment: this is a test comment
+    state: present
     provider:
       host: "{{ inventory_hostname_short }}"
       username: admin
       password: admin
   connection: local
 
-- name: Configure an ipv4 network container
-  infoblox.nios_modules.nios_network:
+- name: Configure a ipv4 range served by a MS Server
+  infoblox.nios_modules.nios_range:
     network: 192.168.10.0/24
-    container: true
-    comment: test network container
+    start: 192.168.10.10
+    end: 192.168.10.20
+    name: Test Range 1
+    ms_server: dc01.ad.localdomain
+    comment: this is a test comment
     state: present
-    provider:
-      host: "{{ inventory_hostname_short }}"
-      username: admin
-      password: admin
-  connection: local
-
-- name: Configure an ipv6 network container
-  infoblox.nios_modules.nios_network:
-    network: fe80::/64
-    container: true
-    comment: test network container
-    state: present
-    provider:
-      host: "{{ inventory_hostname_short }}"
-      username: admin
-      password: admin
-  connection: local
-
-- name: Remove an ipv4 network container
-  infoblox.nios_modules.nios_network:
-    networkr: 192.168.10.0/24
-    container: true
-    comment: test network container
-    state: absent
     provider:
       host: "{{ inventory_hostname_short }}"
       username: admin
@@ -238,10 +267,8 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
-from ..module_utils.api import NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK
-from ..module_utils.api import NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER
+from ..module_utils.api import NIOS_RANGE
 from ..module_utils.api import normalize_ib_spec
-from ..module_utils.network import validate_ip_address, validate_ip_v6_address
 
 
 def options(module):
@@ -269,29 +296,6 @@ def options(module):
     return options
 
 
-def check_ip_addr_type(obj_filter, ib_spec):
-    '''This function will check if the argument ip is type v4/v6 and return appropriate infoblox
-       network/networkcontainer type
-    '''
-
-    ip = obj_filter['network']
-    if 'container' in obj_filter and obj_filter['container']:
-        check_ip = ip.split('/')
-        del ib_spec['container']  # removing the container key from post arguments
-        del ib_spec['options']  # removing option argument as for network container it's not supported
-        if validate_ip_address(check_ip[0]):
-            return NIOS_IPV4_NETWORK_CONTAINER, ib_spec
-        elif validate_ip_v6_address(check_ip[0]):
-            return NIOS_IPV6_NETWORK_CONTAINER, ib_spec
-    else:
-        check_ip = ip.split('/')
-        del ib_spec['container']  # removing the container key from post arguments
-        if validate_ip_address(check_ip[0]):
-            return NIOS_IPV4_NETWORK, ib_spec
-        elif validate_ip_v6_address(check_ip[0]):
-            return NIOS_IPV6_NETWORK, ib_spec
-
-
 def check_vendor_specific_dhcp_option(module, ib_spec):
     '''This function will check if the argument dhcp option belongs to vendor-specific and if yes then will remove
      use_options flag which is not supported with vendor-specific dhcp options.
@@ -303,6 +307,31 @@ def check_vendor_specific_dhcp_option(module, ib_spec):
                     if temp_dict['num'] in (43, 124, 125, 67, 60):
                         del temp_dict['use_option']
     return ib_spec
+
+
+def convert_range_member_to_struct(module):
+    '''This function will check the module input to ensure that only one member assignment type is specified at once.
+    Member passed in is converted to the correct struct for the API to understand bassed on the member type.
+    '''
+    # Error checking that only one member type was defined
+    params = [k for k in module.params.keys() if module.params[k] is not None]
+    opts = list(set(params).intersection(['member', 'failover_association', 'ms_server']))
+    if len(opts) > 1:
+        raise AttributeError("'%s' can not be defined when '%s' is defined!" % (opts[0], opts[1]))
+
+    # A member node was passed in. Ehsure the correct type and struct
+    if 'member' in opts:
+        module.params['member'] = {'_struct': 'dhcpmember', 'name': module.params['member']}
+        module.params['server_association_type'] = 'MEMBER'
+    # A FO association was passed in. Ensure the correct type is set
+    elif 'failover_association' in opts:
+        module.params['server_association_type'] = 'FAILOVER'
+    # MS server was passed in. Ensure the correct type and struct
+    elif 'ms_server' in opts:
+        module.params['ms_server'] = {'_struct': 'msdhcpserver', 'ipv4addr': module.params['ms_server']}
+        module.params['server_association_type'] = 'MS_SERVER'
+
+    return module
 
 
 def main():
@@ -319,17 +348,23 @@ def main():
         vendor_class=dict(default='DHCP')
     )
 
+    # This is what gets posted to the WAPI API
     ib_spec = dict(
-        network=dict(required=True, aliases=['name', 'cidr'], ib_req=True),
+        network=dict(required=True, aliases=['cidr']),
         network_view=dict(default='default', ib_req=True),
-
+        start_addr=dict(required=True, aliases=['start', 'first_addr', 'first'], type='str', ib_req=True),
+        new_start_addr=dict(aliases=['new_start', 'new_first_addr', 'new_first'], type='str'),
+        end_addr=dict(required=True, aliases=['end', 'last_addr', 'last'], type='str', ib_req=True),
+        new_end_addr=dict(aliases=['new_end', 'new_last_addr', 'new_last'], type='str'),
+        name=dict(type='str'),
+        disable=dict(type='bool', default='false',),
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
-
-        template=dict(type='str'),
+        member=dict(type='str'),
+        failover_association=dict(type='str'),
+        ms_server=dict(type='str'),
+        server_association_type=dict(type='str', choices=['NONE', 'FAILOVER', 'MEMBER', 'FAILOVER_MS', 'MS_SERVER']),
         extattrs=dict(type='dict'),
-        comment=dict(),
-        container=dict(type='bool', ib_req=True),
-        members=dict(type='list', elements='dict', default=[])
+        comment=dict()
     )
 
     argument_spec = dict(
@@ -340,18 +375,13 @@ def main():
     argument_spec.update(normalize_ib_spec(ib_spec))
     argument_spec.update(WapiModule.provider_spec)
 
-    module = AnsibleModule(argument_spec=argument_spec,
-                           supports_check_mode=True)
-
-    # to get the argument ipaddr
-    obj_filter = dict([(k, module.params[k]) for k, v in iteritems(ib_spec) if v.get('ib_req')])
-    network_type, ib_spec = check_ip_addr_type(obj_filter, ib_spec)
-
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+    module = convert_range_member_to_struct(module)
     wapi = WapiModule(module)
     # to check for vendor specific dhcp option
     ib_spec = check_vendor_specific_dhcp_option(module, ib_spec)
 
-    result = wapi.run(network_type, ib_spec)
+    result = wapi.run(NIOS_RANGE, ib_spec)
 
     module.exit_json(**result)
 

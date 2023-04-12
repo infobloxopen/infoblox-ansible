@@ -9,7 +9,9 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: nios_member
-author: "Krishna Vasudevan (@krisvasudevan)"
+author:
+  - "Krishna Vasudevan (@krisvasudevan)"
+  - "Matthew Dennett (@matthewdennett)"
 short_description: Configure Infoblox NIOS members
 version_added: "1.0.0"
 description:
@@ -366,6 +368,13 @@ options:
       - Flag for initiating a create token request for pre-provisioned members.
     type: bool
     default: False
+  master_candidate:
+    description:
+      - Configures the instance of this object to be enabled as a Grid Master
+        Candidate or a regular member node.
+      - True enables the member as a Master Candidate
+    type: bool
+    default: false
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -383,6 +392,24 @@ EXAMPLES = '''
 - name: Add a member to the grid with IPv4 address
   infoblox.nios_modules.nios_member:
     host_name: member01.localdomain
+    vip_setting:
+      - address: 192.168.1.100
+        subnet_mask: 255.255.255.0
+        gateway: 192.168.1.1
+    config_addr_type: IPV4
+    platform: VNIOS
+    comment: "Created by Ansible"
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Add a Grid Master Candidate to the grid with IPv4 address
+  infoblox.nios_modules.nios_member:
+    host_name: member01.localdomain
+    master_candidate: true
     vip_setting:
       - address: 192.168.1.100
         subnet_mask: 255.255.255.0
@@ -553,6 +580,7 @@ def main():
         pre_provisioning=dict(type='list', elements='dict', options=pre_prov_spec),
         extattrs=dict(type='dict'),
         create_token=dict(type='bool', default=False),
+        master_candidate=dict(type='bool', default=False)
     )
 
     argument_spec = dict(
