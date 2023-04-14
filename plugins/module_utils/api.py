@@ -350,6 +350,9 @@ class WapiModule(WapiBase):
                     if 'remove' in proposed_object['ipv4addrs'][0]:
                         del proposed_object['ipv4addrs'][0]['remove']
 
+        # Checks if 'new_ipv4addr' param exists in ipv4addr args
+        proposed_object = self.check_for_new_ipv4addr(proposed_object)
+
         res = None
         modified = not self.compare_objects(current_object, proposed_object)
         if 'extattrs' in proposed_object:
@@ -357,9 +360,6 @@ class WapiModule(WapiBase):
 
         # Checks if nios_next_ip param is passed in ipv4addrs/ipv4addr args
         proposed_object = self.check_if_nios_next_ip_exists(proposed_object)
-
-        # Checks if 'new_ipv4addr' param exists in ipv4addr args
-        proposed_object = self.check_for_new_ipv4addr(proposed_object)
 
         if state == 'present':
             if ref is None:
@@ -561,12 +561,24 @@ class WapiModule(WapiBase):
                     test_obj_filter = dict([('name', old_name), ('view', obj_filter['view'])])
                 else:
                     test_obj_filter = dict([('name', old_name)])
+                try:
+                    ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
+                    ipaddr = ipaddr_obj.get('old_ipv4addr')
+                    old_ipv4addr_exists = True if ipaddr else False
+                except TypeError:
+                    ipaddr = obj_filter['ipv4addr']
+                if old_ipv4addr_exists:
+                    test_obj_filter['ipv4addr'] = ipaddr
+
                 # get the object reference
                 ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=list(ib_spec.keys()))
                 if ib_obj:
                     obj_filter['name'] = new_name
                 else:
-                    raise Exception("object with name: '%s' is not found" % (old_name))
+                    if old_ipv4addr_exists:
+                        raise Exception("object with name: '%s' is not found, associated with %s ipv4addr" % (old_name, test_obj_filter['ipv4addr']))
+                    else:
+                        raise Exception("object with name: '%s' is not found" % (old_name))
                 update = True
                 return ib_obj, update, new_name
             if (ib_obj_type == NIOS_HOST_RECORD):
