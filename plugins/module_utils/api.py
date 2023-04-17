@@ -252,6 +252,11 @@ class WapiInventory(WapiBase):
     pass
 
 
+class AnsibleError(Exception):
+    '''Implements raising exceptions'''
+    pass
+
+
 class WapiModule(WapiBase):
     ''' Implements WapiBase for executing a NIOS module '''
     def __init__(self, module):
@@ -397,6 +402,9 @@ class WapiModule(WapiBase):
                     if 'remove' in proposed_object['ipv4addrs'][0]:
                         del proposed_object['ipv4addrs'][0]['remove']
 
+        # Checks if 'new_ipv4addr' param exists in ipv4addr args
+        proposed_object = self.check_for_new_ipv4addr(proposed_object)
+
         res = None
         modified = not self.compare_objects(current_object, proposed_object)
         if 'extattrs' in proposed_object:
@@ -484,6 +492,17 @@ class WapiModule(WapiBase):
             if obj_host_name == ref_host_name and current_ip_addr != proposed_ip_addr:
                 self.create_object(ib_obj_type, proposed_object)
 
+    def get_network_view(self, proposed_object):
+        ''' Check for the associated network view with
+            the given dns_view'''
+        try:
+            network_view_ref = self.get_object('view', {"name": proposed_object['view']}, return_fields=['network_view'])
+            if network_view_ref:
+                network_view = network_view_ref[0].get('network_view')
+        except Exception:
+            raise Exception("object with dns_view: %s not found" % (proposed_object['view']))
+        return network_view
+
     def check_if_nios_next_ip_exists(self, proposed_object):
         ''' Check if nios_next_ip argument is passed in ipaddr while creating
             host record, if yes then format proposed object ipv4addrs and pass
@@ -497,7 +516,18 @@ class WapiModule(WapiBase):
         elif 'ipv4addr' in proposed_object:
             if 'nios_next_ip' in proposed_object['ipv4addr']:
                 ip_range = check_type_dict(proposed_object['ipv4addr'])['nios_next_ip']
-                proposed_object['ipv4addr'] = NIOS_NEXT_AVAILABLE_IP + ':' + ip_range
+                net_view = self.get_network_view(proposed_object)
+                proposed_object['ipv4addr'] = NIOS_NEXT_AVAILABLE_IP + ':' + ip_range + ',' + net_view
+
+        return proposed_object
+
+    def check_for_new_ipv4addr(self, proposed_object):
+        ''' Checks if new_ipv4addr parameter is passed in the argument
+            while updating the record with new ipv4addr with static allocation'''
+        if 'ipv4addr' in proposed_object:
+            if 'new_ipv4addr' in proposed_object['ipv4addr']:
+                new_ipv4 = check_type_dict(proposed_object['ipv4addr'])['new_ipv4addr']
+                proposed_object['ipv4addr'] = new_ipv4
 
         return proposed_object
 
@@ -528,6 +558,14 @@ class WapiModule(WapiBase):
             else:
                 del proposed_object['ipv4addrs'][0]['remove']
         return update, proposed_object
+
+    def check_next_ip_status(self, obj_filter):
+        ''' Checks if nios next ip argument exists if True returns true
+            else returns false'''
+        if 'ipv4addr' in obj_filter:
+            if 'nios_next_ip' in obj_filter['ipv4addr']:
+                return True
+        return False
 
     def issubset(self, item, objects):
         ''' Checks if item is a subset of objects
@@ -587,6 +625,7 @@ class WapiModule(WapiBase):
         update = False
         old_name = new_name = None
         old_ipv4addr_exists = old_text_exists = False
+        next_ip_exists = False
         if ('name' in obj_filter):
             # gets and returns the current object based on name/old_name passed
             try:
@@ -637,9 +676,15 @@ class WapiModule(WapiBase):
                     ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
                     ipaddr = ipaddr_obj.get('old_ipv4addr')
                     old_ipv4addr_exists = True if ipaddr else False
+                    if not old_ipv4addr_exists:
+                        next_ip_exists = self.check_next_ip_status(test_obj_filter)
                 except TypeError:
                     ipaddr = obj_filter['ipv4addr']
-                test_obj_filter['ipv4addr'] = ipaddr
+                if old_ipv4addr_exists:
+                    test_obj_filter['ipv4addr'] = ipaddr
+                # resolve issue if nios_next_ip exists which is not searchable attribute
+                if next_ip_exists:
+                    del test_obj_filter['ipv4addr']
             elif (ib_obj_type == NIOS_TXT_RECORD):
                 # resolves issue where multiple txt_records with same name and different text
                 test_obj_filter = obj_filter
@@ -667,7 +712,7 @@ class WapiModule(WapiBase):
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
 
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
-            if old_ipv4addr_exists and ib_obj is None:
+            if old_ipv4addr_exists and (ib_obj is None or len(ib_obj) == 0):
                 raise Exception("A Record with ipv4addr: '%s' is not found" % (ipaddr))
             # prevents creation of a new TXT record with 'new_text' when TXT record with a particular 'old_text' is not found
             if old_text_exists and ib_obj is None:
