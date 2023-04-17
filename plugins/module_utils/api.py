@@ -332,6 +332,7 @@ class WapiModule(WapiBase):
                     # To check for existing A_record with same name with input A_record by IP
                     if each.get('ipv4addr') and each.get('ipv4addr') == proposed_object.get('ipv4addr'):
                         current_object = each
+                        break
                     # To check for existing Host_record with same name with input Host_record by IP
                     elif each.get('ipv4addrs') and each.get('ipv4addrs')[0].get('ipv4addr')\
                             == proposed_object.get('ipv4addrs')[0].get('ipv4addr'):
@@ -643,6 +644,19 @@ class WapiModule(WapiBase):
             if old_name and new_name:
                 if (ib_obj_type == NIOS_HOST_RECORD):
                     test_obj_filter = dict([('name', old_name), ('view', obj_filter['view'])])
+                # if there are multiple records with same name and different ip
+                elif (ib_obj_type == NIOS_A_RECORD):
+                    test_obj_filter = dict([('name', old_name), ('ipv4addr', obj_filter['ipv4addr'])])
+                    try:
+                        ipaddr_obj = check_type_dict(obj_filter['ipv4addr'])
+                        ipaddr = ipaddr_obj.get('old_ipv4addr')
+                        old_ipv4addr_exists = True if ipaddr else False
+                    except TypeError:
+                        ipaddr = test_obj_filter['ipv4addr']
+                    if old_ipv4addr_exists:
+                        test_obj_filter['ipv4addr'] = ipaddr
+                    else:
+                        del test_obj_filter['ipv4addr']
                 else:
                     test_obj_filter = dict([('name', old_name)])
                 # get the object reference
