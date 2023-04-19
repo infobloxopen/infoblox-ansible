@@ -763,7 +763,7 @@ class WapiModule(WapiBase):
             # throws exception if start_addr and end_addr doesn't exists for updating range
             if (new_start_arg and new_end_arg):
                 if not ib_obj:
-                    raise Exception('Specified range %s-%s not found'%(obj_filter['start_addr'], obj_filter['end_addr']))
+                    raise Exception('Specified range %s-%s not found' % (obj_filter['start_addr'], obj_filter['end_addr']))
         else:
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
         return ib_obj, update, new_name
