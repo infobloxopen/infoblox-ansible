@@ -663,6 +663,8 @@ class WapiModule(WapiBase):
                 ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=list(ib_spec.keys()))
                 if ib_obj:
                     obj_filter['name'] = new_name
+                elif old_ipv4addr_exists and (len(ib_obj) == 0):
+                    raise Exception("object with name: '%s', ipv4addr: '%s' is not found" % (old_name, test_obj_filter['ipv4addr']))
                 else:
                     raise Exception("object with name: '%s' is not found" % (old_name))
                 update = True
