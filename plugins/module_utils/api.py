@@ -559,7 +559,8 @@ class WapiModule(WapiBase):
                         return False
                 # If the lists are of a different length the objects can not be
                 # equal and False will be returned before comparing the lists items
-                if len(proposed_item) != len(current_item):
+                # this code part will work for members assignment
+                if key == 'members' and (len(proposed_item) != len(current_item)):
                     return False
 
                 for subitem in proposed_item:
