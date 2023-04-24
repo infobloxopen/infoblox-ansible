@@ -330,7 +330,8 @@ def convert_range_member_to_struct(module):
     elif 'ms_server' in opts:
         module.params['ms_server'] = {'_struct': 'msdhcpserver', 'ipv4addr': module.params['ms_server']}
         module.params['server_association_type'] = 'MS_SERVER'
-
+    else:
+        module.params['server_association_type'] = 'NONE'
     return module
 
 
