@@ -5,4 +5,4 @@ pytest-xdist
 mock
 pytest-mock
 pytest-cov
-coverage>=5.2.1
+coverage==4.5.4
