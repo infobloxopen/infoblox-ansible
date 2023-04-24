@@ -159,7 +159,6 @@ RETURN = ''' # '''
 from ..module_utils.api import NIOS_DTC_LBDN
 from ..module_utils.api import WapiModule
 from ..module_utils.api import normalize_ib_spec
-from ansible.module_utils.six import iteritems
 from ansible.module_utils.basic import AnsibleModule
 
 

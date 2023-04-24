@@ -23,7 +23,6 @@ __metaclass__ = type
 from ansible_collections.infoblox.nios_modules.plugins.modules import nios_dns_view
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
-from ansible.module_utils.common.validation import check_type_dict
 from .test_nios_module import TestNiosModule, load_fixture
 
 

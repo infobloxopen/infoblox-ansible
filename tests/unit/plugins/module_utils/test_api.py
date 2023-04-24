@@ -8,7 +8,6 @@ import copy
 
 from ansible_collections.infoblox.nios_modules.tests.unit.compat import unittest
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
-from ansible.module_utils.common.validation import check_type_dict
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 
 
