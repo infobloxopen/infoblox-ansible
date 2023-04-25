@@ -22,7 +22,8 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system.
+        the system. User can also update the name as it is possible
+        to pass a dict containing I(new_name), I(old_name). See examples
     required: true
     type: str
   view:

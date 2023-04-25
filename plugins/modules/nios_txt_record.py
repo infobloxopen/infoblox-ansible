@@ -25,7 +25,8 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system.
+        the system. Users can also update the name as it is possible
+        to pass a dict containing I(new_name), I(old_name). See examples.
     required: true
     type: str
   view:
@@ -84,6 +85,18 @@ EXAMPLES = '''
           host: "{{ inventory_hostname_short }}"
           username: admin
           password: admin
+
+    - name: Update name of TXT record
+      infoblox.nios_modules.nios_txt_record:
+        name: {old_name: sample.txtrecord.com, new_name: newsample.txtrecord.com}
+        text: mytext
+        state: present
+        view: External
+        provider:
+          host: "{{ inventory_hostname_short }}"
+          username: admin
+          password: admin
+      connection: local
 
     - name: Ensure a text Record does not exist
       infoblox.nios_modules.nios_txt_record:

@@ -25,7 +25,8 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system.
+        the system. Users can also update the name as it is possible
+        to pass a dict containing I(new_name), I(old_name). See examples.
     required: true
     type: str
   view:
@@ -104,6 +105,20 @@ EXAMPLES = '''
     target: service1.ansible.com
     weight: 10
     comment: this is a test comment
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name:Update name of SRV record
+  infoblox.nios_modules.nios_srv_record:
+    name: {old_name: _sip._tcp.service.ansible.com, new_name: _sip._udp.service.ansible.com}
+    port: 5080
+    priority: 10
+    target: service1.ansible.com
+    weight: 10
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
