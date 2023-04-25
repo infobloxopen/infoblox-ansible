@@ -112,7 +112,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name:Update name of SRV record
+- name: Update name of SRV record
   infoblox.nios_modules.nios_srv_record:
     name: {old_name: _sip._tcp.service.ansible.com, new_name: _sip._udp.service.ansible.com}
     port: 5080
