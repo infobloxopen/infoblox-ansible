@@ -125,7 +125,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-- name: Update an A record in custom view with a dynamic IP using nios_next_ip
+- name: Update an A record with static ip
   infoblox.nios_modules.nios_a_record:
     name: test.parent.com
     view: default.custom
