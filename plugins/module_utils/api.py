@@ -78,6 +78,7 @@ NIOS_DTC_MONITOR_SIP = 'dtc:monitor:sip'
 NIOS_DTC_MONITOR_SNMP = 'dtc:monitor:snmp'
 NIOS_DTC_MONITOR_TCP = 'dtc:monitor:tcp'
 NIOS_DTC_TOPOLOGY = 'dtc:topology'
+NIOS_EXTENSIBLE_ATTRIBUTE = 'extensibleattributedef'
 
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
@@ -213,6 +214,12 @@ def convert_members_to_struct(member_spec):
         member_spec['members'] = [{'_struct': 'dhcpmember', 'name': k['name']} for k in member_spec['members']]
     return member_spec
 
+def convert_ea_list_to_struct(member_spec):
+    ''' Transforms the list of the values into a valid WAPI struct.
+    '''
+    if 'list_values' in member_spec.keys():
+        member_spec['list_values'] = [{'_struct': 'extensibleattributedef:listvalues', 'value': v} for v in member_spec['list_values']]
+    return member_spec
 
 def normalize_ib_spec(ib_spec):
     result = {}
@@ -380,6 +387,9 @@ class WapiModule(WapiBase):
             if proposed_object.get('new_end_addr'):
                 proposed_object['end_addr'] = proposed_object.get('new_end_addr')
                 del proposed_object['new_end_addr']
+
+        if (ib_obj_type == NIOS_EXTENSIBLE_ATTRIBUTE):
+            proposed_object = convert_ea_list_to_struct(proposed_object)
 
         # checks if the 'text' field has to be updated for the TXT Record
         if (ib_obj_type == NIOS_TXT_RECORD):
