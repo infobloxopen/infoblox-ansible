@@ -25,7 +25,8 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system.
+        the system. Users can also update the name as it is possible
+        to pass a dict containing I(new_name), I(old_name). See examples.
     required: true
     type: str
   view:
@@ -40,7 +41,9 @@ options:
     description:
       - Configures the IPv4 address for this A record. Users can dynamically
         allocate ipv4 address to A record by passing dictionary containing,
-        I(nios_next_ip) and I(CIDR network range). See example.
+        I(nios_next_ip) and I(CIDR network range). Also update ipv4 address
+        statically to A record by passing dictionary containing, I(old_ipv4addr)
+        and I(new_ipv4addr). See example.
     aliases:
       - ipv4
     required: true
@@ -103,6 +106,32 @@ EXAMPLES = '''
     name: a.ansible.com
     ipv4: 192.168.10.1
     state: absent
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Update an A record in custom view with a dynamic IP using nios_next_ip
+  infoblox.nios_modules.nios_a_record:
+    name: test.parent.com
+    view: default.custom
+    ipv4: {'old_ipv4addr': '10.0.0.5', nios_next_ip: 80.0.0.0/24}
+    comment: this is a test comment
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Update an A record with static ip
+  infoblox.nios_modules.nios_a_record:
+    name: test.parent.com
+    view: default.custom
+    ipv4: {'old_ipv4addr': '10.0.0.5', new_ipv4addr: '17.0.0.5'}
+    comment: this is a test comment
+    state: present
     provider:
       host: "{{ inventory_hostname_short }}"
       username: admin

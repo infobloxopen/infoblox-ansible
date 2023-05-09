@@ -172,9 +172,8 @@ options:
       - absent
   disable:
     description:
-      - Configures the enabled of discbeled for DHCP state for the instance
-        of the object on the NIOS server. When this value is set to true, the
-        object is configured in the disabled for DHCP state.
+      - Determines whether a range is disabled or not. When this is set
+        to False, the range is enabled.
     type: bool
     default: false
   name:
@@ -239,6 +238,23 @@ EXAMPLES = '''
     name: Test Range 1
     failover_association: fo_association_01
     comment: this is a test comment
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Configure a ipv4 range with options
+  infoblox.nios_modules.nios_range:
+    network: 18.10.0.0/24
+    network_view: custom
+    start_addr: 18.10.0.12
+    end_addr: 18.10.0.14
+    options:
+     - name: domain-name
+       value: zone1.com
+    comment: Created with Ansible
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"

@@ -25,7 +25,8 @@ options:
   host_name:
     description:
       - Specifies the host name of the member to either add or remove from
-        the NIOS instance.
+        the NIOS instance. Users can also update the name as it is possible
+        to pass a dict containing I(new_name), I(old_name). See examples.
     required: true
     aliases:
       - name
@@ -417,6 +418,23 @@ EXAMPLES = '''
     config_addr_type: IPV4
     platform: VNIOS
     comment: "Created by Ansible"
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Update host name of member
+  infoblox.nios_modules.nios_member:
+    host_name: {old_name: block1.localdomain, new_name: member01.localdomain}
+    master_candidate: false
+    vip_setting:
+      - address: 120.0.0.25
+        subnet_mask: 255.255.255.0
+        gateway: 120.0.0.1
+    config_addr_type: IPV4
+    platform: VNIOS
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
