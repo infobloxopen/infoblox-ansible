@@ -79,11 +79,11 @@ Installation
 Dependencies
 ------------
 
--   Python version 2.7 or later
+-   Python version 3.8 or later
 
--   Ansible version 2.9.0 or later
+-   Ansible version 2.12 or later
 
--   NIOS 8.2.4 or later
+-   NIOS 8.5.x or later
 
 Prerequisites
 -------------
@@ -166,7 +166,7 @@ Dates TBD
 Current release
 ---------------
 
-1.4.1 on 24 November 2022
+1.5.0 on 11 May 2023
 
 Versioning
 =========
