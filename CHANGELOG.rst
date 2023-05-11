@@ -14,6 +14,7 @@ Release Summary
 - Fixes Unable to Update/Delete EAs using Ansible plugin
 - Fixes Static Allocation of IPV4 address of A Record
 - Updates default WAPI version to 2.9
+- Added Grid Master Candidate feature
 
 Major Changes
 -------------
@@ -28,9 +29,6 @@ Major Changes
 Bugfixes
 ---------
 - Fixes Update A Record having multiple records with same name and different IP `#182 <https://github.com/infobloxopen/infoblox-ansible/pull/182>`_
-- Fixes while executing ansible playbook for A record with same IP shows 'changed' status `#182 <https://github.com/infobloxopen/infoblox-ansible/pull/182>`_
-- Fixes new DHCP range is created when user tries to update a non-existent range `#183 <https://github.com/infobloxopen/infoblox-ansible/pull/183>`_
-- Fixes 'server_association_type' shows null value while creating nios_range `#183 <https://github.com/infobloxopen/infoblox-ansible/pull/183>`_
 
 
 v1.4.1

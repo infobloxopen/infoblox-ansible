@@ -166,7 +166,7 @@ Dates TBD
 Current release
 ---------------
 
-1.5.0 on 09 May 2023
+1.5.0 on 11 May 2023
 
 Versioning
 =========
