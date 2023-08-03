@@ -4,6 +4,33 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
+v1.5.0
+======
+
+Release Summary
+---------------
+- Added new module - NIOS Range with Create, Update and Delete features
+- Added new feature - Member Assignment to Networks with add and remove functionality
+- Fixes Unable to Update/Delete EAs using Ansible plugin
+- Fixes Static Allocation of IPV4 address of A Record
+- Updates default WAPI version to 2.9
+- Added Grid Master Candidate feature
+
+Major Changes
+-------------
+- Added NIOS Range module with Create, Update and Delete features `#152 <https://github.com/infobloxopen/infoblox-ansible/pull/152>`_
+- Added Member Assignment to network and ranges `#152 <https://github.com/infobloxopen/infoblox-ansible/pull/152>`_
+- Added Grid Master Candidate feature `#152 <https://github.com/infobloxopen/infoblox-ansible/pull/152>`_
+- Fixes issue unable to update/delete EAs using Ansible plugin `#180 <https://github.com/infobloxopen/infoblox-ansible/pull/180>`_
+- Fixes static and dynamic allocation of IPV4 address of A Record `#182 <https://github.com/infobloxopen/infoblox-ansible/pull/182>`_
+- Fixes to Update host name of  NIOS member `#176 <https://github.com/infobloxopen/infoblox-ansible/pull/176>`_
+- Updates default WAPI version to 2.9 `#176 <https://github.com/infobloxopen/infoblox-ansible/pull/176>`_
+
+Bugfixes
+---------
+- Fixes Update A Record having multiple records with same name and different IP `#182 <https://github.com/infobloxopen/infoblox-ansible/pull/182>`_
+
+
 v1.4.1
 ======
 

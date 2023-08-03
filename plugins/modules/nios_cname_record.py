@@ -25,7 +25,8 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system.
+        the system. User can also update the name as it is possible
+        to pass a dict containing I(new_name), I(old_name). See examples
     required: true
     type: str
   view:
@@ -96,6 +97,17 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Update name of CNAME record
+  infoblox.nios_modules.nios_cname_record:
+    name: {old_name: cname.ansibletestzone.com, new_name: demo.ansibletestzone.com}
+    canonical: realhost.ansible.com
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
 - name: Remove a CNAME record from the system
   infoblox.nios_modules.nios_cname_record:
     name: cname.ansible.com
@@ -111,7 +123,6 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_CNAME_RECORD
 from ..module_utils.api import normalize_ib_spec

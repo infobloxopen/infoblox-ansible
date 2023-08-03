@@ -25,7 +25,8 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system.
+        the system. Users can also update the name as it is possible
+        to pass a dict containing I(new_name), I(old_name). See examples.
     type: str
     required: true
   view:
@@ -103,6 +104,18 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Update name of MX Record
+  infoblox.nios_modules.nios_mx_record:
+    name: {old_name: ansible.com, new_name: newAnsible.com}
+    mx: mailhost.ansible.com
+    preference: 0
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
 - name: Remove an MX record from the system
   infoblox.nios_modules.nios_mx_record:
     name: ansible.com
@@ -119,7 +132,6 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_MX_RECORD
 from ..module_utils.api import normalize_ib_spec

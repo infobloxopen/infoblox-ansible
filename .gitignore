@@ -9,6 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+.direnv/
 build/
 develop-eggs/
 dist/
@@ -99,3 +100,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+infoblox-ansible.code-workspace
+
+# Ansible sanity test ouput
+**/ansible-test-sanity-*.json
+
+# Dev tools
+.vscode/
