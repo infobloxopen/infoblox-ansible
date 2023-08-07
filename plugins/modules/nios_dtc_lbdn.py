@@ -37,6 +37,12 @@ options:
       - RATIO
       - ROUND_ROBIN
       - TOPOLOGY
+  topology:
+    description:
+      - Configures the topology rules for the C(TOPOLOGY) load balancing method. 
+      - Required only when I(lb_method) is set to C(TOPOLOGY).
+    required: false
+    type: str
   auth_zones:
     description:
       - List of linked authoritative zones.
@@ -207,6 +213,7 @@ def main():
         lb_method=dict(required=True, choices=['GLOBAL_AVAILABILITY',
                                                'RATIO', 'ROUND_ROBIN', 'TOPOLOGY']),
 
+        topology=dict(type='str'),
         auth_zones=dict(type='list', elements='str', options=auth_zones_spec,
                         transform=auth_zones_transform),
         patterns=dict(type='list', elements='str'),
