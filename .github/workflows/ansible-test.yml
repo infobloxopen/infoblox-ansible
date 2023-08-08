@@ -18,10 +18,10 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: 3.10
 
       - name: Install ansible (${{ matrix.ansible-version }})
         run: pip install pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
@@ -48,19 +48,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.8, 3.9]
-        ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, stable-2.13, devel]
+        python-version: [3.8, 3.9, 3.10, 3.11, 3.12]
+        ansible-version: [stable-2.13, stable-2.14, stable-2.15, devel]
         exclude:
           - ansible-version: devel
-            python-version: 2.7
-          - ansible-version: devel
             python-version: 3.8
-          - ansible-version: stable-2.12
-            python-version: 2.7 
-          - ansible-version: stable-2.13
-            python-version: 2.7
-          - ansible-version: stable-2.9
+          - ansible-version: devel
             python-version: 3.9
+          - ansible-version: stable-2.15
+            python-version: 3.8
+          - ansible-version: stable-2.15
+            python-version: 3.12
+          - ansible-version: stable-2.14
+            python-version: 3.8
+          - ansible-version: stable-2.14
+            python-version: 3.12
+          - ansible-version: stable-2.13
+            python-version: 3.11
+          - ansible-version: stable-2.13
+            python-version: 3.12
 
     steps:
       - name: Set up Python ${{ matrix.python-version }}
@@ -108,21 +114,35 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.8, 3.9]
-        ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, stable-2.13, devel]
+        python-version: [3.8, 3.9, 3.10, 3.11, 3.12]
+        ansible-version: [stable-2.13, stable-2.14, stable-2.15, devel]
         exclude:
-          - ansible-version: stable-2.9
+          - ansible-version: devel
+            python-version: 3.8
+          - ansible-version: devel
             python-version: 3.9
+          - ansible-version: stable-2.15
+            python-version: 3.8
+          - ansible-version: stable-2.15
+            python-version: 3.12
+          - ansible-version: stable-2.14
+            python-version: 3.8
+          - ansible-version: stable-2.14
+            python-version: 3.12
+          - ansible-version: stable-2.13
+            python-version: 3.11
+          - ansible-version: stable-2.13
+            python-version: 3.12
     steps:
-      - name: Set up Python 3.9
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.python-version }}
 
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Install ansible-base (${{ matrix.ansible }})
+      - name: Install ansible-base (${{ matrix.ansible-version }})
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
 
       - name: Download migrated collection artifacts
@@ -170,15 +190,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ansible-version: [stable-2.9, stable-2.10, stable-2.11, stable-2.12, stable-2.13, devel]
+        ansible-version: [stable-2.13, stable-2.14, stable-2.15, devel]
 
     steps:
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v1
         with:
           # it is just required to run that once as "ansible-test sanity" in the docker image
           # will run on all python versions it supports.
-          python-version: 3.9
+          python-version: 3.10
 
       - name: Install ansible (${{ matrix.ansible-version }}) version
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
