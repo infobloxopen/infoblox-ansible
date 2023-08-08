@@ -204,7 +204,7 @@ def main():
     def topology_transform(module):
         topology = module.params['topology']
         if topology:
-            topo_obj = wapi.get_object('topology', {'name': topology})
+            topo_obj = wapi.get_object('dtc:topology', {'name': topology})
             if topo_obj is not None:
                 return topo_obj[0]['_ref']
             else:
