@@ -4,6 +4,20 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
+v1.6.0
+======
+
+Release Summary
+---------------
+
+This release provides plugins for NIOS DTC monitoring
+
+New Modules
+-----------
+
+- infoblox.nios_modules.nios_dtc_monitor_tcp - Configure Infoblox NIOS DTC TCP monitor
+
+
 v1.5.0
 ======
 
