@@ -43,7 +43,7 @@ options:
     type: str
   lb_preferred_topology:
     description:
-      - Configures the topology rules for the C(TOPOLOGY) load balancing method. 
+      - Configures the topology rules for the C(TOPOLOGY) load balancing method.
       - Required only when I(lb_preferred_method) is set to C(TOPOLOGY).
     required: false
     type: str
@@ -190,7 +190,7 @@ def main():
                 if monitor_obj is not None:
                     monitor_list.append(monitor_obj[0]['_ref'])
         return monitor_list
-    
+
     def topology_transform(module):
         topology = module.params['lb_preferred_topology']
         if topology:
