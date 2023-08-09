@@ -39,7 +39,7 @@ options:
       - TOPOLOGY
   topology:
     description:
-      - Configures the topology rules for the C(TOPOLOGY) load balancing method. 
+      - Configures the topology rules for the C(TOPOLOGY) load balancing method.
       - Required only when I(lb_method) is set to C(TOPOLOGY).
     required: false
     type: str
