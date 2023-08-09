@@ -127,12 +127,12 @@ def main():
 
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
-        
+
         port=dict(type='int'),
-        interval=dict(type='int'),
-        retry_down=dict(type='int'),
-        retry_up=dict(type='int'),
-        timeout=dict(type='int'),
+        interval=dict(type='int', default=5),
+        retry_down=dict(type='int', default=1),
+        retry_up=dict(type='int', default=1),
+        timeout=dict(type='int', default=15),
 
         extattrs=dict(type='dict'),
         comment=dict(),
