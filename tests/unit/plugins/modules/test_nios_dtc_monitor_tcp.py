@@ -23,6 +23,7 @@ from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
 from .test_nios_module import TestNiosModule, load_fixture
 
+
 class TestNiosDtcTcpMonitorModule(TestNiosModule):
 
     module = nios_dtc_monitor_tcp

@@ -91,7 +91,7 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-  
+
 - name: Add a comment to an existing DTC TCP monitor
   infoblox.nios_modules.nios_dtc_monitor_tcp:
     name: tcp_monitor
@@ -120,6 +120,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_DTC_MONITOR_TCP
 from ..module_utils.api import normalize_ib_spec
+
 
 def main():
     ''' Main entry point for module execution
