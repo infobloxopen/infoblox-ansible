@@ -11,13 +11,13 @@
     provider: "{{ nios_provider }}"
 
 - name: Clean up the DTC TCP monitor
-  infoblox.nios_modules.dtc_monitor_tcp:
+  dtc_monitor_tcp:
     name: tcp_monitor
     state: absent
     provider: "{{ nios_provider }}"
 
 - name: Create a DTC TCP monitor
-  infoblox.nios_modules.dtc_monitor_tcp:
+  dtc_monitor_tcp:
     name: tcp_monitor
     port: 8080
     state: present
@@ -25,7 +25,7 @@
   register: dtc_monitor_tcp_create1
 
 - name: Recreate a DTC TCP monitor
-  infoblox.nios_modules.dtc_monitor_tcp:
+  dtc_monitor_tcp:
     name: tcp_monitor
     port: 8080
     state: present
@@ -33,7 +33,7 @@
   register: dtc_monitor_tcp_create2
 
 - name: Add a comment to an existing DTC TCP monitor
-  infoblox.nios_modules.dtc_monitor_tcp:
+  dtc_monitor_tcp:
     name: tcp_monitor
     comment: this is a test comment
     state: present
@@ -41,7 +41,7 @@
   register: dtc_monitor_tcp_update1
 
 - name: Readd a comment to an existing DTC TCP monitor
-  infoblox.nios_modules.dtc_monitor_tcp:
+  dtc_monitor_tcp:
     name: tcp_monitor
     comment: this is a test comment
     state: present
@@ -49,14 +49,14 @@
   register: dtc_monitor_tcp_update2
 
 - name: Remove a DTC TCP monitor from the system
-  infoblox.nios_modules.dtc_monitor_tcp:
+  dtc_monitor_tcp:
     name: tcp_monitor
     state: absent
     provider: "{{ nios_provider }}"
   register: dtc_monitor_tcp_delete1
 
 - name: Reremove a DTC TCP monitor from the system
-  infoblox.nios_modules.dtc_monitor_tcp:
+  dtc_monitor_tcp:
     name: tcp_monitor
     state: absent
     provider: "{{ nios_provider }}"
