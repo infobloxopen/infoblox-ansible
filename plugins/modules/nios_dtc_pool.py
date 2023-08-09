@@ -41,6 +41,12 @@ options:
       - TOPOLOGY
     required: true
     type: str
+  lb_preferred_topology:
+    description:
+      - Configures the topology rules for the C(TOPOLOGY) load balancing method. 
+      - Required only when I(lb_preferred_method) is set to C(TOPOLOGY).
+    required: false
+    type: str
   servers:
     description:
       - Configure the DTC Servers related to the pool
@@ -184,6 +190,16 @@ def main():
                 if monitor_obj is not None:
                     monitor_list.append(monitor_obj[0]['_ref'])
         return monitor_list
+    
+    def topology_transform(module):
+        topology = module.params['lb_preferred_topology']
+        if topology:
+            topo_obj = wapi.get_object('dtc:topology', {'name': topology})
+            if topo_obj is not None:
+                return topo_obj[0]['_ref']
+            else:
+                module.fail_json(
+                    msg='topology %s cannot be found.' % topology)
 
     servers_spec = dict(
         server=dict(required=True),
@@ -203,6 +219,7 @@ def main():
                                                          'RATIO',
                                                          'ROUND_ROBIN',
                                                          'TOPOLOGY']),
+        lb_preferred_topology=dict(type='str', transform=topology_transform),
 
         servers=dict(type='list', elements='dict', options=servers_spec,
                      transform=servers_transform),
