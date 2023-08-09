@@ -112,7 +112,7 @@ class TestNiosDtcTcpMonitorModule(TestNiosModule):
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "dtc:monitor:tcp/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "tcp_monitor",
                 "port": 8080,
                 "extattrs": {}
