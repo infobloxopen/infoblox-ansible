@@ -233,4 +233,7 @@ releases:
     - description: Configure Infoblox NIOS DTC PDP monitor
       name: nios_dtc_monitor_pdp
       namespace: ''
+    - description: Configure Infoblox NIOS DTC SIP monitor
+      name: nios_dtc_monitor_sip
+      namespace: ''
     release_date: 'tbd'
