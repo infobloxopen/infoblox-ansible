@@ -117,7 +117,7 @@ class TestNiosDtcSnmpMonitorModule(TestNiosModule):
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "dtc:monitor:snmp/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "snmp_monitor",
                 "port": 161,
                 "version": "V2C",
