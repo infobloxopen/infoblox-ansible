@@ -30,8 +30,7 @@ options:
     type: str
   port:
     description:
-      - Configures the port value for HTTP requests. The field is required on
-        creation.
+      - Configures the port value for HTTP requests.
     type: int
     default: 80
   ciphers:
