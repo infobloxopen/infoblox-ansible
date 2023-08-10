@@ -69,6 +69,11 @@ plugins:
       name: nios_dtc_monitor_icmp
       namespace: ''
       version_added: 1.6.0
+    nios_dtc_monitor_pdp:
+      description: Configure Infoblox NIOS DTC PDP monitor
+      name: nios_dtc_monitor_pdp
+      namespace: ''
+      version_added: 1.6.0
     nios_fixed_address:
       description: Configure Infoblox NIOS DHCP Fixed Address
       name: nios_fixed_address

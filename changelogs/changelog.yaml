@@ -227,4 +227,7 @@ releases:
     - description: Configure Infoblox NIOS DTC ICMP monitor
       name: nios_dtc_monitor_icmp
       namespace: ''
+    - description: Configure Infoblox NIOS DTC PDP monitor
+      name: nios_dtc_monitor_pdp
+      namespace: ''
     release_date: 'tbd'

@@ -17,6 +17,7 @@ New Modules
 
 - infoblox.nios_modules.nios_dtc_monitor_tcp - Configure Infoblox NIOS DTC TCP monitor
 - infoblox.nios_modules.nios_dtc_monitor_icmp - Configure Infoblox NIOS DTC ICMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_pdp - Configure Infoblox NIOS DTC PDP monitor
 
 
 v1.5.0
