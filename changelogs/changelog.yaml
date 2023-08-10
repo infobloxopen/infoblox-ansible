@@ -221,6 +221,9 @@ releases:
     changes:
       release_summary: This release provides plugins for NIOS DTC monitoring
     modules:
+    - description: Configure Infoblox NIOS DTC HTTP monitor
+      name: nios_dtc_monitor_http
+      namespace: ''
     - description: Configure Infoblox NIOS DTC TCP monitor
       name: nios_dtc_monitor_tcp
       namespace: ''

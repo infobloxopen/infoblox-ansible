@@ -59,6 +59,11 @@ plugins:
       name: nios_dtc_server
       namespace: ''
       version_added: 1.1.0
+    nios_dtc_monitor_http:
+      description: Configure Infoblox NIOS DTC HTTP monitor
+      name: nios_dtc_monitor_http
+      namespace: ''
+      version_added: 1.6.0
     nios_dtc_monitor_tcp:
       description: Configure Infoblox NIOS DTC TCP monitor
       name: nios_dtc_monitor_tcp

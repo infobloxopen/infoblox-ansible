@@ -9,9 +9,8 @@
 
   connection: local
   tasks:
-   - name: Create Nios DTC PDP monitor Test
+   - name: Delete Nios DTC PDP monitor Test
      infoblox.nios_modules.nios_dtc_monitor_pdp:
        name: pdp_monitor
-       comment: Created with Ansible
        state: absent
        provider: "{{ nios_provider }}"
