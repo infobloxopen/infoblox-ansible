@@ -61,13 +61,12 @@ class TestNiosDtcIcmpMonitorModule(TestNiosModule):
 
     def test_nios_dtc_monitor_icmp_create(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'icmp_monitor',
-                              'port': 8080, 'comment': None, 'extattrs': None}
+                              'comment': None, 'extattrs': None}
 
         test_object = None
 
         test_spec = {
             "name": {"ib_req": True},
-            "port": {},
             "comment": {},
             "extattrs": {}
         }
@@ -76,8 +75,7 @@ class TestNiosDtcIcmpMonitorModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': 'icmp_monitor',
-                                                                  'port': 8080})
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'icmp_monitor'})
 
     def test_nios_dtc_monitor_icmp_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'icmp_monitor',
@@ -88,7 +86,6 @@ class TestNiosDtcIcmpMonitorModule(TestNiosModule):
                 "comment": "test comment",
                 "_ref": "dtc:monitor:icmp/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
                 "name": "icmp_monitor",
-                "port": 8080,
                 "extattrs": {}
             }
         ]
@@ -115,7 +112,6 @@ class TestNiosDtcIcmpMonitorModule(TestNiosModule):
                 "comment": "test comment",
                 "_ref": ref,
                 "name": "icmp_monitor",
-                "port": 8080,
                 "extattrs": {}
             }
         ]
