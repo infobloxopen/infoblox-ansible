@@ -116,6 +116,7 @@ class TestNiosDtcTopologyModule(TestNiosModule):
 
         test_spec = {
             "name": {"ib_req": True},
+            "rules": {},
             "comment": {},
             "extattrs": {}
         }
@@ -145,6 +146,7 @@ class TestNiosDtcTopologyModule(TestNiosModule):
 
         test_spec = {
             "name": {"ib_req": True},
+            "rules": {},
             "comment": {},
             "extattrs": {}
         }
