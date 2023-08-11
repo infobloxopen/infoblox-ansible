@@ -77,6 +77,7 @@ NIOS_DTC_MONITOR_PDP = 'dtc:monitor:pdp'
 NIOS_DTC_MONITOR_SIP = 'dtc:monitor:sip'
 NIOS_DTC_MONITOR_SNMP = 'dtc:monitor:snmp'
 NIOS_DTC_MONITOR_TCP = 'dtc:monitor:tcp'
+NIOS_DTC_TOPOLOGY = 'dtc:topology'
 
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),

@@ -239,4 +239,7 @@ releases:
     - description: Configure Infoblox NIOS DTC TCP monitor
       name: nios_dtc_monitor_tcp
       namespace: ''
+    - description: Configure Infoblox NIOS DTC Topology
+      name: nios_dtc_topology
+      namespace: ''
     release_date: 'tbd'

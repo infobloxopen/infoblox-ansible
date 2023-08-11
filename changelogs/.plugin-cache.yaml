@@ -89,6 +89,11 @@ plugins:
       name: nios_dtc_monitor_snmp
       namespace: ''
       version_added: 1.6.0
+    nios_dtc_topology:
+      description: Configure Infoblox NIOS DTC Topology
+      name: nios_dtc_topology
+      namespace: ''
+      version_added: 1.6.0
     nios_fixed_address:
       description: Configure Infoblox NIOS DHCP Fixed Address
       name: nios_fixed_address

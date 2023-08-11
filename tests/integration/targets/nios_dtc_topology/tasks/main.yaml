@@ -1,0 +1,1 @@
+- include_tasks: nios_dtc_topology_idempotence.yaml
