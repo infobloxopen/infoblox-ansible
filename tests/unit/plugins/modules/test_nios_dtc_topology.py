@@ -110,13 +110,12 @@ class TestNiosDtcTopologyModule(TestNiosModule):
                     '_ref': 'dtc:topology:rule/ZG5zLm5ldHdvcmtfdmlldyQw:a_topology/web_pool'
                 }],
                 'comment': "test comment",
-                'extattrs': None
+                'extattrs': {}
             }
         ]
 
         test_spec = {
             "name": {"ib_req": True},
-            "rules": {},
             "comment": {},
             "extattrs": {}
         }
@@ -146,7 +145,6 @@ class TestNiosDtcTopologyModule(TestNiosModule):
 
         test_spec = {
             "name": {"ib_req": True},
-            "rules": {},
             "comment": {},
             "extattrs": {}
         }
