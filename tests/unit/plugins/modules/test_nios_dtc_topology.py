@@ -109,7 +109,7 @@ class TestNiosDtcTopologyModule(TestNiosModule):
                 'rules': [{
                     '_ref': 'dtc:topology:rule/ZG5zLm5ldHdvcmtfdmlldyQw:a_topology/web_pool'
                 }],
-                'comment': None,
+                'comment': "test comment",
                 'extattrs': None
             }
         ]
