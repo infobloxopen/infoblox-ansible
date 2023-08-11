@@ -65,7 +65,7 @@ class TestNiosDtcTopologyModule(TestNiosModule):
             'state': 'present',
             'name': 'a_topology',
             'rules': [{
-                'dest_type': 'POOl',
+                'dest_type': 'POOL',
                 'destination_link': 'web_pool',
                 'return_type': 'REGULAR'
             }],
@@ -91,7 +91,7 @@ class TestNiosDtcTopologyModule(TestNiosModule):
             {
                 'name': 'a_topology',
                 'rules': [{
-                    'dest_type': 'POOl',
+                    'dest_type': 'POOL',
                     'destination_link': 'web_pool',
                     'return_type': 'REGULAR'
                 }]
