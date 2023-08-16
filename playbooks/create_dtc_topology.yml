@@ -10,7 +10,7 @@
   connection: local
   tasks:
     - name: Create a DTC Topology
-      nios_dtc_topology:
+      infoblox.nios_modules.nios_dtc_topology:
         name: a_topology
         rules:
           - dest_type: POOL

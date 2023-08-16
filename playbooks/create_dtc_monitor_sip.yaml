@@ -9,9 +9,9 @@
 
   connection: local
   tasks:
-   - name: Create Nios DTC SIP monitor Test
-     infoblox.nios_modules.nios_dtc_monitor_sip:
-       name: sip_monitor
-       comment: Created with Ansible
-       state: present
-       provider: "{{ nios_provider }}"
+    - name: Create Nios DTC SIP monitor Test
+      infoblox.nios_modules.nios_dtc_monitor_sip:
+        name: sip_monitor
+        comment: Created with Ansible
+        state: present
+        provider: "{{ nios_provider }}"

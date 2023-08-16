@@ -9,8 +9,8 @@
 
   connection: local
   tasks:
-   - name: Delete Nios DTC SNMP monitor Test
-     infoblox.nios_modules.nios_dtc_monitor_snmp:
-       name: snmp_monitor
-       state: absent
-       provider: "{{ nios_provider }}"
+    - name: Delete Nios DTC SNMP monitor Test
+      infoblox.nios_modules.nios_dtc_monitor_snmp:
+        name: snmp_monitor
+        state: absent
+        provider: "{{ nios_provider }}"

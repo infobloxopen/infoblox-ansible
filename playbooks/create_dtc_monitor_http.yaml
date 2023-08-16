@@ -9,11 +9,11 @@
 
   connection: local
   tasks:
-   - name: Create Nios DTC HTTPS monitor Test
-     infoblox.nios_modules.nios_dtc_monitor_https:
-       name: https_monitor
-       port: 443
-       secure: true
-       comment: Created with Ansible
-       state: present
-       provider: "{{ nios_provider }}"
+    - name: Create Nios DTC HTTPS monitor Test
+      infoblox.nios_modules.nios_dtc_monitor_http:
+        name: https_monitor
+        port: 443
+        secure: true
+        comment: Created with Ansible
+        state: present
+        provider: "{{ nios_provider }}"

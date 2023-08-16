@@ -9,10 +9,10 @@
 
   connection: local
   tasks:
-   - name: Create Nios DTC TCP monitor Test
-     infoblox.nios_modules.nios_dtc_monitor_tcp:
-       name: tcp_monitor
-       port: 8080
-       comment: Created with Ansible
-       state: present
-       provider: "{{ nios_provider }}"
+    - name: Create Nios DTC TCP monitor Test
+      infoblox.nios_modules.nios_dtc_monitor_tcp:
+        name: tcp_monitor
+        port: 8080
+        comment: Created with Ansible
+        state: present
+        provider: "{{ nios_provider }}"

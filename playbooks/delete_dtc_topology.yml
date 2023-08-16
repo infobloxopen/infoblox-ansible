@@ -14,4 +14,3 @@
         name: a_topology
         state: absent
         provider: "{{ nios_provider }}"
-...

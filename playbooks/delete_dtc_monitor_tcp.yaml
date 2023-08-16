@@ -9,8 +9,8 @@
 
   connection: local
   tasks:
-   - name: Delete Nios DTC TCP monitor Test
-     infoblox.nios_modules.nios_dtc_monitor_tcp:
-       name: tcp_monitor
-       state: absent
-       provider: "{{ nios_provider }}"
+    - name: Delete Nios DTC TCP monitor Test
+      infoblox.nios_modules.nios_dtc_monitor_tcp:
+        name: tcp_monitor
+        state: absent
+        provider: "{{ nios_provider }}"
