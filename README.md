@@ -29,9 +29,23 @@ Modules
 
 -   `nios_dtc_lbdn` – Configure Infoblox NIOS DTC LBDN records
 
+-   `nios_dtc_monitor_http` – Configure Infoblox NIOS DTC HTTP monitors
+
+-   `nios_dtc_monitor_icmp` – Configure Infoblox NIOS DTC ICMP monitors
+
+-   `nios_dtc_monitor_pdp` – Configure Infoblox NIOS DTC PDP monitors
+
+-   `nios_dtc_monitor_sip` – Configure Infoblox NIOS DTC SIP monitors
+
+-   `nios_dtc_monitor_snmp` – Configure Infoblox NIOS DTC SNMP monitors
+
+-   `nios_dtc_monitor_tcp` – Configure Infoblox NIOS DTC TCP monitors
+
 -   `nios_dtc_pool` – Configure Infoblox NIOS DTC pools
 
 -   `nios_dtc_server` – Configure Infoblox NIOS DTC server records
+
+-   `nios_dtc_topology` – Configure Infoblox NIOS DTC topologies
 
 -   `nios_fixed_address` – Configure Infoblox NIOS DHCP Fixed Address
 
