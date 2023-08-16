@@ -11,27 +11,27 @@
     provider: "{{ nios_provider }}"
 
 - name: Clean up the DTC ICMP monitor
-  infoblox.nios_modules.dtc_monitor_icmp:
+  infoblox.nios_modules.nios_dtc_monitor_icmp:
     name: icmp_monitor
     state: absent
     provider: "{{ nios_provider }}"
 
 - name: Create a DTC ICMP monitor
-  infoblox.nios_modules.dtc_monitor_icmp:
+  infoblox.nios_modules.nios_dtc_monitor_icmp:
     name: icmp_monitor
     state: present
     provider: "{{ nios_provider }}"
   register: dtc_monitor_icmp_create1
 
 - name: Recreate a DTC ICMP monitor
-  infoblox.nios_modules.dtc_monitor_icmp:
+  infoblox.nios_modules.nios_dtc_monitor_icmp:
     name: icmp_monitor
     state: present
     provider: "{{ nios_provider }}"
   register: dtc_monitor_icmp_create2
 
 - name: Add a comment to an existing DTC ICMP monitor
-  infoblox.nios_modules.dtc_monitor_icmp:
+  infoblox.nios_modules.nios_dtc_monitor_icmp:
     name: icmp_monitor
     comment: this is a test comment
     state: present
@@ -39,7 +39,7 @@
   register: dtc_monitor_icmp_update1
 
 - name: Readd a comment to an existing DTC ICMP monitor
-  infoblox.nios_modules.dtc_monitor_icmp:
+  infoblox.nios_modules.nios_dtc_monitor_icmp:
     name: icmp_monitor
     comment: this is a test comment
     state: present
@@ -47,14 +47,14 @@
   register: dtc_monitor_icmp_update2
 
 - name: Remove a DTC ICMP monitor from the system
-  infoblox.nios_modules.dtc_monitor_icmp:
+  infoblox.nios_modules.nios_dtc_monitor_icmp:
     name: icmp_monitor
     state: absent
     provider: "{{ nios_provider }}"
   register: dtc_monitor_icmp_delete1
 
 - name: Reremove a DTC ICMP monitor from the system
-  infoblox.nios_modules.dtc_monitor_icmp:
+  infoblox.nios_modules.nios_dtc_monitor_icmp:
     name: icmp_monitor
     state: absent
     provider: "{{ nios_provider }}"

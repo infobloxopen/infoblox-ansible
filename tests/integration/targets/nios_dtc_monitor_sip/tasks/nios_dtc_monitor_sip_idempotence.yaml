@@ -11,27 +11,27 @@
     provider: "{{ nios_provider }}"
 
 - name: Clean up the DTC SIP monitor
-  infoblox.nios_modules.dtc_monitor_sip:
+  infoblox.nios_modules.nios_dtc_monitor_sip:
     name: sip_monitor
     state: absent
     provider: "{{ nios_provider }}"
 
 - name: Create a DTC SIP monitor
-  infoblox.nios_modules.dtc_monitor_sip:
+  infoblox.nios_modules.nios_dtc_monitor_sip:
     name: sip_monitor
     state: present
     provider: "{{ nios_provider }}"
   register: dtc_monitor_sip_create1
 
 - name: Recreate a DTC SIP monitor
-  infoblox.nios_modules.dtc_monitor_sip:
+  infoblox.nios_modules.nios_dtc_monitor_sip:
     name: sip_monitor
     state: present
     provider: "{{ nios_provider }}"
   register: dtc_monitor_sip_create2
 
 - name: Add a comment to an existing DTC SIP monitor
-  infoblox.nios_modules.dtc_monitor_sip:
+  infoblox.nios_modules.nios_dtc_monitor_sip:
     name: sip_monitor
     comment: this is a test comment
     state: present
@@ -39,7 +39,7 @@
   register: dtc_monitor_sip_update1
 
 - name: Readd a comment to an existing DTC SIP monitor
-  infoblox.nios_modules.dtc_monitor_sip:
+  infoblox.nios_modules.nios_dtc_monitor_sip:
     name: sip_monitor
     comment: this is a test comment
     state: present
@@ -47,14 +47,14 @@
   register: dtc_monitor_sip_update2
 
 - name: Remove a DTC SIP monitor from the system
-  infoblox.nios_modules.dtc_monitor_sip:
+  infoblox.nios_modules.nios_dtc_monitor_sip:
     name: sip_monitor
     state: absent
     provider: "{{ nios_provider }}"
   register: dtc_monitor_sip_delete1
 
 - name: Reremove a DTC SIP monitor from the system
-  infoblox.nios_modules.dtc_monitor_sip:
+  infoblox.nios_modules.nios_dtc_monitor_sip:
     name: sip_monitor
     state: absent
     provider: "{{ nios_provider }}"

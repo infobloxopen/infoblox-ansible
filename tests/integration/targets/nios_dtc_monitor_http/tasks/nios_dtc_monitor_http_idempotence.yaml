@@ -11,13 +11,13 @@
     provider: "{{ nios_provider }}"
 
 - name: Clean up the DTC HTTPS monitor
-  infoblox.nios_modules.dtc_monitor_http:
+  infoblox.nios_modules.nios_dtc_monitor_http:
     name: https_monitor
     state: absent
     provider: "{{ nios_provider }}"
 
 - name: Create a DTC HTTPS monitor
-  infoblox.nios_modules.dtc_monitor_http:
+  infoblox.nios_modules.nios_dtc_monitor_http:
     name: https_monitor
     port: 443
     secure: true
@@ -26,7 +26,7 @@
   register: dtc_monitor_http_create1
 
 - name: Recreate a DTC HTTPS monitor
-  infoblox.nios_modules.dtc_monitor_http:
+  infoblox.nios_modules.nios_dtc_monitor_http:
     name: https_monitor
     port: 443
     secure: true
@@ -35,7 +35,7 @@
   register: dtc_monitor_http_create2
 
 - name: Add a comment to an existing DTC HTTPS monitor
-  infoblox.nios_modules.dtc_monitor_http:
+  infoblox.nios_modules.nios_dtc_monitor_http:
     name: https_monitor
     comment: this is a test comment
     state: present
@@ -43,7 +43,7 @@
   register: dtc_monitor_http_update1
 
 - name: Readd a comment to an existing DTC HTTPS monitor
-  infoblox.nios_modules.dtc_monitor_http:
+  infoblox.nios_modules.nios_dtc_monitor_http:
     name: https_monitor
     comment: this is a test comment
     state: present
@@ -51,14 +51,14 @@
   register: dtc_monitor_http_update2
 
 - name: Remove a DTC HTTPS monitor from the system
-  infoblox.nios_modules.dtc_monitor_http:
+  infoblox.nios_modules.nios_dtc_monitor_http:
     name: https_monitor
     state: absent
     provider: "{{ nios_provider }}"
   register: dtc_monitor_http_delete1
 
 - name: Reremove a DTC HTTPS monitor from the system
-  infoblox.nios_modules.dtc_monitor_http:
+  infoblox.nios_modules.nios_dtc_monitor_http:
     name: https_monitor
     state: absent
     provider: "{{ nios_provider }}"
