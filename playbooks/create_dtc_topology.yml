@@ -29,4 +29,3 @@
                 source_value: DC2
         state: present
         provider: "{{ nios_provider }}"
-...

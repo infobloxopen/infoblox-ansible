@@ -192,19 +192,19 @@ def main():
                 dest_obj = wapi.get_object('dtc:pool', {'name': rule['destination_link']})
             else:
                 dest_obj = wapi.get_object('dtc:server', {'name': rule['destination_link']})
-            if dest_obj is None:
-                continue
+            if not dest_obj:
+                module.fail_json(msg='destination_link %s does not exist' % rule['destination_link'])
 
-            source_list = sources_transform(rule['sources'], module)
-
-            rule = dict(
+            tf_rule = dict(
                 dest_type=rule['dest_type'],
-                destination_link=dest_obj['_ref'],
+                destination_link=dest_obj[0]['_ref'],
                 return_type=rule['return_type']
             )
-            if source_list:
-                rule['sources'] = source_list
-            rule_list.append(rule)
+
+            if rule['sources']:
+                tf_rule['sources'] = sources_transform(rule['sources'], module)
+
+            rule_list.append(tf_rule)
         return rule_list
 
     source_spec = dict(
