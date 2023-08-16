@@ -17,8 +17,9 @@
     provider: "{{ nios_provider }}"
 
 - name: Clean up the DTC pool
-  infoblox.nios_modules.dtc_pool:
+  infoblox.nios_modules.nios_dtc_pool:
     name: web_pool
+    lb_preferred_method: ROUND_ROBIN
     state: absent
     provider: "{{ nios_provider }}"
 
@@ -42,8 +43,8 @@
     name: web_pool
     lb_preferred_method: ROUND_ROBIN
     servers:
-    - server: Server1
-      ratio: 1
+      - server: Server1
+        ratio: 1
     comment: Created with Ansible
     state: present
     provider: "{{ nios_provider }}"
@@ -97,8 +98,9 @@
   register: dtc_topology_delete2
 
 - name: Remove the DTC pool
-  infoblox.nios_modules.dtc_pool:
+  infoblox.nios_modules.nios_dtc_pool:
     name: web_pool
+    lb_preferred_method: ROUND_ROBIN
     state: absent
     provider: "{{ nios_provider }}"
 
