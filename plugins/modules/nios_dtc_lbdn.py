@@ -205,7 +205,7 @@ def main():
         topology = module.params['topology']
         if topology:
             topo_obj = wapi.get_object('dtc:topology', {'name': topology})
-            if topo_obj is not None:
+            if topo_obj:
                 return topo_obj[0]['_ref']
             else:
                 module.fail_json(
