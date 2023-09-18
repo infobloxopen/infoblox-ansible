@@ -186,6 +186,20 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Set filters for a network ipv4
+  infoblox.nios_modules.nios_network:
+    network: 192.168.10.0/24
+    comment: this is a test comment
+    logic_filter_rules:
+      - filter: PXE-UEFI
+        type: Option
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
 - name: Remove a network ipv4
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
@@ -329,7 +343,8 @@ def main():
         extattrs=dict(type='dict'),
         comment=dict(),
         container=dict(type='bool', ib_req=True),
-        members=dict(type='list', elements='dict', default=[])
+        members=dict(type='list', elements='dict', default=[]),
+        logic_filter_rules=dict(type='list', elements='dict', default=[])
     )
 
     argument_spec = dict(
