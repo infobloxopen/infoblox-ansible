@@ -326,7 +326,7 @@ class WapiModule(WapiBase):
             del proposed_object['view']
 
         if ib_obj_ref:
-            if len(ib_obj_ref) > 1:
+            if len(ib_obj_ref) > 1 or (len(ib_obj_ref) >= 1 and ib_obj_type == NIOS_HOST_RECORD):
                 for each in ib_obj_ref:
                     # To check for existing A_record with same name with input A_record by IP
                     if each.get('ipv4addr') and each.get('ipv4addr') == proposed_object.get('ipv4addr'):
