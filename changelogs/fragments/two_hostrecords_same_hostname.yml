@@ -1,2 +1,2 @@
-- bugfixes:
+bugfixes:
   - nios_host_record - "if len(ib_obj_ref) > 1" in module_utils/api.py results in weird behaviour. Adding "or (len(ib_obj_ref) >= 1 and ib_obj_type == NIOS_HOST_RECORD)" to the if-statement results in the wanted behaviour.
