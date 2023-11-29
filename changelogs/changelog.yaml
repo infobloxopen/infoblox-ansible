@@ -217,3 +217,29 @@ releases:
         Updates default WAPI version to `2.9`,
         Added Grid Master Candidate feature'
     release_date: '2023-05-11'
+  1.6.0:
+    changes:
+      release_summary: This release provides plugins for NIOS DTC monitoring
+    modules:
+    - description: Configure Infoblox NIOS DTC HTTP monitor
+      name: nios_dtc_monitor_http
+      namespace: ''
+    - description: Configure Infoblox NIOS DTC ICMP monitor
+      name: nios_dtc_monitor_icmp
+      namespace: ''
+    - description: Configure Infoblox NIOS DTC PDP monitor
+      name: nios_dtc_monitor_pdp
+      namespace: ''
+    - description: Configure Infoblox NIOS DTC SIP monitor
+      name: nios_dtc_monitor_sip
+      namespace: ''
+    - description: Configure Infoblox NIOS DTC SNMP monitor
+      name: nios_dtc_monitor_snpp
+      namespace: ''
+    - description: Configure Infoblox NIOS DTC TCP monitor
+      name: nios_dtc_monitor_tcp
+      namespace: ''
+    - description: Configure Infoblox NIOS DTC Topology
+      name: nios_dtc_topology
+      namespace: ''
+    release_date: 'tbd'

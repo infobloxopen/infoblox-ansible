@@ -4,6 +4,26 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
+v1.6.0
+======
+
+Release Summary
+---------------
+
+This release provides plugins for NIOS DTC monitoring and topology
+
+New Modules
+-----------
+
+- infoblox.nios_modules.nios_dtc_monitor_http - Configure Infoblox NIOS DTC HTTP monitor
+- infoblox.nios_modules.nios_dtc_monitor_icmp - Configure Infoblox NIOS DTC ICMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_pdp - Configure Infoblox NIOS DTC PDP monitor
+- infoblox.nios_modules.nios_dtc_monitor_sip - Configure Infoblox NIOS DTC SIP monitor
+- infoblox.nios_modules.nios_dtc_monitor_snmp - Configure Infoblox NIOS DTC SNMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_tcp - Configure Infoblox NIOS DTC TCP monitor
+- infoblox.nios_modules.nios_dtc_topology - Configure Infoblox NIOS DTC Topology
+
+
 v1.5.0
 ======
 
