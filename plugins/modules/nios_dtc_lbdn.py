@@ -37,6 +37,12 @@ options:
       - RATIO
       - ROUND_ROBIN
       - TOPOLOGY
+  topology:
+    description:
+      - Configures the topology rules for the C(TOPOLOGY) load balancing method.
+      - Required only when I(lb_method) is set to C(TOPOLOGY).
+    required: false
+    type: str
   auth_zones:
     description:
       - List of linked authoritative zones.
@@ -195,6 +201,16 @@ def main():
                     module.fail_json(msg='pool %s cannot be found.' % pool)
         return pool_list
 
+    def topology_transform(module):
+        topology = module.params['topology']
+        if topology:
+            topo_obj = wapi.get_object('dtc:topology', {'name': topology})
+            if topo_obj:
+                return topo_obj[0]['_ref']
+            else:
+                module.fail_json(
+                    msg='topology %s cannot be found.' % topology)
+
     auth_zones_spec = dict()
 
     pools_spec = dict(
@@ -207,6 +223,7 @@ def main():
         lb_method=dict(required=True, choices=['GLOBAL_AVAILABILITY',
                                                'RATIO', 'ROUND_ROBIN', 'TOPOLOGY']),
 
+        topology=dict(type='str', transform=topology_transform),
         auth_zones=dict(type='list', elements='str', options=auth_zones_spec,
                         transform=auth_zones_transform),
         patterns=dict(type='list', elements='str'),
