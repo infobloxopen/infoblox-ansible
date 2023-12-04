@@ -5,8 +5,10 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import copy
-
-from ansible_collections.infoblox.nios_modules.tests.unit.compat import unittest
+try:
+    from ansible_collections.infoblox.nios_modules.tests.unit.compat import unittest
+except ImportError:
+    import unittest
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 
