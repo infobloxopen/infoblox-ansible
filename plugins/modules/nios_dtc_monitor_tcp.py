@@ -32,6 +32,7 @@ options:
     description:
       - Configures the port value for TCP requests. The field is required on
         creation.
+    required: true
     type: int
   interval:
     description:
@@ -128,8 +129,8 @@ def main():
 
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
+        port=dict(type='int', ib_req=True),
 
-        port=dict(type='int'),
         interval=dict(type='int', default=5),
         retry_down=dict(type='int', default=1),
         retry_up=dict(type='int', default=1),
