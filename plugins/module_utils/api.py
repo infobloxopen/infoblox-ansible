@@ -753,6 +753,11 @@ class WapiModule(WapiBase):
                 except TypeError:
                     txt = obj_filter['text']
                 test_obj_filter['text'] = txt
+
+            # removing Port param from get params for NIOS_DTC_MONITOR_TCP
+            if (ib_obj_type == NIOS_DTC_MONITOR_TCP):
+                test_obj_filter = dict([('name', obj_filter['name'])])
+
             # check if test_obj_filter is empty copy passed obj_filter
             else:
                 test_obj_filter = obj_filter
