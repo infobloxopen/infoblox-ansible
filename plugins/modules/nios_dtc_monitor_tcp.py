@@ -96,6 +96,7 @@ EXAMPLES = '''
 - name: Add a comment to an existing DTC TCP monitor
   infoblox.nios_modules.nios_dtc_monitor_tcp:
     name: tcp_monitor
+    port: 8080
     comment: this is a test comment
     state: present
     provider:
@@ -107,6 +108,7 @@ EXAMPLES = '''
 - name: Remove a DTC TCP monitor from the system
   infoblox.nios_modules.nios_dtc_monitor_tcp:
     name: tcp_monitor
+    port: 8080
     state: absent
     provider:
       host: "{{ inventory_hostname_short }}"
