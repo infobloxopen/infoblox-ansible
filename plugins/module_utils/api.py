@@ -91,8 +91,8 @@ NIOS_PROVIDER_SPEC = {
     'http_pool_connections': dict(type='int', default=10),
     'http_pool_maxsize': dict(type='int', default=10),
     'max_retries': dict(type='int', default=3, fallback=(env_fallback, ['INFOBLOX_MAX_RETRIES'])),
-    'wapi_version': dict(default='2.9', fallback=(env_fallback, ['INFOBLOX_WAP_VERSION'])),
-    'max_results': dict(type='int', default=1000, fallback=(env_fallback, ['INFOBLOX_MAX_RETRIES']))
+    'wapi_version': dict(default='2.9', fallback=(env_fallback, ['INFOBLOX_WAPI_VERSION'])),
+    'max_results': dict(type='int', default=1000, fallback=(env_fallback, ['INFOBLOX_MAX_RESULTS']))
 }
 
 
@@ -120,7 +120,12 @@ def get_connector(*args, **kwargs):
             # explicitly set
             env = ('INFOBLOX_%s' % key).upper()
             if env in os.environ:
-                kwargs[key] = os.environ.get(env)
+                if NIOS_PROVIDER_SPEC[key].get('type') == 'bool':
+                    kwargs[key] = eval(os.environ.get(env).title())
+                elif NIOS_PROVIDER_SPEC[key].get('type') == 'int':
+                    kwargs[key] = eval(os.environ.get(env))
+                else:
+                    kwargs[key] = os.environ.get(env)
 
     if 'validate_certs' in kwargs.keys():
         kwargs['ssl_verify'] = kwargs['validate_certs']
@@ -755,7 +760,7 @@ class WapiModule(WapiBase):
                 test_obj_filter['text'] = txt
 
             # removing Port param from get params for NIOS_DTC_MONITOR_TCP
-            if (ib_obj_type == NIOS_DTC_MONITOR_TCP):
+            elif (ib_obj_type == NIOS_DTC_MONITOR_TCP):
                 test_obj_filter = dict([('name', obj_filter['name'])])
 
             # check if test_obj_filter is empty copy passed obj_filter
@@ -779,9 +784,6 @@ class WapiModule(WapiBase):
             except TypeError:
                 ipaddr = obj_filter['ipv4addr']
             test_obj_filter['ipv4addr'] = ipaddr
-            # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
-            if old_ipv4addr_exists and ib_obj is None:
-                raise Exception("A Record with ipv4addr: '%s' is not found" % (ipaddr))
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
             if old_ipv4addr_exists and ib_obj is None:
