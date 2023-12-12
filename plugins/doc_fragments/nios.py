@@ -77,7 +77,7 @@ options:
       wapi_version:
         description:
           - Specifies the version of WAPI to use
-          - Value can also be specified using C(INFOBLOX_WAP_VERSION) environment
+          - Value can also be specified using C(INFOBLOX_WAPI_VERSION) environment
             variable.
           - Until ansible 2.8 the default WAPI was 1.4
         type: str

@@ -178,7 +178,7 @@ def main():
             for zone in module.params['auth_zones']:
                 zone_obj = wapi.get_object('zone_auth',
                                            {'fqdn': zone})
-                if zone_obj is not None:
+                if zone_obj:
                     zone_list.append(zone_obj[0]['_ref'])
                 else:
                     module.fail_json(
@@ -194,7 +194,7 @@ def main():
                                            {'name': pool['pool']})
                 if 'ratio' not in pool:
                     pool['ratio'] = 1
-                if pool_obj is not None:
+                if pool_obj:
                     pool_list.append({'pool': pool_obj[0]['_ref'],
                                       'ratio': pool['ratio']})
                 else:
