@@ -12,5 +12,6 @@
     - name: Delete Nios DTC SIP monitor Test
       infoblox.nios_modules.nios_dtc_monitor_sip:
         name: sip_monitor
+        port: 8080
         state: absent
         provider: "{{ nios_provider }}"
