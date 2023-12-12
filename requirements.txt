@@ -1,1 +1,1 @@
-infoblox-client
+infoblox-client==0.6.0
