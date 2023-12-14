@@ -17,10 +17,9 @@ readme: README.md
 # A list of the collection's content authors. Can be just the name or in the format 'Full Name <email> (url)
 # @nicks:irc/im.site#channel'
 authors:
-- Sailesh Giri (sgiri@infoblox.com)
-- Vaishnavi TR (vtr@infoblox.com)
-- Anagha KH (akh@infoblox.com)
-- Shankar Ganesh (sganesh@infoblox.com)
+- Hemanth Kumar (hkumar3@infoblox.com)
+- Jeenitkumar Khatri (jkhatri@infoblox.com)
+- Jaykumar Chhatbar (jchhatbar@infoblox.com)
 
 ### OPTIONAL but strongly recommended
 

@@ -93,11 +93,15 @@ Installation
 Dependencies
 ------------
 
--   Python version 3.8 or later
+-   Python version 3.10 or later
 
--   Ansible version 2.12 or later
+-   Ansible version 2.16 or later
 
--   NIOS 8.5.x or later
+-   NIOS 8.6.x and 9.0.x
+
+-  Infoblox WAPI version 2.9 or later
+ 
+Note: For modules of DTC objects to function properly, Infoblox recommends WAPI version 2.12 or later.
 
 Prerequisites
 -------------
@@ -180,7 +184,7 @@ Dates TBD
 Current release
 ---------------
 
-1.5.0 on 11 May 2023
+1.6.0 on 14 Dec 2023
 
 Versioning
 =========

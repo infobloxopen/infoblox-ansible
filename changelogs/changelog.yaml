@@ -219,27 +219,37 @@ releases:
     release_date: '2023-05-11'
   1.6.0:
     changes:
-      release_summary: This release provides plugins for NIOS DTC monitoring
+      major_changes:
+        - Upgrade Ansible version support from 2.13 to 2.16.
+        - Upgrade Python version support from 3.8 to 3.10.
+      release_summary: 'Added new modules with CRUD features to manage NIOS DTC health check monitors: DTC HTTP Monitor,
+        DTC ICMP Monitor, DTC PDP Monitor, DTC SIP Monitor, DTC SNMP Monitor, DTC TCP Monitor.
+        Added a new module with CRUD features to manage topology rulesets in NIOS.
+        Added a new field to define topology ruleset for the DTC Pool and DTC LBDN modules.'
+      bugfixes:
+        - Fixes typo for environment variable INFOBLOX_WAPI_VERSION `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+        - Fixes environment variable max_results using INFOBLOX_MAX_RESULTS `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+        - Fixes index error for transform fields in DTC LBDN (auth_zone and Pool) and DTC POOL (servers and monitors) `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
     modules:
-    - description: Configure Infoblox NIOS DTC HTTP monitor
+    - description: Configures the Infoblox NIOS DTC HTTP monitor.
       name: nios_dtc_monitor_http
       namespace: ''
-    - description: Configure Infoblox NIOS DTC ICMP monitor
+    - description: Configures the Infoblox NIOS DTC ICMP monitor
       name: nios_dtc_monitor_icmp
       namespace: ''
-    - description: Configure Infoblox NIOS DTC PDP monitor
+    - description: Configures the Infoblox NIOS DTC PDP monitor
       name: nios_dtc_monitor_pdp
       namespace: ''
-    - description: Configure Infoblox NIOS DTC SIP monitor
+    - description: Configures the Infoblox NIOS DTC SIP monitor
       name: nios_dtc_monitor_sip
       namespace: ''
-    - description: Configure Infoblox NIOS DTC SNMP monitor
-      name: nios_dtc_monitor_snpp
+    - description: Configures the Infoblox NIOS DTC SNMP monitor
+      name: nios_dtc_monitor_snmp
       namespace: ''
-    - description: Configure Infoblox NIOS DTC TCP monitor
+    - description: Configures the Infoblox NIOS DTC TCP monitor
       name: nios_dtc_monitor_tcp
       namespace: ''
-    - description: Configure Infoblox NIOS DTC Topology
+    - description: Configures the Infoblox NIOS DTC Topology
       name: nios_dtc_topology
       namespace: ''
-    release_date: 'tbd'
+    release_date: '2023-12-14'
