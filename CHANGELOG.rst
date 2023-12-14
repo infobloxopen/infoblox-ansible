@@ -9,20 +9,31 @@ v1.6.0
 
 Release Summary
 ---------------
+Added new modules with CRUD features to manage NIOS DTC health check monitors: DTC HTTP Monitor,
+DTC ICMP Monitor, DTC PDP Monitor, DTC SIP Monitor, DTC SNMP Monitor, DTC TCP Monitor.
+Added a new module with CRUD features to manage topology rulesets in NIOS.
+Added a new field to define topology ruleset for the DTC Pool and DTC LBDN modules.
 
-This release provides plugins for NIOS DTC monitoring and topology
+Major Changes
+-------------
+- Upgrade Ansible version support from 2.13 to 2.16.
+- Upgrade Python version support from 3.8 to 3.10.
 
 New Modules
 -----------
+- infoblox.nios_modules.nios_dtc_monitor_http - Configures the Infoblox NIOS DTC HTTP monitor
+- infoblox.nios_modules.nios_dtc_monitor_icmp - Configures the Infoblox NIOS DTC ICMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_pdp - Configures the Infoblox NIOS DTC PDP monitor
+- infoblox.nios_modules.nios_dtc_monitor_sip - Configures the Infoblox NIOS DTC SIP monitor
+- infoblox.nios_modules.nios_dtc_monitor_snmp - Configures the Infoblox NIOS DTC SNMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_tcp - Configures the Infoblox NIOS DTC TCP monitor
+- infoblox.nios_modules.nios_dtc_topology - Configures the Infoblox NIOS DTC Topology
 
-- infoblox.nios_modules.nios_dtc_monitor_http - Configure Infoblox NIOS DTC HTTP monitor
-- infoblox.nios_modules.nios_dtc_monitor_icmp - Configure Infoblox NIOS DTC ICMP monitor
-- infoblox.nios_modules.nios_dtc_monitor_pdp - Configure Infoblox NIOS DTC PDP monitor
-- infoblox.nios_modules.nios_dtc_monitor_sip - Configure Infoblox NIOS DTC SIP monitor
-- infoblox.nios_modules.nios_dtc_monitor_snmp - Configure Infoblox NIOS DTC SNMP monitor
-- infoblox.nios_modules.nios_dtc_monitor_tcp - Configure Infoblox NIOS DTC TCP monitor
-- infoblox.nios_modules.nios_dtc_topology - Configure Infoblox NIOS DTC Topology
-
+Bugfixes
+---------
+- Fixes typo for environment variable INFOBLOX_WAPI_VERSION `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+- Fixes environment variable max_results using INFOBLOX_MAX_RESULTS `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+- Fixes index error for transform fields in DTC LBDN (auth_zone and Pool) and DTC POOL (servers and monitors) `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
 
 v1.5.0
 ======
