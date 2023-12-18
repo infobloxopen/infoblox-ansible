@@ -4,6 +4,6 @@ pytest-xdist
 mock
 pytest-mock
 pytest-cov==2.8.0
-coverage
+coverage==7.3.2
 pygobject
 launchpadlib
