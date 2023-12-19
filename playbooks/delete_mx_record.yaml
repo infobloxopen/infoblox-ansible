@@ -9,7 +9,7 @@
 
   connection: local
   tasks:
-   - name: Create Nios MX record
+   - name: delete Nios MX record
      infoblox.nios_modules.nios_mx_record:
        name: ansible.com
        mx: mailhost.ansible.com

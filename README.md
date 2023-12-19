@@ -95,7 +95,7 @@ Dependencies
 
 -   Python version 3.10 or later
 
--   Ansible version 2.16 or later
+-   Ansible Core version 2.14 or later
 
 -   NIOS 8.6.x and 9.0.x
 
@@ -184,7 +184,7 @@ Dates TBD
 Current release
 ---------------
 
-1.6.0 on 14 Dec 2023
+1.6.1 on 19 Dec 2023
 
 Versioning
 =========

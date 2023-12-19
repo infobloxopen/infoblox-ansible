@@ -3,6 +3,17 @@ Infoblox.Nios_Modules Release Notes
 ===================================
 
 .. contents:: Topics
+v1.6.1
+======
+
+Release Summary
+---------------
+This release includes the updates of plug-in version 1.6.0 and the following documentation changes:
+Ansible core version in the dependencies updated to 2.14 or later.
+
+Minor Changes
+-------------
+Ansible core version in the dependencies updated to 2.14 or later.
 
 v1.6.0
 ======

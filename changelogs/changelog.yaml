@@ -253,3 +253,10 @@ releases:
       name: nios_dtc_topology
       namespace: ''
     release_date: '2023-12-14'
+    1.6.1:
+      changes:
+        minor_changes:
+          - Ansible core version in the dependencies updated to 2.14 or later.
+        release_summary: 'This release includes the updates of plug-in version 1.6.0 and the following documentation changes:
+          Ansible core version in the dependencies updated to 2.14 or later.'
+      release_date: '2023-12-19'
