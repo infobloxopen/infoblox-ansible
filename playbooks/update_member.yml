@@ -8,7 +8,7 @@
       password: cloudadmin
   connection: local
   tasks:
-   - name: create member
+   - name: update member host name
      infoblox.nios_modules.nios_member:
        host_name: {old_name: block1.localdomain, new_name: member01.localdomain}
        master_candidate: false

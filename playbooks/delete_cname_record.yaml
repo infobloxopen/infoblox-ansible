@@ -9,7 +9,7 @@
 
   connection: local
   tasks:
-   - name: Create Nios CNAME record
+   - name: Delete Nios CNAME record
      infoblox.nios_modules.nios_cname_record:
        name: cname.ansible.com
        canonical: realhost.ansible.com

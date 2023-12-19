@@ -9,8 +9,8 @@
 
   connection: local
   tasks:
-    - name: Delete a DTC Topology
-      nios_dtc_topology:
+    - name: delete a DTC Topology
+      infoblox.nios_modules.nios_dtc_topology:
         name: a_topology
         state: absent
         provider: "{{ nios_provider }}"
