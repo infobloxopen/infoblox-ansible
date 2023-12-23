@@ -23,6 +23,11 @@ options:
       description: The CIDR network to retrieve the next address(es) from.
       required: True
       type: str
+    use_range:
+      description: Use DHCP range to retrieve the next available IP address(es).
+      required: false
+      default: no
+      type: bool
     num:
       description: The number of IP address(es) to return.
       required: false
@@ -44,6 +49,10 @@ EXAMPLES = """
 - name: return next available IP address for network 192.168.10.0/24
   ansible.builtin.set_fact:
     ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+
+- name: return next available IP address for network 192.168.10.0/24 from DHCP range
+  ansible.builtin.set_fact:
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', use_range=true, provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return next available IP address for network 192.168.10.0/24 in a non-default network view
   ansible.builtin.set_fact:
@@ -91,7 +100,9 @@ class LookupModule(LookupBase):
         provider = kwargs.pop('provider', {})
         wapi = WapiLookup(provider)
 
-        if isinstance(ipaddress.ip_network(network), ipaddress.IPv6Network):
+        if kwargs.get('use_range', False):
+            network_obj = wapi.get_object('range', {'network': network})
+        elif isinstance(ipaddress.ip_network(network), ipaddress.IPv6Network):
             network_obj = wapi.get_object('ipv6network', {'network': network})
         else:
             network_obj = wapi.get_object('network', {'network': network})
