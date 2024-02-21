@@ -126,4 +126,7 @@ class TestNiosNSGroupModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            "nsgroup/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+            {"name": "default", "comment": "updated comment"},
+        )

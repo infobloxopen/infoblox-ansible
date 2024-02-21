@@ -99,7 +99,10 @@ class TestNiosApi(unittest.TestCase):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            "networkview/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+            {"name": "default", "comment": "updated comment"},
+        )
 
     def test_wapi_change_false(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'default',
@@ -125,7 +128,10 @@ class TestNiosApi(unittest.TestCase):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            "networkview/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+            {"name": "default", "comment": "updated comment"},
+        )
 
     def test_wapi_extattrs_change(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'default',

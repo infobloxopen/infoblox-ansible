@@ -133,7 +133,10 @@ class TestNiosPTRRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            "record:ptr/ZG5zLm5ldHdvcmtfdmlldyQw:14.241.36.10.in-addr.arpa/default",
+            {"ipv4addr": "10.36.241.14", "ptrdname": "ansible.test.com", "comment": "updated comment", "view": "default"},
+        )
 
     def test_nios_ptr_record_update_record_ptrdname(self):
         self.module.params = {'provider': None, 'state': 'present', 'ptrdname': 'ansible.test.org',
@@ -162,7 +165,10 @@ class TestNiosPTRRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            "record:ptr/ZG5zLm5ldHdvcmtfdmlldyQw:14.241.36.10.in-addr.arpa/default",
+            {"ipv4addr": "10.36.241.14", "ptrdname": "ansible.test.org", "comment": "comment", "view": "default"},
+        )
 
     def test_nios_ptr6_record_create(self):
         self.module.params = {'provider': None, 'state': 'present', 'ptrdname': 'ansible6.test.com',
