@@ -29,9 +29,23 @@ Modules
 
 -   `nios_dtc_lbdn` – Configure Infoblox NIOS DTC LBDN records
 
+-   `nios_dtc_monitor_http` – Configure Infoblox NIOS DTC HTTP monitors
+
+-   `nios_dtc_monitor_icmp` – Configure Infoblox NIOS DTC ICMP monitors
+
+-   `nios_dtc_monitor_pdp` – Configure Infoblox NIOS DTC PDP monitors
+
+-   `nios_dtc_monitor_sip` – Configure Infoblox NIOS DTC SIP monitors
+
+-   `nios_dtc_monitor_snmp` – Configure Infoblox NIOS DTC SNMP monitors
+
+-   `nios_dtc_monitor_tcp` – Configure Infoblox NIOS DTC TCP monitors
+
 -   `nios_dtc_pool` – Configure Infoblox NIOS DTC pools
 
 -   `nios_dtc_server` – Configure Infoblox NIOS DTC server records
+
+-   `nios_dtc_topology` – Configure Infoblox NIOS DTC topologies
 
 -   `nios_fixed_address` – Configure Infoblox NIOS DHCP Fixed Address
 
@@ -59,6 +73,8 @@ Modules
 
 -   `nios_ptr_record` – Configure Infoblox NIOS PTR records
 
+-   `nios_range` - Configure Infoblox NIOS Network Range object
+
 -   `nios_restartservices` - Controlled restart of Infoblox NIOS services
 
 -   `nios_srv_record` – Configure Infoblox NIOS SRV records
@@ -85,11 +101,15 @@ Installation
 Dependencies
 ------------
 
--   Python version 2.7 or later
+-   Python version 3.10 or later
 
--   Ansible version 2.9.0 or later
+-   Ansible Core version 2.14 or later
 
--   NIOS 8.2.4 or later
+-   NIOS 8.6.x and 9.0.x
+
+-  Infoblox WAPI version 2.9 or later
+ 
+Note: For modules of DTC objects to function properly, Infoblox recommends WAPI version 2.12 or later.
 
 Prerequisites
 -------------
@@ -172,7 +192,7 @@ Dates TBD
 Current release
 ---------------
 
-1.2.1 on 21 December 2021
+1.6.1 on 19 Dec 2023
 
 Versioning
 =========

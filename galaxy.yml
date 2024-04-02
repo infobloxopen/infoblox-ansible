@@ -9,7 +9,7 @@ namespace: infoblox
 name: nios_modules
 
 # The version of the collection. Must be compatible with semantic versioning
-version: 1.2.1
+version: 1.6.1
 
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: README.md
@@ -17,10 +17,9 @@ readme: README.md
 # A list of the collection's content authors. Can be just the name or in the format 'Full Name <email> (url)
 # @nicks:irc/im.site#channel'
 authors:
-- Sailesh Giri (sgiri@infoblox.com)
-- Vaishnavi TR (vtr@infoblox.com)
-- Anagha KH (akh@infoblox.com)
-- Shankar Ganesh (sganesh@infoblox.com)
+- Hemanth Kumar (hkumar3@infoblox.com)
+- Jeenitkumar Khatri (jkhatri@infoblox.com)
+- Jaykumar Chhatbar (jchhatbar@infoblox.com)
 
 ### OPTIONAL but strongly recommended
 
@@ -51,13 +50,13 @@ tags:
 #dependencies: {}
 
 # The URL of the originating SCM repository
-repository: https://github.com/infobloxopen/infoblox-ansible
+repository: https://github.com/infobloxopen/infoblox-ansible/tree/master
 
 # The URL to any online docs
 documentation: https://github.com/infobloxopen/infoblox-ansible/blob/master/README.md
 
 # The URL to the homepage of the collection/project
-homepage: https://github.com/infobloxopen/infoblox-ansible/tree/master/ansible_collections/infoblox/nios_modules
+homepage: https://github.com/infobloxopen/infoblox-ansible
 
 # The URL to the collection issue tracker
 issues: https://github.com/infobloxopen/infoblox-ansible/issues

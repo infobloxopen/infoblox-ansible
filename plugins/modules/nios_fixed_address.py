@@ -16,6 +16,8 @@ description:
   - A fixed address is a specific IP address that a DHCP server
     always assigns when a lease request comes from a particular
     MAC address of the client.
+  - A fix address reservation is a specific IP address that a DHCP
+    server reserves and never assigns to a client.
   - Supports both IPV4 and IPV6 internet protocols.
 requirements:
   - infoblox-client
@@ -40,7 +42,8 @@ options:
     required: true
   mac:
     description:
-      - The MAC address of the IPv4 interface.
+      - The MAC address of the IPv4 interface. For a fix address reservation
+        specify mac address as 00:00:00:00:00:00
     type: str
   duid:
     description:
@@ -121,6 +124,21 @@ EXAMPLES = '''
     name: ipv4_fixed
     ipaddr: 192.168.10.1
     mac: 08:6d:41:e8:fd:e8
+    network: 192.168.10.0/24
+    network_view: default
+    comment: this is a test comment
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Configure an ipv4 dhcp fixed address reservation
+  infoblox.nios_modules.nios_fixed_address:
+    name: ipv4_fixed
+    ipaddr: 192.168.10.1
+    mac: 00:00:00:00:00:00
     network: 192.168.10.0/24
     network_view: default
     comment: this is a test comment

@@ -41,7 +41,7 @@ class TestNiosHostRecordModule(TestNiosModule):
         self.mock_wapi_run.start()
 
         self.load_config = self.mock_wapi_run.start()
-        self.mock_check_type_dict = patch('ansible_collections.infoblox.nios_modules.plugins.module_utils.api.check_type_dict')
+        self.mock_check_type_dict = patch('ansible.module_utils.common.validation.check_type_dict')
         self.mock_check_type_dict_obj = self.mock_check_type_dict.start()
 
     def tearDown(self):
@@ -77,7 +77,7 @@ class TestNiosHostRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('testobject', {'name': self.mock_check_type_dict_obj().__getitem__()})
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'ansible'})
 
     def test_nios_host_record_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'ansible',

@@ -33,6 +33,13 @@ options:
         of the server
     required: true
     type: str
+  disable:
+    description:
+      - Determines whether the DTC Server is disabled or not.
+        When this is set to False, the fixed address is enabled.
+    required: false
+    type: bool
+    default: False
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
@@ -97,7 +104,6 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_DTC_SERVER
 from ..module_utils.api import normalize_ib_spec
@@ -111,6 +117,7 @@ def main():
         name=dict(required=True, ib_req=True),
         host=dict(required=True, ib_req=True),
 
+        disable=dict(type='bool', default=False),
         extattrs=dict(type='dict'),
         comment=dict(),
     )

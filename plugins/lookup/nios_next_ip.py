@@ -33,12 +33,22 @@ options:
       required: false
       type: list
       elements: str
+    network_view:
+      description: The network view to retrieve the CIDR network from.
+      required: false
+      default: default
+      type: str
 '''
 
 EXAMPLES = """
 - name: return next available IP address for network 192.168.10.0/24
   ansible.builtin.set_fact:
     ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+
+- name: return next available IP address for network 192.168.10.0/24 in a non-default network view
+  ansible.builtin.set_fact:
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', network_view='ansible', \
+                provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return the next 3 available IP addresses for network 192.168.10.0/24
   ansible.builtin.set_fact:
@@ -91,9 +101,14 @@ class LookupModule(LookupBase):
 
         num = kwargs.get('num', 1)
         exclude_ip = kwargs.get('exclude', [])
+        network_view = kwargs.get('network_view', 'default')
 
         try:
-            ref = network_obj[0]['_ref']
+            ref_list = [network['_ref'] for network in network_obj if network['network_view'] == network_view]
+            if not ref_list:
+                raise AnsibleError('no records found')
+            else:
+                ref = ref_list[0]
             avail_ips = wapi.call_func('next_available_ip', ref, {'num': num, 'exclude': exclude_ip})
             return [avail_ips['ips']]
         except Exception as exc:

@@ -3,6 +3,144 @@ Infoblox.Nios_Modules Release Notes
 ===================================
 
 .. contents:: Topics
+v1.6.1
+======
+
+Release Summary
+---------------
+This release includes the updates of plug-in version 1.6.0 and the following documentation changes:
+Ansible core version in the dependencies updated to 2.14 or later.
+
+Minor Changes
+-------------
+Ansible core version in the dependencies updated to 2.14 or later.
+
+v1.6.0
+======
+
+Release Summary
+---------------
+Added new modules with CRUD features to manage NIOS DTC health check monitors: DTC HTTP Monitor,
+DTC ICMP Monitor, DTC PDP Monitor, DTC SIP Monitor, DTC SNMP Monitor, DTC TCP Monitor.
+Added a new module with CRUD features to manage topology rulesets in NIOS.
+Added a new field to define topology ruleset for the DTC Pool and DTC LBDN modules.
+
+Major Changes
+-------------
+- Upgrade Ansible version support from 2.13 to 2.16.
+- Upgrade Python version support from 3.8 to 3.10.
+
+New Modules
+-----------
+- infoblox.nios_modules.nios_dtc_monitor_http - Configures the Infoblox NIOS DTC HTTP monitor
+- infoblox.nios_modules.nios_dtc_monitor_icmp - Configures the Infoblox NIOS DTC ICMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_pdp - Configures the Infoblox NIOS DTC PDP monitor
+- infoblox.nios_modules.nios_dtc_monitor_sip - Configures the Infoblox NIOS DTC SIP monitor
+- infoblox.nios_modules.nios_dtc_monitor_snmp - Configures the Infoblox NIOS DTC SNMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_tcp - Configures the Infoblox NIOS DTC TCP monitor
+- infoblox.nios_modules.nios_dtc_topology - Configures the Infoblox NIOS DTC Topology
+
+Bugfixes
+---------
+- Fixes typo for environment variable INFOBLOX_WAPI_VERSION `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+- Fixes environment variable max_results using INFOBLOX_MAX_RESULTS `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+- Fixes index error for transform fields in DTC LBDN (auth_zone and Pool) and DTC POOL (servers and monitors) `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+
+v1.5.0
+======
+
+Release Summary
+---------------
+- Added new module - NIOS Range with Create, Update and Delete features
+- Added new feature - Member Assignment to Networks with add and remove functionality
+- Fixes Unable to Update/Delete EAs using Ansible plugin
+- Fixes Static Allocation of IPV4 address of A Record
+- Updates default WAPI version to 2.9
+- Added Grid Master Candidate feature
+
+Major Changes
+-------------
+- Added NIOS Range module with Create, Update and Delete features `#152 <https://github.com/infobloxopen/infoblox-ansible/pull/152>`_
+- Added Member Assignment to network and ranges `#152 <https://github.com/infobloxopen/infoblox-ansible/pull/152>`_
+- Added Grid Master Candidate feature `#152 <https://github.com/infobloxopen/infoblox-ansible/pull/152>`_
+- Fixes issue unable to update/delete EAs using Ansible plugin `#180 <https://github.com/infobloxopen/infoblox-ansible/pull/180>`_
+- Fixes static and dynamic allocation of IPV4 address of A Record `#182 <https://github.com/infobloxopen/infoblox-ansible/pull/182>`_
+- Fixes to Update host name of  NIOS member `#176 <https://github.com/infobloxopen/infoblox-ansible/pull/176>`_
+- Updates default WAPI version to 2.9 `#176 <https://github.com/infobloxopen/infoblox-ansible/pull/176>`_
+
+Bugfixes
+---------
+- Fixes Update A Record having multiple records with same name and different IP `#182 <https://github.com/infobloxopen/infoblox-ansible/pull/182>`_
+
+
+v1.4.1
+======
+
+Release Summary
+---------------
+- Ansible Lookup modules can specify network_view to which a network/ip belongs
+- Fixes camelCase issue while updating 'nios_network_view' with 'new_name'
+- Fixes issue to allocate ip to a_record dynamically
+- Updates 'nios_a_record' name with multiple ips having same name
+
+Minor Changes
+-------------
+- Fix to specify network_view in lookup modules to return absolute network/ip `#157 <https://github.com/infobloxopen/infoblox-ansible/pull/157>`_
+- Fix to camelcase issue for updating 'nios_network_view' name `#163 <https://github.com/infobloxopen/infoblox-ansible/pull/163>`_
+- Fix to allocate ip to a_record dynamically `#163 <https://github.com/infobloxopen/infoblox-ansible/pull/163>`_
+- Fix to update 'nios_a_record' name with multiple ips having same name `#164 <https://github.com/infobloxopen/infoblox-ansible/pull/164>`_
+- Fix to changelog yaml file with linting issues `#161 <https://github.com/infobloxopen/infoblox-ansible/pull/161>`_
+
+
+v1.4.0
+======
+
+Release Summary
+---------------
+- For ansible module, added certificate authentication feature
+- Few bug fixes in ansible module nios network
+
+Major Changes
+-------------
+- Feature for extra layer security, with `cert` and `key` parameters in playbooks for authenticating using certificate and key .pem file absolute path `#154 <https://github.com/infobloxopen/infoblox-ansible/pull/154>`
+- Fix to remove issue causing due to template attr in deleting network using Ansible module nios network `#147 <https://github.com/infobloxopen/infoblox-ansible/pull/147>`_
+
+
+v1.3.0
+======
+
+Release Summary
+---------------
+- Issue fixes to create TXT record with equals sign
+- For nonexistent record, update operation creates the new record
+- For nonexistent IPv4Address, update operation creates a new A record with new_ipv4addr
+
+Major Changes
+-------------
+- Update operation using `old_name` and `new_name` for the object with dummy name in `old_name` (which does not exist in system) will not create a new object in the system. An error will be thrown stating the object does not exist in the system `#129 <https://github.com/infobloxopen/infoblox-ansible/pull/129>`_
+- Update `text` field of TXT Record `#128 <https://github.com/infobloxopen/infoblox-ansible/pull/128>`_
+
+Bugfixes
+---------
+- Fix to create TXT record with equals sign `#128 <https://github.com/infobloxopen/infoblox-ansible/pull/128>`_
+
+  
+v1.2.2
+======
+
+Release Summary
+---------------
+- Issue fixes to create PTR record in different network views
+- Support extended to determine whether the DTC server is disabled or not
+
+Minor Changes
+-------------
+- Fix to create PTR record in different network views `#103 <https://github.com/infobloxopen/infoblox-ansible/pull/103>`_
+- Remove use_option for DHCP option 60 `#104 <https://github.com/infobloxopen/infoblox-ansible/pull/104>`_
+- Allow specifying a template when creating a network `#105 <https://github.com/infobloxopen/infoblox-ansible/pull/105>`_
+- Fix unit and sanity test issues `#117 <https://github.com/infobloxopen/infoblox-ansible/pull/117>`_
+- Expanding for disable value `#119 <https://github.com/infobloxopen/infoblox-ansible/pull/119>`_
+
 
 v1.2.1
 ======

@@ -37,6 +37,20 @@ options:
           - Value can also be specified using C(INFOBLOX_PASSWORD) environment
             variable.
         type: str
+      cert:
+        description:
+          - Specifies the client certificate file with digest of x509 config
+            for extra layer secure connection the remote instance of NIOS.
+          - Value can also be specified using C(INFOBLOX_CERT) environment
+            variable.
+        type: str
+      key:
+        description:
+          - Specifies private key file for encryption with the certificate
+            in order to connect with remote instance of NIOS.
+          - Value can also be specified using C(INFOBLOX_KEY) environment
+            variable.
+        type: str
       validate_certs:
         description:
           - Boolean value to enable or disable verifying SSL certificates
@@ -63,11 +77,11 @@ options:
       wapi_version:
         description:
           - Specifies the version of WAPI to use
-          - Value can also be specified using C(INFOBLOX_WAP_VERSION) environment
+          - Value can also be specified using C(INFOBLOX_WAPI_VERSION) environment
             variable.
           - Until ansible 2.8 the default WAPI was 1.4
         type: str
-        default: '2.1'
+        default: '2.9'
       max_results:
         description:
           - Specifies the maximum number of objects to be returned,

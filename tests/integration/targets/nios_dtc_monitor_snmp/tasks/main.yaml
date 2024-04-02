@@ -1,0 +1,1 @@
+- include_tasks: nios_dtc_monitor_snmp_idempotence.yaml
