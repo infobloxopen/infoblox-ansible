@@ -55,6 +55,7 @@ options:
           - The information for the remote name server to which you want the Infoblox appliance to forward queries for a specified domain name.
         required: false
         type: list
+        default: []
         elements: dict
         suboptions:
           name:

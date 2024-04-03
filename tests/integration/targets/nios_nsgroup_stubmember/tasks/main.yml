@@ -1,1 +1,1 @@
-- include: nios_nsgroup_stubmember_idempotence.yml
+- include_tasks: nios_nsgroup_stubmember_idempotence.yml
