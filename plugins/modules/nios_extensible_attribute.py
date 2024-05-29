@@ -9,9 +9,11 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: nios_extensible_attribute
-author: "Matthew Dennett (@matthewdennett)"
+author:
+  - "Matthew Dennett (@matthewdennett)"
+  - "Hugues Malphettes (@hmalphettes)"
 short_description: Configure Infoblox NIOS extensible attribute definition
-version_added: "1.5.0"
+version_added: "1.7.0"
 description:
   - Adds and/or removes a extensible attribute definition objects from
     Infoblox NIOS servers.  This module manages NIOS C(extensibleattributedef)
@@ -80,7 +82,7 @@ options:
   flags:
     description:
       - This field contains extensible attribute flags.
-        Possible values: (A)udited, (C)loud API, Cloud (G)master, (I)nheritable, (L)isted, (M)andatory value,
+        The possible values are (A)udited, (C)loud API, Cloud (G)master, (I)nheritable, (L)isted, (M)andatory value,
         MGM (P)rivate, (R)ead Only, (S)ort enum values, Multiple (V)alues.
         If there are two or more flags in the field, you must list them according to the order they are listed above.
         For example, "CR" is a valid value for the "flags" field because C = Cloud API is listed before R = Read only.
