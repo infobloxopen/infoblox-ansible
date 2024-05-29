@@ -9,9 +9,11 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: nios_extensible_attribute
-author: "Matthew Dennett (@matthewdennett)"
+author:
+  - "Matthew Dennett (@matthewdennett)"
+  - "Hugues Malphettes (@hmalphettes)"
 short_description: Configure Infoblox NIOS extensible attribute definition
-version_added: "1.5.0"
+version_added: "1.7.0"
 description:
   - Adds and/or removes a extensible attribute definition objects from
     Infoblox NIOS servers.  This module manages NIOS C(extensibleattributedef)
