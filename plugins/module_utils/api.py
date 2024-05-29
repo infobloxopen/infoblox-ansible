@@ -214,12 +214,14 @@ def convert_members_to_struct(member_spec):
         member_spec['members'] = [{'_struct': 'dhcpmember', 'name': k['name']} for k in member_spec['members']]
     return member_spec
 
+
 def convert_ea_list_to_struct(member_spec):
     ''' Transforms the list of the values into a valid WAPI struct.
     '''
     if 'list_values' in member_spec.keys():
         member_spec['list_values'] = [{'_struct': 'extensibleattributedef:listvalues', 'value': v} for v in member_spec['list_values']]
     return member_spec
+
 
 def normalize_ib_spec(ib_spec):
     result = {}
