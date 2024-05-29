@@ -77,6 +77,15 @@ options:
       - INTEGER
       - STRING
       - URL
+  flags:
+    description:
+      - This field contains extensible attribute flags.
+        Possible values: (A)udited, (C)loud API, Cloud (G)master, (I)nheritable, (L)isted, (M)andatory value,
+        MGM (P)rivate, (R)ead Only, (S)ort enum values, Multiple (V)alues.
+        If there are two or more flags in the field, you must list them according to the order they are listed above.
+        For example, "CR" is a valid value for the "flags" field because C = Cloud API is listed before R = Read only.
+        However, the value "RC" is invalid because the order for the "flags" field is broken.
+    type: str
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -96,6 +105,18 @@ EXAMPLES = '''
     name: my_string
     type: STRING
     comment: Created by ansible
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Update an extensible attribute to accept multiple values
+  infoblox.nios_modules.nios_extensible_attribute:
+    name: my_string
+    type: STRING
+    flags: V
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -174,6 +195,7 @@ def main():
         list_values=dict(type='list', elements='str'),
         max=dict(type='str'),
         min=dict(type='str'),
+        flags=dict(type='str'),
         name=dict(type='str', required=True, ib_req=True),
         type=dict(type='str', default='STRING',
                   choices=['DATE', 'EMAIL', 'ENUM', 'INTEGER', 'STRING', 'URL'])
