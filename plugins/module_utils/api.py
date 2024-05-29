@@ -248,14 +248,16 @@ class WapiBase(object):
             else:
                 raise
 
-
-class WapiLookup(WapiBase):
-    ''' Implements WapiBase for lookup plugins '''
     def handle_exception(self, method_name, exc):
         if ('text' in exc.response):
             raise Exception(exc.response['text'])
         else:
             raise Exception(exc)
+
+
+class WapiLookup(WapiBase):
+    ''' Implements WapiBase for lookup plugins '''
+    pass
 
 
 class WapiInventory(WapiBase):
