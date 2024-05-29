@@ -48,7 +48,8 @@ options:
 EXAMPLES = """
 - name: return next available IP address for network 192.168.10.0/24
   ansible.builtin.set_fact:
-    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24',
+                provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return next available IP address for network 192.168.10.0/24 from DHCP range
   ansible.builtin.set_fact:
@@ -56,7 +57,7 @@ EXAMPLES = """
 
 - name: return next available IP address for network 192.168.10.0/24 in a non-default network view
   ansible.builtin.set_fact:
-    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', network_view='ansible', \
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', network_view='ansible',
                 provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return the next 3 available IP addresses for network 192.168.10.0/24
@@ -71,7 +72,8 @@ EXAMPLES = """
 
 - name: return next available IP address for network fd30:f52:2:12::/64
   ansible.builtin.set_fact:
-    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', 'fd30:f52:2:12::/64', provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', 'fd30:f52:2:12::/64',
+                provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 """
 
 RETURN = """
