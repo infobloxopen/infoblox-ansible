@@ -53,12 +53,12 @@ EXAMPLES = """
 
 - name: return the next 3 available IP addresses for network 192.168.10.0/24
   ansible.builtin.set_fact:
-    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', num=3,
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', num=3, \
                 provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return the next 3 available IP addresses for network 192.168.10.0/24 excluding ip addresses - ['192.168.10.1', '192.168.10.2']
   ansible.builtin.set_fact:
-    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', num=3, exclude=['192.168.10.1', '192.168.10.2'],
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', num=3, exclude=['192.168.10.1', '192.168.10.2'], \
                 provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return next available IP address for network fd30:f52:2:12::/64
