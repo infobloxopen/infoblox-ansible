@@ -94,11 +94,9 @@ options:
         the NIOS server.  When this value is set to C(present), the object
         is configured on the device and when this value is set to C(absent)
         the value is removed (if necessary) from the device.
-    type: str
+    choices: [present, absent]
     default: present
-    choices:
-      - present
-      - absent
+    type: str
 '''
 
 EXAMPLES = '''
