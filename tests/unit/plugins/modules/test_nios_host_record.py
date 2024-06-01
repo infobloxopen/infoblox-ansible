@@ -126,7 +126,10 @@ class TestNiosHostRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            "record:host/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+            {"name": "default", "comment": "updated comment"},
+        )
 
     def test_nios_host_record_update_record_name(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': {'new_name': 'default', 'old_name': 'old_default'},
@@ -152,4 +155,7 @@ class TestNiosHostRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            "record:host/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+            {"name": "default", "comment": "comment"},
+        )
