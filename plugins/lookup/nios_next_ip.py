@@ -49,8 +49,7 @@ EXAMPLES = """
 - name: return next available IP address for network 192.168.10.0/24 in a non-default network view
   ansible.builtin.set_fact:
     ipaddr: |
-      {{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', network_view='ansible',
-          provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}
+      {{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', network_view='ansible', provider={}) }}
 
 - name: return the next 3 available IP addresses for network 192.168.10.0/24
   ansible.builtin.set_fact:
