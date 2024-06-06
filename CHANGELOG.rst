@@ -46,6 +46,26 @@ Bugfixes
 - Fixes environment variable max_results using INFOBLOX_MAX_RESULTS `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
 - Fixes index error for transform fields in DTC LBDN (auth_zone and Pool) and DTC POOL (servers and monitors) `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
 
+v1.6.0
+======
+
+Release Summary
+---------------
+
+This release provides plugins for NIOS DTC monitoring and topology
+
+New Modules
+-----------
+
+- infoblox.nios_modules.nios_dtc_monitor_http - Configure Infoblox NIOS DTC HTTP monitor
+- infoblox.nios_modules.nios_dtc_monitor_icmp - Configure Infoblox NIOS DTC ICMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_pdp - Configure Infoblox NIOS DTC PDP monitor
+- infoblox.nios_modules.nios_dtc_monitor_sip - Configure Infoblox NIOS DTC SIP monitor
+- infoblox.nios_modules.nios_dtc_monitor_snmp - Configure Infoblox NIOS DTC SNMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_tcp - Configure Infoblox NIOS DTC TCP monitor
+- infoblox.nios_modules.nios_dtc_topology - Configure Infoblox NIOS DTC Topology
+
+
 v1.5.0
 ======
 
