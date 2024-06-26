@@ -111,6 +111,28 @@ options:
         description:
           - The name of the Nios member to be assigned to this network.
         type: str
+  use_logic_filter_rules:
+    description:
+      - If set to true it'll override the logic filter list applied at an upper level.
+    type: bool
+    default: false
+  logic_filter_rules:
+    description:
+      - Configures the logic filter rules to be applied to the network object.
+        This argument accepts a list of logic filter rules (see suboptions). When omitted
+        a default value of an empty list is used.
+    type: list
+    default: []
+    elements: dict
+    suboptions:
+      filter:
+        description:
+          - The name of the logic filter to apply to the network object.
+        type: str
+      type:
+        description:
+          - The type of the logic filter to apply to the network object.
+        type: str
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -179,6 +201,21 @@ EXAMPLES = '''
     options:
       - name: domain-name
         value: ansible.com
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Set filters for a network ipv4
+  infoblox.nios_modules.nios_network:
+    network: 192.168.10.0/24
+    comment: this is a test comment
+    use_logic_filter_rules: true
+    logic_filter_rules:
+      - filter: PXE-UEFI
+        type: Option
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -329,7 +366,9 @@ def main():
         extattrs=dict(type='dict'),
         comment=dict(),
         container=dict(type='bool', ib_req=True),
-        members=dict(type='list', elements='dict', default=[])
+        members=dict(type='list', elements='dict', default=[]),
+        use_logic_filter_rules=dict(type='bool', default=False),
+        logic_filter_rules=dict(type='list', elements='dict', default=[])
     )
 
     argument_spec = dict(
