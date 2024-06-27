@@ -104,7 +104,7 @@ class TestNiosNetworkViewModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(test_object)
 
     def test_nios_network_view_update_name(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'default', 'old_name': 'old_default',
@@ -131,7 +131,7 @@ class TestNiosNetworkViewModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(test_object)
 
     def test_nios_network_view_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'ansible',
