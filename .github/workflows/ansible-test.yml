@@ -83,7 +83,7 @@ jobs:
         run: |
           ansible-galaxy collection install .cache/collection-tarballs/*.tar.gz
           git clone https://github.com/ansible/ansible.git -b ${{ matrix.ansible-version }}
-          if [ "${{ matrix.ansible-version }}" != "devel" ]; then cp -rf ansible/test/units/compat /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/; fi
+          if [ "${{ matrix.ansible-version }}" != "devel" ] && [ "${{ matrix.ansible-version }}" != "stable-2.17" ]; then cp -rf ansible/test/units/compat /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/; fi
           cp -rf ansible/test/units/modules/utils.py /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/
           sed -i 's/units/ansible_collections.infoblox.nios_modules.tests.unit/' /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/utils.py
           if [ -f /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/requirements.txt ]; then pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/requirements.txt; fi
