@@ -86,11 +86,11 @@ class TestNiosMXRecordModule(TestNiosModule):
     def test_nios_mx_record_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible.com', 'mx': 'mailhost.ansible.com',
                               'preference': 0, 'comment': 'updated comment', 'extattrs': None}
-
+        ref = "mxrecord/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "mxrecord/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "ansible.com",
                 "mx": "mailhost.ansible.com",
                 "preference": 0,
@@ -110,6 +110,8 @@ class TestNiosMXRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'comment': 'updated comment', 'name': 'ansible.com',
+                                                         'mx': 'mailhost.ansible.com', 'preference': 0})
 
     def test_nios_mx_record_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'ansible.com', 'mx': 'mailhost.ansible.com',

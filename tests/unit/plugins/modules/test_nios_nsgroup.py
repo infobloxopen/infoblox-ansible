@@ -107,10 +107,11 @@ class TestNiosNSGroupModule(TestNiosModule):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'default',
                               'comment': 'updated comment', 'grid_primary': None}
 
+        ref = "nsgroup/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "nsgroup/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "default",
                 "grid_primary": {}
             }
@@ -126,4 +127,6 @@ class TestNiosNSGroupModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.assert_called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            ref, {'comment': 'updated comment', 'name': 'default'}
+        )
