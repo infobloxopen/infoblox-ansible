@@ -81,10 +81,11 @@ class TestNiosDtcTcpMonitorModule(TestNiosModule):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'pdp_monitor',
                               'comment': 'updated comment', 'extattrs': None}
 
+        ref = "dtc:monitor:pdp/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "dtc:monitor:pdp/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "pdp_monitor",
                 "port": 2123,
                 "extattrs": {}
@@ -101,6 +102,7 @@ class TestNiosDtcTcpMonitorModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'comment': 'updated comment', 'name': 'pdp_monitor'})
 
     def test_nios_dtc_monitor_pdp_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'pdp_monitor',

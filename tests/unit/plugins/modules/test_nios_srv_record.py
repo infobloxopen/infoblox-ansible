@@ -90,11 +90,11 @@ class TestNiosSRVRecordModule(TestNiosModule):
         self.module.params = {'provider': None, 'state': 'present', 'name': '_sip._tcp.service.ansible.com',
                               'port': 5080, 'target': 'service1.ansible.com', 'priority': 10, 'weight': 10,
                               'comment': None, 'extattrs': None}
-
+        ref = "srvrecord/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "srvrecord/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "_sip._tcp.service.ansible.com",
                 'port': 5080,
                 "target": "mailhost.ansible.com",
@@ -118,6 +118,8 @@ class TestNiosSRVRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'name': '_sip._tcp.service.ansible.com',
+                                                         'port': 5080, 'target': 'service1.ansible.com', 'priority': 10, 'weight': 10})
 
     def test_nios_srv_record_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': '_sip._tcp.service.ansible.com',
