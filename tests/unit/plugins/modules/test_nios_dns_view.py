@@ -58,6 +58,9 @@ class TestNiosDnsViewModule(TestNiosModule):
         return wapi
 
     def load_fixtures(self, commands=None):
+        """
+        Load fixtures for the module
+        """
         self.exec_command.return_value = (0, load_fixture('nios_result.txt').strip(), None)
         self.load_config.return_value = dict(diff=None, session='session')
 
@@ -84,10 +87,11 @@ class TestNiosDnsViewModule(TestNiosModule):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible-dns',
                               'comment': 'updated comment', 'extattrs': None}
 
+        ref = "dnsview/ZG5zLm5ldHdvcmtfdmlldyQw:ansible/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "dnsview/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "ansible-dns",
                 "extattrs": {}
             }
@@ -103,6 +107,7 @@ class TestNiosDnsViewModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'comment': 'updated comment', 'name': 'ansible-dns'})
 
     def test_nios_dns_view_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'ansible-dns',

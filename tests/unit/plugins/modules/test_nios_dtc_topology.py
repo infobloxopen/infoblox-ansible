@@ -101,10 +101,10 @@ class TestNiosDtcTopologyModule(TestNiosModule):
     def test_nios_dtc_topology_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'a_topology',
                               'comment': 'updated comment', 'extattrs': None}
-
+        ref = "dtc:topology/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
-                '_ref': 'dtc:topology/ZG5zLm5ldHdvcmtfdmlldyQw:default/true',
+                '_ref': ref,
                 'name': 'a_topology',
                 'rules': [{
                     '_ref': 'dtc:topology:rule/ZG5zLm5ldHdvcmtfdmlldyQw:a_topology/web_pool'
@@ -124,6 +124,7 @@ class TestNiosDtcTopologyModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'comment': 'updated comment', 'name': 'a_topology'})
 
     def test_nios_dtc_topology_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'a_topology',

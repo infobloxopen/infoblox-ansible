@@ -80,11 +80,11 @@ class TestNiosDtcSipMonitorModule(TestNiosModule):
     def test_nios_dtc_monitor_sip_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'sip_monitor',
                               'comment': 'updated comment', 'extattrs': None}
-
+        ref = "dtc:monitor:sip/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "dtc:monitor:sip/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "sip_monitor",
                 "extattrs": {}
             }
@@ -100,6 +100,7 @@ class TestNiosDtcSipMonitorModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'comment': 'updated comment', 'name': 'sip_monitor'})
 
     def test_nios_dtc_monitor_sip_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'sip_monitor',

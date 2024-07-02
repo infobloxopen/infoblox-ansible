@@ -81,10 +81,11 @@ class TestNiosDtcIcmpMonitorModule(TestNiosModule):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'icmp_monitor',
                               'comment': 'updated comment', 'extattrs': None}
 
+        ref = "dtc:monitor:icmp/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "dtc:monitor:icmp/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "icmp_monitor",
                 "extattrs": {}
             }
@@ -100,6 +101,7 @@ class TestNiosDtcIcmpMonitorModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'comment': 'updated comment', 'name': 'icmp_monitor'})
 
     def test_nios_dtc_monitor_icmp_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'icmp_monitor',

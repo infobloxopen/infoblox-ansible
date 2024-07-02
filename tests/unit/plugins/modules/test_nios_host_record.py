@@ -107,10 +107,11 @@ class TestNiosHostRecordModule(TestNiosModule):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'default',
                               'comment': 'updated comment', 'extattrs': None}
 
+        ref = "record:host/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "record:host/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "default",
                 "extattrs": {}
             }
@@ -126,18 +127,20 @@ class TestNiosHostRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            ref, {'comment': 'updated comment', 'name': 'default'}
+        )
 
     def test_nios_host_record_update_record_name(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': {'new_name': 'default', 'old_name': 'old_default'},
                               'comment': 'comment', 'extattrs': None}
 
+        ref = "record:host/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "record:host/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
-                "name": "default",
-                "old_name": "old_default",
+                "_ref": ref,
+                "name": "old_default",
                 "extattrs": {}
             }
         ]
@@ -152,4 +155,6 @@ class TestNiosHostRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            ref, {'comment': 'comment', 'name': 'default'}
+        )
