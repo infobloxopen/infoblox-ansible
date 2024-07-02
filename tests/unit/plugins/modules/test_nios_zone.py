@@ -104,11 +104,11 @@ class TestNiosZoneModule(TestNiosModule):
     def test_nios_zone_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'fqdn': 'ansible.com',
                               'comment': 'updated comment', 'extattrs': None}
-
+        ref = "zone/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "zone/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "fqdn": "ansible.com",
                 "extattrs": {'Site': {'value': 'test'}}
             }
@@ -124,6 +124,7 @@ class TestNiosZoneModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'comment': 'updated comment', 'fqdn': 'ansible.com'})
 
     def test_nios_zone_create_using_grid_primary_secondaries(self):
         self.module.params = {'provider': None, 'state': 'present', 'fqdn': 'ansible.com',
