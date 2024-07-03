@@ -70,6 +70,53 @@
     provider: "{{ nios_provider }}"
   register: nios_ipv6_create1
 
+
+- name: configure a network ipv6 with filter option
+  nios_network:
+    network: fe80::/64
+    comment: this is a test comment
+    use_logic_filter_rules: true
+    state: present
+    provider: "{{ nios_provider }}"
+  register: nios_ipv6_update1
+
+- name: configure a network ipv4 with filter option
+  nios_network:
+    network: 192.168.11.0/24
+    comment: this is a test comment
+    use_logic_filter_rules: true
+    state: present
+    provider: "{{ nios_provider }}"
+  register: nios_ipv4_create3
+
+- name: update a network ipv4 with filter option
+  nios_network:
+    network: 192.168.11.0/24
+    comment: this is a test comment
+    use_logic_filter_rules: false
+    state: present
+    provider: "{{ nios_provider }}"
+  register: nios_ipv4_update3
+
+- name: Re-run with no changes
+  nios_network:
+    network: 192.168.11.0/24
+    comment: this is a test comment
+    use_logic_filter_rules: false
+    state: present
+    provider: "{{ nios_provider }}"
+  register: nios_ipv4_update4
+
+- name: remove an ipv4 network
+  nios_network:
+    network: 192.168.11.0/24
+    comment: this is a test comment
+    use_logic_filter_rules: false
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: nios_ipv4_remove3
+
+
 - assert:
     that:
       - "nios_ipv4_create1.changed"
@@ -78,3 +125,10 @@
       - "not nios_ipv4_update2.changed"
       - "nios_ipv4_remove1.changed"
       - "not nios_ipv4_remove2.changed"
+      - "nios_ipv4_create3.changed"
+      - "nios_ipv4_update3.changed"
+      - "nios_ipv6_create1.changed"
+      - "nios_ipv6_update1.changed"
+      - "not nios_ipv4_update4.changed"
+      - "nios_ipv4_remove3.changed"
+
