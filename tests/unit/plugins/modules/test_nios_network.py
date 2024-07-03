@@ -281,10 +281,11 @@ class TestNiosNetworkModule(TestNiosModule):
                               'comment': 'updated comment', 'extattrs': None, 'use_logic_filter_rules': True,
                               'logic_filter_rules': []}
 
+        ref = "network/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "network/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "network": "192.168.10.0/24",
                 "extattrs": {'options': {'name': 'test', 'value': 'ansible.com'}},
                 "use_logic_filter_rules": False,
@@ -304,3 +305,8 @@ class TestNiosNetworkModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'network': '192.168.10.0/24',
+                                                         'comment': 'updated comment',
+                                                         'use_logic_filter_rules': True,
+                                                         'logic_filter_rules': []}
+                                                   )
