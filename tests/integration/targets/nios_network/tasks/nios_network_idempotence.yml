@@ -131,4 +131,3 @@
       - "nios_ipv6_update1.changed"
       - "not nios_ipv4_update4.changed"
       - "nios_ipv4_remove3.changed"
-
