@@ -30,12 +30,16 @@ class TestNiosNetworkModule(TestNiosModule):
 
     def setUp(self):
         super(TestNiosNetworkModule, self).setUp()
-        self.module = MagicMock(name='ansible_collections.infoblox.nios_modules.plugins.modules.nios_network.WapiModule')
+        self.module = MagicMock(
+            name='ansible_collections.infoblox.nios_modules.plugins.modules.nios_network.WapiModule'
+        )
         self.module.check_mode = False
         self.module.params = {'provider': None}
         self.mock_wapi = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_network.WapiModule')
         self.exec_command = self.mock_wapi.start()
-        self.mock_wapi_run = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_network.WapiModule.run')
+        self.mock_wapi_run = patch(
+            'ansible_collections.infoblox.nios_modules.plugins.modules.nios_network.WapiModule.run'
+        )
         self.mock_wapi_run.start()
         self.load_config = self.mock_wapi_run.start()
 
@@ -58,7 +62,8 @@ class TestNiosNetworkModule(TestNiosModule):
 
     def test_nios_network_ipv4_create(self):
         self.module.params = {'provider': None, 'state': 'present', 'network': '192.168.10.0/24',
-                              'comment': None, 'extattrs': None}
+                              'comment': None, 'extattrs': None, 'use_logic_filter_rules': False,
+                              'logic_filter_rules': []}
 
         test_object = None
         test_spec = {
@@ -250,3 +255,62 @@ class TestNiosNetworkModule(TestNiosModule):
 
         self.assertTrue(res['changed'])
         wapi.create_object.assert_called_once_with('testobject', {'ipv6networkcontainer': 'fe80::/64'})
+
+    def test_nios_network_ipv4_create_with_use_logic_filter_rules(self):
+        self.module.params = {'provider': None, 'state': 'present', 'network': '192.168.10.0/24',
+                              'comment': None, 'extattrs': None, 'use_logic_filter_rules': True,
+                              'logic_filter_rules': []}
+
+        test_object = None
+        test_spec = {
+            "network": {"ib_req": True},
+            "comment": {},
+            "extattrs": {},
+            "use_logic_filter_rules": {},
+            "logic_filter_rules": {}
+        }
+
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.create_object.assert_called_once_with('testobject', {'network': '192.168.10.0/24',
+                                                                  'use_logic_filter_rules': True,
+                                                                  'logic_filter_rules': []
+                                                                  }
+                                                   )
+
+    def test_nios_network_ipv4_update_with_use_logic_filter_rules(self):
+        self.module.params = {'provider': None, 'state': 'present', 'network': '192.168.10.0/24',
+                              'comment': 'updated comment', 'extattrs': None, 'use_logic_filter_rules': True,
+                              'logic_filter_rules': []}
+
+        ref = "network/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
+        test_object = [
+            {
+                "comment": "test comment",
+                "_ref": ref,
+                "network": "192.168.10.0/24",
+                "extattrs": {'options': {'name': 'test', 'value': 'ansible.com'}},
+                "use_logic_filter_rules": False,
+                "logic_filter_rules": []
+            }
+        ]
+
+        test_spec = {
+            "network": {"ib_req": True},
+            "comment": {},
+            "extattrs": {},
+            "use_logic_filter_rules": {},
+            "logic_filter_rules": {}
+        }
+
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'network': '192.168.10.0/24',
+                                                         'comment': 'updated comment',
+                                                         'use_logic_filter_rules': True,
+                                                         'logic_filter_rules': []}
+                                                   )
