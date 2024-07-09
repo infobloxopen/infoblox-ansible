@@ -24,7 +24,7 @@ options:
       required: True
       type: str
     use_range:
-      description: Use DHCP range to retrieve the next available IP address(es).
+      description: Use DHCP range to retrieve the next available IP address(es). Requested number of IP Addresses must be between 1 and 20.
       required: false
       default: no
       type: bool
@@ -86,7 +86,6 @@ _list:
 """
 
 from ansible.plugins.lookup import LookupBase
-from ansible.module_utils._text import to_text
 from ansible.errors import AnsibleError
 from ..module_utils.api import WapiLookup
 import ipaddress
@@ -103,12 +102,12 @@ class LookupModule(LookupBase):
         provider = kwargs.pop('provider', {})
         wapi = WapiLookup(provider)
 
-        if kwargs.get('use_range', False):
-            network_obj = wapi.get_object('range', {'network': network})
-        elif isinstance(ipaddress.ip_network(network), ipaddress.IPv6Network):
-            network_obj = wapi.get_object('ipv6network', {'network': network})
+        if isinstance(ipaddress.ip_network(network), ipaddress.IPv6Network):
+            object_type = 'ipv6range' if kwargs.get('use_range', False) else 'ipv6network'
         else:
-            network_obj = wapi.get_object('network', {'network': network})
+            object_type = 'range' if kwargs.get('use_range', False) else 'network'
+
+        network_obj = wapi.get_object(object_type, {'network': network})
 
         if network_obj is None:
             raise AnsibleError('unable to find network object %s' % network)
@@ -117,13 +116,16 @@ class LookupModule(LookupBase):
         exclude_ip = kwargs.get('exclude', [])
         network_view = kwargs.get('network_view', 'default')
 
-        try:
-            ref_list = [network['_ref'] for network in network_obj if network['network_view'] == network_view]
-            if not ref_list:
-                raise AnsibleError('no records found')
-            else:
-                ref = ref_list[0]
-            avail_ips = wapi.call_func('next_available_ip', ref, {'num': num, 'exclude': exclude_ip})
-            return [avail_ips['ips']]
-        except Exception as exc:
-            raise AnsibleError(to_text(exc))
+        ref_list = [network['_ref'] for network in network_obj if network['network_view'] == network_view]
+        if not ref_list:
+            raise AnsibleError('no records found')
+
+        for ref in ref_list:
+            try:
+                avail_ips = wapi.call_func('next_available_ip', ref, {'num': num, 'exclude': exclude_ip})
+                if len(avail_ips['ips']) >= num:
+                    return [avail_ips['ips']]
+            except Exception:
+                continue
+
+        raise AnsibleError('unable to find the required number of IPs')
