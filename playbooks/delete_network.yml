@@ -1,6 +1,6 @@
 ---
-
-- hosts: localhost
+- name: Infoblox Member Configuration
+  hosts: localhost
   vars:
     nios_provider:
       host: 10.60.27.4
@@ -9,9 +9,9 @@
 
   connection: local
   tasks:
-   - name: delete network
-     infoblox.nios_modules.nios_network:
-       network: 10.0.0.0/24
-       network_view: ansibleNetView
-       state: absent
-       provider: "{{ nios_provider }}"
+    - name: Delete network
+      infoblox.nios_modules.nios_network:
+        network: 10.0.0.0/24
+        network_view: ansibleNetView
+        state: absent
+        provider: "{{ nios_provider }}"
