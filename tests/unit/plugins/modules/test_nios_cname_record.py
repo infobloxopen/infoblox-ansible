@@ -85,11 +85,11 @@ class TestNiosCNameRecordModule(TestNiosModule):
     def test_nios_cname_record_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'cname.ansible.com',
                               'canonical': 'realhost.ansible.com', 'comment': 'updated comment', 'extattrs': None}
-
+        ref = "cnamerecord/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "cnamerecord/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "cname.ansible.com",
                 "canonical": "realhost.ansible.com",
                 "extattrs": {}
@@ -107,6 +107,10 @@ class TestNiosCNameRecordModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(
+            ref,
+            {'comment': 'updated comment', 'name': 'cname.ansible.com', 'canonical': 'realhost.ansible.com'}
+        )
 
     def test_nios_cname_record_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'cname.ansible.com',

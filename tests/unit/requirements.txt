@@ -6,4 +6,3 @@ mock
 pytest-mock
 pytest-cov
 coverage==7.3.2
-

@@ -13,15 +13,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ansible-version: [stable-2.14]
+        ansible-version: [stable-2.15]
     steps:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v1
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Install ansible (${{ matrix.ansible-version }})
         run: pip install pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
@@ -48,25 +48,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
-        ansible-version: [stable-2.14, stable-2.15, stable-2.16, devel]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        ansible-version: [stable-2.15, stable-2.16, stable-2.17, devel]
         exclude:
           - ansible-version: devel
-            python-version: '3.8'
+            python-version: '3.11'
+          - ansible-version: devel
+            python-version: '3.10'
           - ansible-version: devel
             python-version: '3.9'
-          - ansible-version: stable-2.16
-            python-version: '3.8'
+          - ansible-version: stable-2.17
+            python-version: '3.9'
           - ansible-version: stable-2.16
             python-version: '3.9'
           - ansible-version: stable-2.15
-            python-version: '3.8'
-          - ansible-version: stable-2.14
-            python-version: '3.8'
+            python-version: '3.12'
 
     steps:
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -83,7 +83,7 @@ jobs:
         run: |
           ansible-galaxy collection install .cache/collection-tarballs/*.tar.gz
           git clone https://github.com/ansible/ansible.git -b ${{ matrix.ansible-version }}
-          if [ "${{ matrix.ansible-version }}" != "devel" ]; then cp -rf ansible/test/units/compat /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/; fi
+          if [ "${{ matrix.ansible-version }}" != "devel" ] && [ "${{ matrix.ansible-version }}" != "stable-2.17" ]; then cp -rf ansible/test/units/compat /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/; fi
           cp -rf ansible/test/units/modules/utils.py /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/
           sed -i 's/units/ansible_collections.infoblox.nios_modules.tests.unit/' /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/utils.py
           if [ -f /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/requirements.txt ]; then pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/requirements.txt; fi
@@ -93,8 +93,8 @@ jobs:
 
       - name: Generate coverage report
         run: |
-          if [ "${{ matrix.ansible-version }}" == "stable-2.14" ]; then 
-            pip install coverage==6.5.0;
+          if [ "${{ matrix.ansible-version }}" == "devel" ]; then 
+            pip install coverage==7.5.3;
           elif [ "${{ matrix.ansible-version }}" == "stable-2.15" ]; then
             pip install coverage==6.5.0;
           fi
@@ -114,24 +114,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
-        ansible-version: [stable-2.14, stable-2.15, stable-2.16, devel]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        ansible-version: [stable-2.15, stable-2.16, stable-2.17, devel]
         exclude:
           - ansible-version: devel
-            python-version: '3.8'
+            python-version: '3.11'
+          - ansible-version: devel
+            python-version: '3.10'
           - ansible-version: devel
             python-version: '3.9'
-          - ansible-version: stable-2.16
-            python-version: '3.8'
+          - ansible-version: stable-2.17
+            python-version: '3.9'
           - ansible-version: stable-2.16
             python-version: '3.9'
           - ansible-version: stable-2.15
-            python-version: '3.8'
-          - ansible-version: stable-2.14
-            python-version: '3.8'
+            python-version: '3.12'
     steps:
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -186,15 +186,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ansible-version: [stable-2.14, stable-2.15, stable-2.16, devel]
+        ansible-version: [stable-2.15, stable-2.16, stable-2.17, devel]
 
     steps:
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v1
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
         with:
           # it is just required to run that once as "ansible-test sanity" in the docker image
           # will run on all python versions it supports.
-          python-version: '3.10'
+          python-version: 3.11
 
       - name: Install ansible (${{ matrix.ansible-version }}) version
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check

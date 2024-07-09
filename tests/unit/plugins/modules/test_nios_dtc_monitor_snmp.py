@@ -80,11 +80,11 @@ class TestNiosDtcSnmpMonitorModule(TestNiosModule):
     def test_nios_dtc_monitor_snmp_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'snmp_monitor',
                               'comment': 'updated comment', 'extattrs': None}
-
+        ref = "dtc:monitor:snmp/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "dtc:monitor:snmp/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "snmp_monitor",
                 "port": 161,
                 "version": "V2C",
@@ -107,6 +107,7 @@ class TestNiosDtcSnmpMonitorModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'comment': 'updated comment', 'name': 'snmp_monitor'})
 
     def test_nios_dtc_monitor_snmp_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'snmp_monitor',
