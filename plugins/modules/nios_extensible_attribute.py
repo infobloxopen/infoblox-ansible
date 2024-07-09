@@ -50,7 +50,7 @@ options:
         can contain. When provided for an extensible attribute of type INTEGER
         the value represents the maximum integer value permitted.Not
         applicable for other attributes types.
-    type: str
+    type: int
   min:
     description:
       - Configures the minimum value to be associated with the instance of
@@ -59,7 +59,7 @@ options:
         can contain. When provided for an extensible attribute of type INTEGER
         the value represents the minimum integer value permitted. Not
         applicable for other attributes types.
-    type: str
+    type: int
   name:
     description:
       - Configures the intended name of the instance of the object on the
@@ -185,6 +185,7 @@ RETURN = ''' # '''
 from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule
 from ..module_utils.api import normalize_ib_spec
+from ..module_utils.api import NIOS_EXTENSIBLE_ATTRIBUTE
 
 
 def main():
@@ -195,8 +196,8 @@ def main():
         comment=dict(type='str'),
         default_value=dict(type='str'),
         list_values=dict(type='list', elements='str'),
-        max=dict(type='str'),
-        min=dict(type='str'),
+        max=dict(type='int'),
+        min=dict(type='int'),
         flags=dict(type='str'),
         name=dict(type='str', required=True, ib_req=True),
         type=dict(type='str', default='STRING',
@@ -216,7 +217,7 @@ def main():
 
     wapi = WapiModule(module)
 
-    result = wapi.run('extensibleattributedef', ib_spec)
+    result = wapi.run(NIOS_EXTENSIBLE_ATTRIBUTE, ib_spec)
 
     module.exit_json(**result)
 

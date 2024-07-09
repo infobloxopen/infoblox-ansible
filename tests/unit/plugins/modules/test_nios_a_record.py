@@ -53,7 +53,7 @@ class TestNiosARecordModule(TestNiosModule):
         wapi = api.WapiModule(self.module)
         wapi.get_object = Mock(name='get_object', return_value=test_object)
         wapi.create_object = Mock(name='create_object')
-        wapi.update_object = Mock(name='update_object', )
+        wapi.update_object = Mock(name='update_object')
         wapi.delete_object = Mock(name='delete_object')
         return wapi
 
