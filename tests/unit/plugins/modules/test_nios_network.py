@@ -78,10 +78,11 @@ class TestNiosNetworkModule(TestNiosModule):
         self.module.params = {'provider': None, 'state': 'present', 'network': '192.168.10.0/24',
                               'comment': 'updated comment', 'extattrs': None}
 
+        ref = "network/ZG5zLm5ldHdvcmtfdmlldyQw:ansible/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "network/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "network": "192.168.10.0/24",
                 "extattrs": {'options': {'name': 'test', 'value': 'ansible.com'}}
             }
@@ -97,15 +98,17 @@ class TestNiosNetworkModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'comment': 'updated comment', 'network': '192.168.10.0/24'})
 
     def test_nios_network_ipv6_dhcp_update(self):
         self.module.params = {'provider': None, 'state': 'present', 'ipv6network': 'fe80::/64',
                               'comment': 'updated comment', 'extattrs': None}
 
+        ref = "ipv6network/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "ipv6network/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "ipv6network": "fe80::/64",
                 "extattrs": {'options': {'name': 'test', 'value': 'ansible.com'}}
             }
@@ -120,6 +123,7 @@ class TestNiosNetworkModule(TestNiosModule):
         wapi = self._get_wapi(test_object)
         res = wapi.run('testobject', test_spec)
         self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'comment': 'updated comment', 'ipv6network': 'fe80::/64'})
 
     def test_nios_network_ipv4_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'network': '192.168.10.0/24',
