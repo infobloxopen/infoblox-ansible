@@ -223,6 +223,8 @@ def convert_ea_list_to_struct(member_spec):
     ''' Transforms the list of the values into a valid WAPI struct.
     '''
     if 'list_values' in member_spec.keys():
+        if all(isinstance(item, dict) for item in member_spec['list_values']):
+            member_spec['list_values'] = [item['value'] for item in member_spec['list_values']]
         member_spec['list_values'] = [{'_struct': 'extensibleattributedef:listvalues', 'value': v} for v in member_spec['list_values']]
     return member_spec
 
@@ -396,6 +398,11 @@ class WapiModule(WapiBase):
 
         if (ib_obj_type == NIOS_EXTENSIBLE_ATTRIBUTE):
             proposed_object = convert_ea_list_to_struct(proposed_object)
+            current_object = convert_ea_list_to_struct(current_object)
+            # Convert 'default_value' to string in both proposed_object and current_object if it exists
+            for obj in (proposed_object, current_object):
+                if 'default_value' in obj:
+                    obj['default_value'] = str(obj['default_value'])
 
         # checks if the 'text' field has to be updated for the TXT Record
         if (ib_obj_type == NIOS_TXT_RECORD):
