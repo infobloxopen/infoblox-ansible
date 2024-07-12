@@ -61,7 +61,15 @@ Modules
 
 -   `nios_network_view` – Configure Infoblox NIOS network views
 
--   `nios_nsgroup` – Configure Infoblox DNS Nameserver Groups
+-   `nios_nsgroup` – Configure Infoblox DNS Nameserver Authoritative Groups
+
+-   `nios_nsgroup_delegation` – Configure Infoblox DNS Nameserver Delegation Groups
+
+-   `nios_nsgroup_forwardingmember` – Configure Infoblox DNS Nameserver Forwarding Member Groups
+
+-   `nios_nsgroup_forwardstubserver` – Configure Infoblox DNS Nameserver Forward/Stub Server Groups
+
+-   `nios_nsgroup_stubmember` – Configure Infoblox DNS Nameserver Stub Member Groups
 
 -   `nios_ptr_record` – Configure Infoblox NIOS PTR records
 
