@@ -645,6 +645,10 @@ class WapiModule(WapiBase):
                     if not self.issubset(subitem, current_item):
                         return False
 
+                # If the lists are of a different length the objects and order of element mismatch
+                if proposed_item != current_item:
+                    return False
+
             elif isinstance(proposed_item, dict):
                 # Compare the items of the dict to see if they are equal. A
                 # difference stops the comparison and returns false. If they
