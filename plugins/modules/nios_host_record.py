@@ -92,6 +92,23 @@ options:
         required: false
         aliases:
           - add
+      use_nextserver:
+        version_added: "1.0.0"
+        description:
+          - Enable the use of the nextserver option
+        type: bool
+        required: false
+        aliases:
+          - use_pxe
+      nextserver:
+        version_added: "1.0.0"
+        description:
+          - Takes as input the name in FQDN format and/or IPv4 Address of
+            the next server that the host needs to boot from.
+        type: str
+        required: false
+        aliases:
+          - pxe
       remove:
         version_added: "1.0.0"
         description:
@@ -328,6 +345,8 @@ def main():
         configure_for_dhcp=dict(type='bool', required=False, aliases=['dhcp']),
         mac=dict(required=False),
         add=dict(type='bool', required=False),
+        use_nextserver=dict(type='bool', required=False, aliases=['use_pxe']),
+        nextserver=dict(required=False, aliases=['pxe']),
         remove=dict(type='bool', required=False)
     )
 
