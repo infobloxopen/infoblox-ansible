@@ -490,6 +490,8 @@ class WapiModule(WapiBase):
                     result['changed'] = True
                 elif 'network_view' in proposed_object and (ib_obj_type not in (NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS, NIOS_RANGE)):
                     proposed_object.pop('network_view')
+                    if ib_obj_type in (NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER):
+                        proposed_object.pop('network')
                     result['changed'] = True
                 if not self.module.check_mode and res is None:
                     proposed_object = self.on_update(proposed_object, ib_spec)
