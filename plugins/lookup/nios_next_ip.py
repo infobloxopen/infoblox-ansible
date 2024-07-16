@@ -63,7 +63,7 @@ EXAMPLES = """
 
 - name: return the next 3 available IP addresses for network 192.168.10.0/24
   ansible.builtin.set_fact:
-    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', num=3, \
+    ipaddr: "{{ lookup('infoblox.nios_modules.nios_next_ip', '192.168.10.0/24', num=3,
                        provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
 - name: return the next 3 available IP addresses for network 192.168.10.0/24

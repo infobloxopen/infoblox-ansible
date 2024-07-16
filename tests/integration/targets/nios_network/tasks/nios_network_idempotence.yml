@@ -1,33 +1,28 @@
-- name: cleanup a network ipv4
-  nios_network:
+- name: Cleanup a network ipv4
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
     state: absent
     provider: "{{ nios_provider }}"
 
-- name: configure a network ipv4
-  nios_network:
+- name: Configure a network ipv4
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
     state: present
     provider: "{{ nios_provider }}"
   register: nios_ipv4_create1
 
-- name: configure a network ipv4
-  nios_network:
+- name: Configure a network ipv4
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
     state: present
     provider: "{{ nios_provider }}"
   register: nios_ipv4_create2
 
-#- assert:
-#    that:
-#      - "nios_ipv4_create1.changed"
-#      - "not nios_ipv4_create2.changed"
-
-- name: set dhcp options for a network ipv4
-  nios_network:
+- name: Set dhcp options for a network ipv4
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
     options:
@@ -37,8 +32,8 @@
     provider: "{{ nios_provider }}"
   register: nios_ipv4_update1
 
-- name: set dhcp options for a network ipv4
-  nios_network:
+- name: Set dhcp options for a network ipv4
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     comment: this is a test comment
     options:
@@ -48,22 +43,22 @@
     provider: "{{ nios_provider }}"
   register: nios_ipv4_update2
 
-- name: remove a network ipv4
-  nios_network:
+- name: Remove a network ipv4
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     state: absent
     provider: "{{ nios_provider }}"
   register: nios_ipv4_remove1
 
-- name: remove a network ipv4
-  nios_network:
+- name: Remove a network ipv4
+  infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
     state: absent
     provider: "{{ nios_provider }}"
   register: nios_ipv4_remove2
 
-- name: configure a network ipv6
-  nios_network:
+- name: Configure a network ipv6
+  infoblox.nios_modules.nios_network:
     network: fe80::/64
     comment: this is a test comment
     state: present
@@ -71,8 +66,8 @@
   register: nios_ipv6_create1
 
 
-- name: configure a network ipv6 with filter option
-  nios_network:
+- name: Configure a network ipv6 with filter option
+  infoblox.nios_modules.nios_network:
     network: fe80::/64
     comment: this is a test comment
     use_logic_filter_rules: true
@@ -80,8 +75,8 @@
     provider: "{{ nios_provider }}"
   register: nios_ipv6_update1
 
-- name: configure a network ipv4 with filter option
-  nios_network:
+- name: Configure a network ipv4 with filter option
+  infoblox.nios_modules.nios_network:
     network: 192.168.11.0/24
     comment: this is a test comment
     use_logic_filter_rules: true
@@ -89,8 +84,8 @@
     provider: "{{ nios_provider }}"
   register: nios_ipv4_create3
 
-- name: update a network ipv4 with filter option
-  nios_network:
+- name: Update a network ipv4 with filter option
+  infoblox.nios_modules.nios_network:
     network: 192.168.11.0/24
     comment: this is a test comment
     use_logic_filter_rules: false
@@ -99,7 +94,7 @@
   register: nios_ipv4_update3
 
 - name: Re-run with no changes
-  nios_network:
+  infoblox.nios_modules.nios_network:
     network: 192.168.11.0/24
     comment: this is a test comment
     use_logic_filter_rules: false
@@ -107,8 +102,8 @@
     provider: "{{ nios_provider }}"
   register: nios_ipv4_update4
 
-- name: remove an ipv4 network
-  nios_network:
+- name: Remove an ipv4 network
+  infoblox.nios_modules.nios_network:
     network: 192.168.11.0/24
     comment: this is a test comment
     use_logic_filter_rules: false
@@ -117,7 +112,8 @@
   register: nios_ipv4_remove3
 
 
-- assert:
+- name: Verify idempotence and changes of network operations
+  ansible.builtin.assert:
     that:
       - "nios_ipv4_create1.changed"
       - "not nios_ipv4_create2.changed"
