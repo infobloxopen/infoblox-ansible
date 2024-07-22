@@ -1,3 +1,4 @@
+---
 - name: Cleanup a network ipv4
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
@@ -65,7 +66,6 @@
     provider: "{{ nios_provider }}"
   register: nios_ipv6_create1
 
-
 - name: Configure a network ipv6 with filter option
   infoblox.nios_modules.nios_network:
     network: fe80::/64
@@ -111,19 +111,18 @@
     provider: "{{ nios_provider }}"
   register: nios_ipv4_remove3
 
-
 - name: Verify idempotence and changes of network operations
   ansible.builtin.assert:
     that:
-      - "nios_ipv4_create1.changed"
-      - "not nios_ipv4_create2.changed"
-      - "nios_ipv4_update1.changed"
-      - "not nios_ipv4_update2.changed"
-      - "nios_ipv4_remove1.changed"
-      - "not nios_ipv4_remove2.changed"
-      - "nios_ipv4_create3.changed"
-      - "nios_ipv4_update3.changed"
-      - "nios_ipv6_create1.changed"
-      - "nios_ipv6_update1.changed"
-      - "not nios_ipv4_update4.changed"
-      - "nios_ipv4_remove3.changed"
+      - nios_ipv4_create1.changed
+      - not nios_ipv4_create2.changed
+      - nios_ipv4_update1.changed
+      - not nios_ipv4_update2.changed
+      - nios_ipv4_remove1.changed
+      - not nios_ipv4_remove2.changed
+      - nios_ipv4_create3.changed
+      - nios_ipv4_update3.changed
+      - nios_ipv6_create1.changed
+      - nios_ipv6_update1.changed
+      - not nios_ipv4_update4.changed
+      - nios_ipv4_remove3.changed
