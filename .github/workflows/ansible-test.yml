@@ -24,7 +24,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install ansible (${{ matrix.ansible-version }})
-        run: pip install pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
+        run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
 
       - name: Build a collection tarball
         run: ansible-galaxy collection build --output-path "${GITHUB_WORKSPACE}/.cache/collection-tarballs"
@@ -152,6 +152,7 @@ jobs:
 
       - name: Setup Integration test Pre-requisites
         run: |
+             sudo apt-get update
              sudo apt install libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0
              pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
 
