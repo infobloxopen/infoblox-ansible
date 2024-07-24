@@ -655,8 +655,9 @@ class WapiModule(WapiBase):
                         return False
 
                 # If the lists are of a different length the objects and order of element mismatch
-                if proposed_item != current_item:
-                    return False
+                if not key == 'options':
+                    if proposed_item != current_item:
+                        return False
 
             elif isinstance(proposed_item, dict):
                 # Compare the items of the dict to see if they are equal. A
