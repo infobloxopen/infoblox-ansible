@@ -1,3 +1,4 @@
+---
 - name: Clean up the parent object
   infoblox.nios_modules.nios_zone:
     name: ansible.com
@@ -70,9 +71,9 @@
 - name: Verify outcomes
   ansible.builtin.assert:
     that:
-      - "dtc_monitor_tcp_create1.changed"
-      - "not dtc_monitor_tcp_create2.changed"
-      - "dtc_monitor_tcp_update1.changed"
-      - "not dtc_monitor_tcp_update2.changed"
-      - "dtc_monitor_tcp_delete1.changed"
-      - "not dtc_monitor_tcp_delete2.changed"
+      - dtc_monitor_tcp_create1.changed
+      - not dtc_monitor_tcp_create2.changed
+      - dtc_monitor_tcp_update1.changed
+      - not dtc_monitor_tcp_update2.changed
+      - dtc_monitor_tcp_delete1.changed
+      - not dtc_monitor_tcp_delete2.changed

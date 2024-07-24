@@ -177,7 +177,6 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-
 '''
 
 RETURN = ''' # '''
