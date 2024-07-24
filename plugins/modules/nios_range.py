@@ -252,8 +252,8 @@ EXAMPLES = '''
     start_addr: 18.10.0.12
     end_addr: 18.10.0.14
     options:
-     - name: domain-name
-       value: zone1.com
+      - name: domain-name
+        value: zone1.com
     comment: Created with Ansible
     state: present
     provider:

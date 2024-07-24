@@ -1,3 +1,4 @@
+---
 - name: Clean up the parent object
   infoblox.nios_modules.nios_zone:
     name: ansible.com
@@ -63,9 +64,9 @@
 - name: Verify outcomes
   ansible.builtin.assert:
     that:
-      - "dtc_monitor_snmp_create1.changed"
-      - "not dtc_monitor_snmp_create2.changed"
-      - "dtc_monitor_snmp_update1.changed"
-      - "not dtc_monitor_snmp_update2.changed"
-      - "dtc_monitor_snmp_delete1.changed"
-      - "not dtc_monitor_snmp_delete2.changed"
+      - dtc_monitor_snmp_create1.changed
+      - not dtc_monitor_snmp_create2.changed
+      - dtc_monitor_snmp_update1.changed
+      - not dtc_monitor_snmp_update2.changed
+      - dtc_monitor_snmp_delete1.changed
+      - not dtc_monitor_snmp_delete2.changed

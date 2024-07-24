@@ -295,7 +295,7 @@ EXAMPLES = '''
     external_primaries: "{{ ext_nameservers }}"
     grid_secondaries:
       - name: infoblox-test.example.com
-        lead: True
+        lead: true
         preferred_primaries: "{{ ext_nameservers }}"
     state: present
     provider:
