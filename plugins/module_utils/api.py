@@ -659,7 +659,8 @@ class WapiModule(WapiBase):
                         return False
 
                 # If the lists are of a different length the objects and order of element mismatch
-                if proposed_item != current_item:
+                # Ignore DHCP options while comparing due to extra num param is get response
+                if key != 'options' and proposed_item != current_item:
                     return False
 
             elif isinstance(proposed_item, dict):
