@@ -59,7 +59,9 @@ options:
         description:
           - Configures the IPv4 address for the host record. Users can dynamically
             allocate ipv4 address to host record by passing dictionary containing,
-            I(nios_next_ip) and I(CIDR network range). If user wants to add or
+            I(nios_next_ip) and I(CIDR network range). It supports _object_function
+            calls to dynamic select an ipv4address from a network/dhcp-range and
+            exclude a list of IPs from the selection. If user wants to add or
             remove the ipv4 address from existing record, I(add/remove)
             params need to be used. See examples.
         type: str
@@ -250,6 +252,29 @@ EXAMPLES = '''
     name: host.ansible.com
     ipv4:
       - address: {nios_next_ip: 192.168.10.0/24}
+    comment: this is a test comment
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: >
+    Dynamically add host record to next available ip in
+    a network and excluding a list of IPs
+    see https://ipam.illinois.edu/wapidoc/objects/record.host_ipv4addr.html
+  infoblox.nios_modules.nios_host_record:
+    name: host.ansible.com
+    ipv4:
+      - address:
+        _object_function: next_available_ip
+        _parameters:
+          exclude: ['192.168.10.1', '192.168.10.2', '192.168.10.3'],
+        _result_fields: ips
+        _object: network
+        _object_parameters:
+          network: 192.168.10.0/24
     comment: this is a test comment
     state: present
     provider:
