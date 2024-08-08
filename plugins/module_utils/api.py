@@ -384,6 +384,22 @@ class WapiModule(WapiBase):
         if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
             proposed_object = convert_members_to_struct(proposed_object)
 
+        if (ib_obj_type == NIOS_IPV4_NETWORK_CONTAINER or ib_obj_type == NIOS_IPV6_NETWORK_CONTAINER):
+
+            # Iterate over each option and remove the 'num' key
+            if current_object.get('options') or proposed_object.get('options'):
+                if current_object.get('options'):
+                    for option in current_object['options']:
+                        option.pop('num', None)
+
+                    # remove use_options false from current_object
+                    current_object['options'] = [option for option in current_object['options'] if option.get('use_option', True)]
+
+                    # Assuming 'current_object' is the dictionary containing the 'options' list
+                    current_object['options'] = sorted(current_object['options'], key=lambda x: x['name'])
+                if proposed_object.get('options'):
+                    proposed_object['options'] = sorted(proposed_object['options'], key=lambda x: x['name'])
+
         if (ib_obj_type == NIOS_RANGE):
             if proposed_object.get('new_start_addr'):
                 proposed_object['start_addr'] = proposed_object.get('new_start_addr')
@@ -656,7 +672,7 @@ class WapiModule(WapiBase):
 
                 # If the lists are of a different length the objects and order of element mismatch
                 # Ignore DHCP options while comparing due to extra num param is get response
-                if key != 'options' and proposed_item != current_item:
+                if proposed_item != current_item:
                     return False
 
             elif isinstance(proposed_item, dict):
