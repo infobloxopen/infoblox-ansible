@@ -126,7 +126,6 @@ class TestNiosExtensibleAttributeModule(TestNiosModule):
             ref, {'comment': 'Update comment', 'type': 'STRING', 'name': 'testStringEA', 'flag': 'I', 'default_value': 'test'}
         )
 
-
     def test_remove_extensible_attribute(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'testStringEA', 'type': 'STRING',
                               'flag': None, 'default_value': None, 'comment': None}
