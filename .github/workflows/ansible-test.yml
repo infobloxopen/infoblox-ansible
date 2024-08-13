@@ -94,7 +94,7 @@ jobs:
       - name: Generate coverage report
         run: |
           if [ "${{ matrix.ansible-version }}" == "devel" ]; then 
-            pip install coverage==7.5.3;
+            pip install coverage==7.6.1;
           elif [ "${{ matrix.ansible-version }}" == "stable-2.15" ]; then
             pip install coverage==6.5.0;
           fi
