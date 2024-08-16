@@ -388,21 +388,35 @@ class WapiModule(WapiBase):
         if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
             proposed_object = convert_members_to_struct(proposed_object)
 
-        if (ib_obj_type == NIOS_IPV4_NETWORK_CONTAINER or ib_obj_type == NIOS_IPV6_NETWORK_CONTAINER):
+        if ib_obj_type in {NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER, NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK}:
 
             # Iterate over each option and remove the 'num' key
             if current_object.get('options') or proposed_object.get('options'):
+                num_present, name_present = False, False
+                if proposed_object.get('options'):
+                    # get options from proposed_object and check if it should not have mix of 'name' and 'num'
+                    for option in proposed_object['options']:
+                        if 'num' in option:
+                            num_present = True
+                        elif 'name' in option:
+                            name_present = True
+                    if num_present and name_present:
+                        raise Exception("options should not have mix of 'name' and 'num'")
+
+                    proposed_object['options'] = sorted(proposed_object['options'], key=lambda x: x['value'])
+
                 if current_object.get('options'):
                     for option in current_object['options']:
-                        option.pop('num', None)
+                        if num_present:
+                            option.pop('name', None)
+                        else:
+                            option.pop('num', None)
 
                     # remove use_options false from current_object
                     current_object['options'] = [option for option in current_object['options'] if option.get('use_option', True)]
 
                     # Assuming 'current_object' is the dictionary containing the 'options' list
-                    current_object['options'] = sorted(current_object['options'], key=lambda x: x['name'])
-                if proposed_object.get('options'):
-                    proposed_object['options'] = sorted(proposed_object['options'], key=lambda x: x['name'])
+                    current_object['options'] = sorted(current_object['options'], key=lambda x: x['value'])
 
         if (ib_obj_type == NIOS_RANGE):
             if proposed_object.get('new_start_addr'):
