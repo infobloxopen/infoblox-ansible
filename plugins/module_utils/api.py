@@ -388,31 +388,13 @@ class WapiModule(WapiBase):
 
             # Iterate over each option and remove the 'num' key
             if current_object.get('options') or proposed_object.get('options'):
-                num_present, name_present = False, False
                 if proposed_object.get('options'):
-                    # get options from proposed_object and check if it should not have mix of 'name' and 'num'
-                    for option in proposed_object['options']:
-                        if 'num' in option:
-                            num_present = True
-                        elif 'name' in option:
-                            name_present = True
-                    if num_present and name_present:
-                        raise Exception("options should not have mix of 'name' and 'num'")
-
-                    proposed_object['options'] = sorted(proposed_object['options'], key=lambda x: x['value'])
+                    # remove use_options false from proposed_object
+                    proposed_object['options'] = [option for option in proposed_object['options'] if option.get('use_option', True)]
 
                 if current_object.get('options'):
-                    for option in current_object['options']:
-                        if num_present:
-                            option.pop('name', None)
-                        else:
-                            option.pop('num', None)
-
                     # remove use_options false from current_object
                     current_object['options'] = [option for option in current_object['options'] if option.get('use_option', True)]
-
-                    # Assuming 'current_object' is the dictionary containing the 'options' list
-                    current_object['options'] = sorted(current_object['options'], key=lambda x: x['value'])
 
         if (ib_obj_type == NIOS_RANGE):
             if proposed_object.get('new_start_addr'):
@@ -677,7 +659,7 @@ class WapiModule(WapiBase):
                 # If the lists are of a different length the objects can not be
                 # equal and False will be returned before comparing the lists items
                 # this code part will work for members assignment
-                if key == 'members' and (len(proposed_item) != len(current_item)):
+                if key in ['members', 'options'] and (len(proposed_item) != len(current_item)):
                     return False
 
                 for subitem in proposed_item:
@@ -686,7 +668,7 @@ class WapiModule(WapiBase):
 
                 # If the lists are of a different length the objects and order of element mismatch
                 # Ignore DHCP options while comparing due to extra num param is get response
-                if proposed_item != current_item:
+                if key == 'logic_filter_rules' and proposed_item != current_item:
                     return False
 
             elif isinstance(proposed_item, dict):
