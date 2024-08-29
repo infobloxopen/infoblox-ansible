@@ -94,7 +94,7 @@ jobs:
       - name: Generate coverage report
         run: |
           if [ "${{ matrix.ansible-version }}" == "devel" ]; then 
-            pip install coverage==7.5.3;
+            pip install coverage==7.6.1;
           elif [ "${{ matrix.ansible-version }}" == "stable-2.15" ]; then
             pip install coverage==6.5.0;
           fi
@@ -162,7 +162,7 @@ jobs:
              echo $ANSIBLE_NIOSSIM_CONTAINER
              ansible-test integration -v --color --retry-on-error --continue-on-error --diff --python ${{ matrix.python-version }} --docker --coverage
         env:
-           ANSIBLE_NIOSSIM_CONTAINER: quay.io/ansible/nios-test-container:4.0.0
+           ANSIBLE_NIOSSIM_CONTAINER: quay.io/ansible/nios-test-container:5.0.0
         working-directory: /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/
 
         # ansible-test support producing code coverage date
