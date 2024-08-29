@@ -183,7 +183,6 @@ def main():
                 else:
                     module.fail_json(
                         msg='auth_zone %s cannot be found.' % zone)
-        # epdb.serve()
         return zone_list
 
     def pools_transform(module):
