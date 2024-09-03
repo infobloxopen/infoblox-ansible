@@ -73,7 +73,7 @@ EXAMPLES = '''
   infoblox.nios_modules.nios_nsgroup_forwardstubserver:
     name: my-forwardstub-group
     comment: "this is a forward/stub nameserver group"
-    nameservers:
+    external_servers:
       - name: first
         address: 192.168.0.10
       - name: second

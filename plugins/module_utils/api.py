@@ -348,7 +348,7 @@ class WapiModule(WapiBase):
                     proposed_object[key] = self.module.params[key]
 
         # If configure_by_dns is set to False and view is 'default', then delete the default dns
-        if not proposed_object.get('configure_for_dns') and proposed_object.get('view') == 'default'\
+        if not proposed_object.get('configure_for_dns') and proposed_object.get('view') == 'default' \
                 and ib_obj_type == NIOS_HOST_RECORD:
             del proposed_object['view']
 
@@ -360,7 +360,7 @@ class WapiModule(WapiBase):
                         current_object = each
                         break
                     # To check for existing Host_record with same name with input Host_record by IP
-                    elif each.get('ipv4addrs') and each.get('ipv4addrs')[0].get('ipv4addr')\
+                    elif each.get('ipv4addrs') and each.get('ipv4addrs')[0].get('ipv4addr') \
                             == proposed_object.get('ipv4addrs')[0].get('ipv4addr'):
                         current_object = each
                     # Else set the current_object with input value
@@ -647,11 +647,14 @@ class WapiModule(WapiBase):
                     return False
             return True
 
+    def verify_list_order(self, proposed_data, current_data):
+        return len(proposed_data) == len(current_data) and all(a == b for a, b in zip(proposed_data, current_data))
+
     def compare_objects(self, current_object, proposed_object):
         for key, proposed_item in iteritems(proposed_object):
             current_item = current_object.get(key)
 
-            # if proposed has a key that current doesn't then the objects are
+            # if proposed has a key that current doesn't, then the objects are
             # not equal and False will be immediately returned
             if current_item is None:
                 return False
@@ -660,17 +663,22 @@ class WapiModule(WapiBase):
                 if key == 'aliases':
                     if set(current_item) != set(proposed_item):
                         return False
-                # If the lists are of a different length the objects can not be
-                # equal and False will be returned before comparing the lists items
-                # this code part will work for members assignment
-                if key in ['members', 'options'] and (len(proposed_item) != len(current_item)):
+                # If the lists are of a different length, the objects cannot be
+                # equal, and False will be returned before comparing the list items
+                # this code part will work for members' assignment
+                if (key in ('members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members')
+                        and (len(proposed_item) != len(current_item))):
+                    return False
+
+                # Validate the Sequence of the List data
+                if key in ('external_servers',) and not self.verify_list_order(proposed_item, current_item):
                     return False
 
                 for subitem in proposed_item:
                     if not self.issubset(subitem, current_item):
                         return False
 
-                # If the lists are of a different length the objects and order of element mismatch
+                # If the lists are of a different length, the objects and order of element mismatch
                 # Ignore DHCP options while comparing due to extra num param is get response
                 if key == 'logic_filter_rules' and proposed_item != current_item:
                     return False
@@ -678,7 +686,7 @@ class WapiModule(WapiBase):
             elif isinstance(proposed_item, dict):
                 # Compare the items of the dict to see if they are equal. A
                 # difference stops the comparison and returns false. If they
-                # are equal move on to the next item
+                # are equal, move on to the next item
 
                 # Checks if extattrs existing in proposed object
                 if key == 'extattrs':
@@ -746,7 +754,8 @@ class WapiModule(WapiBase):
                 if ib_obj:
                     obj_filter['name'] = new_name
                 elif old_ipv4addr_exists and (len(ib_obj) == 0):
-                    raise Exception("object with name: '%s', ipv4addr: '%s' is not found" % (old_name, test_obj_filter['ipv4addr']))
+                    raise Exception(
+                        "object with name: '%s', ipv4addr: '%s' is not found" % (old_name, test_obj_filter['ipv4addr']))
                 else:
                     raise Exception("object with name: '%s' is not found" % (old_name))
                 update = True
@@ -931,7 +940,8 @@ class WapiModule(WapiBase):
             # throws exception if start_addr and end_addr doesn't exists for updating range
             if (new_start_arg and new_end_arg):
                 if not ib_obj:
-                    raise Exception('Specified range %s-%s not found' % (obj_filter['start_addr'], obj_filter['end_addr']))
+                    raise Exception(
+                        'Specified range %s-%s not found' % (obj_filter['start_addr'], obj_filter['end_addr']))
         else:
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
         return ib_obj, update, new_name
