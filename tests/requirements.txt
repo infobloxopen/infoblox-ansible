@@ -1,3 +1,5 @@
+pip==20.3.4; python_version == '2.6' or python_version=='2.7'
+pip==22.2.2; python_version > '3.0'
 infoblox-client
 pytest
 pytest-xdist
