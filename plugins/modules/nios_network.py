@@ -47,6 +47,7 @@ options:
         of values (see suboptions).  When configuring suboptions at
         least one of C(name) or C(num) must be specified.
     type: list
+    default: []
     elements: dict
     suboptions:
       name:
@@ -315,7 +316,6 @@ def check_ip_addr_type(obj_filter, ib_spec):
     if 'container' in obj_filter and obj_filter['container']:
         check_ip = ip.split('/')
         del ib_spec['container']  # removing the container key from post arguments
-        del ib_spec['options']  # removing option argument as for network container it's not supported
         if validate_ip_address(check_ip[0]):
             return NIOS_IPV4_NETWORK_CONTAINER, ib_spec
         elif validate_ip_v6_address(check_ip[0]):
@@ -360,7 +360,7 @@ def main():
         network=dict(required=True, aliases=['name', 'cidr'], ib_req=True),
         network_view=dict(default='default', ib_req=True),
 
-        options=dict(type='list', elements='dict', options=option_spec, transform=options),
+        options=dict(type='list', elements='dict', options=option_spec, transform=options, default=[]),
 
         template=dict(type='str'),
         extattrs=dict(type='dict'),

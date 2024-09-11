@@ -30,7 +30,7 @@ jobs:
         run: ansible-galaxy collection build --output-path "${GITHUB_WORKSPACE}/.cache/collection-tarballs"
 
       - name: Store migrated collection artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: collection
           path: .cache/collection-tarballs
@@ -74,7 +74,7 @@ jobs:
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
 
       - name: Download migrated collection artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: collection
           path: .cache/collection-tarballs
@@ -94,7 +94,7 @@ jobs:
       - name: Generate coverage report
         run: |
           if [ "${{ matrix.ansible-version }}" == "devel" ]; then 
-            pip install coverage==7.5.3;
+            pip install coverage==7.6.1;
           elif [ "${{ matrix.ansible-version }}" == "stable-2.15" ]; then
             pip install coverage==6.5.0;
           fi
@@ -142,7 +142,7 @@ jobs:
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
 
       - name: Download migrated collection artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: collection
           path: .cache/collection-tarball
@@ -152,6 +152,7 @@ jobs:
 
       - name: Setup Integration test Pre-requisites
         run: |
+             sudo apt-get update
              sudo apt install libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0
              pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
 
@@ -161,7 +162,7 @@ jobs:
              echo $ANSIBLE_NIOSSIM_CONTAINER
              ansible-test integration -v --color --retry-on-error --continue-on-error --diff --python ${{ matrix.python-version }} --docker --coverage
         env:
-           ANSIBLE_NIOSSIM_CONTAINER: quay.io/ansible/nios-test-container:4.0.0
+           ANSIBLE_NIOSSIM_CONTAINER: quay.io/ansible/nios-test-container:5.0.0
         working-directory: /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/
 
         # ansible-test support producing code coverage date
@@ -200,7 +201,7 @@ jobs:
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
 
       - name: Download migrated collection artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: collection
           path: .cache/collection-tarballs

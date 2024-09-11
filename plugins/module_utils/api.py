@@ -223,6 +223,8 @@ def convert_ea_list_to_struct(member_spec):
     ''' Transforms the list of the values into a valid WAPI struct.
     '''
     if 'list_values' in member_spec.keys():
+        if all(isinstance(item, dict) for item in member_spec['list_values']):
+            member_spec['list_values'] = [item['value'] for item in member_spec['list_values']]
         member_spec['list_values'] = [{'_struct': 'extensibleattributedef:listvalues', 'value': v} for v in member_spec['list_values']]
     return member_spec
 
@@ -386,6 +388,18 @@ class WapiModule(WapiBase):
         if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
             proposed_object = convert_members_to_struct(proposed_object)
 
+        if ib_obj_type in {NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER, NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK, NIOS_RANGE}:
+
+            # Iterate over each option and remove the 'num' key
+            if current_object.get('options') or proposed_object.get('options'):
+                if proposed_object.get('options'):
+                    # remove use_options false from proposed_object
+                    proposed_object['options'] = [option for option in proposed_object['options'] if option.get('use_option', True)]
+
+                if current_object.get('options'):
+                    # remove use_options false from current_object
+                    current_object['options'] = [option for option in current_object['options'] if option.get('use_option', True)]
+
         if (ib_obj_type == NIOS_RANGE):
             if proposed_object.get('new_start_addr'):
                 proposed_object['start_addr'] = proposed_object.get('new_start_addr')
@@ -396,6 +410,11 @@ class WapiModule(WapiBase):
 
         if (ib_obj_type == NIOS_EXTENSIBLE_ATTRIBUTE):
             proposed_object = convert_ea_list_to_struct(proposed_object)
+            current_object = convert_ea_list_to_struct(current_object)
+            # Convert 'default_value' to string in both proposed_object and current_object if it exists
+            for obj in (proposed_object, current_object):
+                if 'default_value' in obj:
+                    obj['default_value'] = str(obj['default_value'])
 
         # checks if the 'text' field has to be updated for the TXT Record
         if (ib_obj_type == NIOS_TXT_RECORD):
@@ -487,6 +506,8 @@ class WapiModule(WapiBase):
                     result['changed'] = True
                 elif 'network_view' in proposed_object and (ib_obj_type not in (NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS, NIOS_RANGE)):
                     proposed_object.pop('network_view')
+                    if ib_obj_type in (NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER):
+                        proposed_object.pop('network')
                     result['changed'] = True
                 if not self.module.check_mode and res is None:
                     proposed_object = self.on_update(proposed_object, ib_spec)
@@ -642,12 +663,17 @@ class WapiModule(WapiBase):
                 # If the lists are of a different length the objects can not be
                 # equal and False will be returned before comparing the lists items
                 # this code part will work for members assignment
-                if key == 'members' and (len(proposed_item) != len(current_item)):
+                if key in ['members', 'options'] and (len(proposed_item) != len(current_item)):
                     return False
 
                 for subitem in proposed_item:
                     if not self.issubset(subitem, current_item):
                         return False
+
+                # If the lists are of a different length the objects and order of element mismatch
+                # Ignore DHCP options while comparing due to extra num param is get response
+                if key == 'logic_filter_rules' and proposed_item != current_item:
+                    return False
 
             elif isinstance(proposed_item, dict):
                 # Compare the items of the dict to see if they are equal. A

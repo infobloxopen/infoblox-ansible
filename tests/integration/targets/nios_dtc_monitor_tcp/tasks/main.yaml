@@ -1,1 +1,3 @@
-- include_tasks: nios_dtc_monitor_tcp_idempotence.yaml
+---
+- name: Include the test for the nios_dtc_monitor_tcp_idempotence
+  ansible.builtin.include_tasks: nios_dtc_monitor_tcp_idempotence.yaml
