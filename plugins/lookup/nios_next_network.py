@@ -69,10 +69,10 @@ EXAMPLES = """
     networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '192.168.10.0/24', cidr=25, exclude=['192.168.10.0/25'],
                         provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 
-- name: return the available ipv6 network addresses for network-container 2001:1:111:1::0/64    
-  set_fact:    
-    networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '2001:1:111:1::0/64', cidr=126, 
-                        provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"                           
+- name: return the available ipv6 network addresses for network-container 2001:1:111:1::0/64
+  set_fact:
+    networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '2001:1:111:1::0/64', cidr=126,
+                        provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 """
 
 RETURN = """
@@ -90,6 +90,7 @@ from ..module_utils.api import WapiLookup
 from ..module_utils.api import NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER
 import ipaddress
 
+
 class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
@@ -106,7 +107,7 @@ class LookupModule(LookupBase):
             raise AnsibleError('missing CIDR argument in the form of xx')
 
         if network.prefixlen >= cidr:
-            raise AnsibleError('cidr %s must be greater than parent network cidr %s' % (cidr,network.prefixlen))
+            raise AnsibleError('cidr %s must be greater than parent network cidr %s' % (cidr, network.prefixlen))
 
         container_type = None
         network_objects = None
@@ -125,14 +126,14 @@ class LookupModule(LookupBase):
 
         # check for valid subnetting cidr
         if network.prefixlen >= cidr:
-            raise AnsibleError('cidr %s must be greater than parent network cidr %s' % (cidr,network.prefixlen))
+            raise AnsibleError('cidr %s must be greater than parent network cidr %s' % (cidr, network.prefixlen))
 
         provider = kwargs.pop('provider', {})
         wapi = WapiLookup(provider)
 
         if container_type is None:
             raise AnsibleError('unable to identify network-container type')
-        
+
         network_objects = wapi.get_object(container_type, {'network': network.with_prefixlen})
 
         if network_objects is None:
