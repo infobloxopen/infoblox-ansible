@@ -493,7 +493,7 @@ class WapiModule(WapiBase):
                     res = self.update_object(ref, proposed_object)
                     result['changed'] = True
 
-                    if ib_obj_type == NIOS_HOST_RECORD:
+                    if ib_obj_type == NIOS_HOST_RECORD and res:
                         # WAPI always reset the use_for_ea_inheritance for each update operation
                         # Handle use_for_ea_inheritance flag changes for IPv4addr in a host record
                         # Fetch the updated reference of host to avoid drift.
