@@ -503,7 +503,7 @@ class WapiModule(WapiBase):
                         ref_dict = {obj['ipv4addr']: obj['_ref'] for obj in host_ref['ipv4addrs']}
                         for proposed in proposed_object['ipv4addrs']:
                             ipv4addr = proposed['ipv4addr']
-                            if ipv4addr in ref_dict:
+                            if ipv4addr in ref_dict and 'use_for_ea_inheritance' in proposed:
                                 self.update_object(ref_dict[ipv4addr], {'use_for_ea_inheritance': proposed['use_for_ea_inheritance']})
         elif state == 'absent':
             if ref is not None:
