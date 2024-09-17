@@ -490,9 +490,21 @@ class WapiModule(WapiBase):
                     result['changed'] = True
                 if not self.module.check_mode and res is None:
                     proposed_object = self.on_update(proposed_object, ib_spec)
-                    self.update_object(ref, proposed_object)
+                    res = self.update_object(ref, proposed_object)
                     result['changed'] = True
 
+                    if ib_obj_type == NIOS_HOST_RECORD:
+                        # WAPI always reset the use_for_ea_inheritance for each update operation
+                        # Handle use_for_ea_inheritance flag changes for IPv4addr in a host record
+                        # Fetch the updated reference of host to avoid drift.
+                        host_ref = self.connector.get_object(res)
+
+                        # Create a dictionary for quick lookups
+                        ref_dict = {obj['ipv4addr']: obj['_ref'] for obj in host_ref['ipv4addrs']}
+                        for proposed in proposed_object['ipv4addrs']:
+                            ipv4addr = proposed['ipv4addr']
+                            if ipv4addr in ref_dict:
+                                self.update_object(ref_dict[ipv4addr], {'use_for_ea_inheritance': proposed['use_for_ea_inheritance']})
         elif state == 'absent':
             if ref is not None:
                 if 'ipv4addrs' in proposed_object:
@@ -607,6 +619,9 @@ class WapiModule(WapiBase):
         '''
         for obj in objects:
             if isinstance(item, dict):
+                # Normalize MAC address
+                if 'mac' in item:
+                    item['mac'] = item['mac'].replace('-', ':').lower()
                 if all(entry in obj.items() for entry in item.items()):
                     return True
             else:
@@ -786,7 +801,15 @@ class WapiModule(WapiBase):
             # check if test_obj_filter is empty copy passed obj_filter
             else:
                 test_obj_filter = obj_filter
-            ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
+            
+            return_fields = list(ib_spec.keys())
+            if ib_obj_type == NIOS_HOST_RECORD:
+                ipv4addrs_return = ['ipv4addrs.use_for_ea_inheritance', 'ipv4addrs.ipv4addr', 'ipv4addrs.mac', 'ipv4addrs.configure_for_dhcp', 'ipv4addrs.host']
+                ipv6addrs_return = ['ipv6addrs.use_for_ea_inheritance', 'ipv6addrs.ipv6addr', 'ipv6addrs.duid', 'ipv6addrs.configure_for_dhcp', 'ipv6addrs.host']
+                return_fields.extend(ipv4addrs_return)
+                return_fields.extend(ipv6addrs_return)
+
+            ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=return_fields)
 
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
             if old_ipv4addr_exists and (ib_obj is None or len(ib_obj) == 0):

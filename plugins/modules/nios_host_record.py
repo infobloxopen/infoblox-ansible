@@ -66,6 +66,12 @@ options:
         required: true
         aliases:
           - address
+      use_for_ea_inheritance:
+        description:
+          - Set this to True when using this host address for EA inheritance.
+            The default value is False.
+        type: bool
+        required: false
       configure_for_dhcp:
         description:
           - Configure the host_record over DHCP instead of DNS, if user
@@ -347,7 +353,8 @@ def main():
         add=dict(type='bool', required=False),
         use_nextserver=dict(type='bool', required=False, aliases=['use_pxe']),
         nextserver=dict(required=False, aliases=['pxe']),
-        remove=dict(type='bool', required=False)
+        remove=dict(type='bool', required=False),
+        use_for_ea_inheritance=dict(type='bool', required=False)
     )
 
     ipv6addr_spec = dict(
