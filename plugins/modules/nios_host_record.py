@@ -262,7 +262,7 @@ EXAMPLES = '''
       password: admin
   connection: local
 
-  
+
 - name: Create an ipv4 host record over DHCP with PXE server
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
