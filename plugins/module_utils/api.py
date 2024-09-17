@@ -671,7 +671,7 @@ class WapiModule(WapiBase):
                     return False
 
                 # Validate the Sequence of the List data
-                if key in ('external_servers',) and not self.verify_list_order(proposed_item, current_item):
+                if key in ('external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
                     return False
 
                 for subitem in proposed_item:
