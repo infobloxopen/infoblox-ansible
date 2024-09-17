@@ -68,6 +68,11 @@ EXAMPLES = """
   ansible.builtin.set_fact:
     networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '192.168.10.0/24', cidr=25, exclude=['192.168.10.0/25'],
                         provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
+
+- name: return the available ipv6 network addresses for network-container 2001:1:111:1::0/64
+  set_fact:
+    networkaddr: "{{ lookup('infoblox.nios_modules.nios_next_network', '2001:1:111:1::0/64', cidr=126,
+                        provider={'host': 'nios01', 'username': 'admin', 'password': 'password'}) }}"
 """
 
 RETURN = """
@@ -82,32 +87,64 @@ from ansible.plugins.lookup import LookupBase
 from ansible.module_utils._text import to_text
 from ansible.errors import AnsibleError
 from ..module_utils.api import WapiLookup
+from ..module_utils.api import NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER
+import ipaddress
 
 
 class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
         try:
-            network = terms[0]
+            network = ipaddress.ip_network(terms[0], strict=True)
         except IndexError:
-            raise AnsibleError('missing network argument in the form of A.B.C.D/E')
+            raise AnsibleError('network argument is missing')
+        except (ValueError, TypeError) as error:
+            raise AnsibleError('network argument is invalid %s' % error)
         try:
             cidr = kwargs.get('cidr', 24)
+            # maybe using network.prefixlen+1 as default
         except IndexError:
             raise AnsibleError('missing CIDR argument in the form of xx')
 
+        if network.prefixlen >= cidr:
+            raise AnsibleError('cidr %s must be greater than parent network cidr %s' % (cidr, network.prefixlen))
+
+        container_type = None
+        network_objects = None
+
+        # check for ip version 4 or 6 else die
+        if network.version == 4:
+            container_type = NIOS_IPV4_NETWORK_CONTAINER
+            if cidr not in range(1, 32):
+                raise AnsibleError('cidr %s must be in range 1 to 32' % cidr)
+        elif network.version == 6:
+            container_type = NIOS_IPV6_NETWORK_CONTAINER
+            if cidr not in range(1, 128):
+                raise AnsibleError('cidr %s must be in range 1 to 128' % cidr)
+        else:
+            raise AnsibleError('not a valid ipv4 or ipv6 network definition %s' % terms[0])
+
+        # check for valid subnetting cidr
+        if network.prefixlen >= cidr:
+            raise AnsibleError('cidr %s must be greater than parent network cidr %s' % (cidr, network.prefixlen))
+
         provider = kwargs.pop('provider', {})
         wapi = WapiLookup(provider)
-        network_obj = wapi.get_object('networkcontainer', {'network': network})
 
-        if network_obj is None:
-            raise AnsibleError('unable to find network-container object %s' % network)
+        if container_type is None:
+            raise AnsibleError('unable to identify network-container type')
+
+        network_objects = wapi.get_object(container_type, {'network': network.with_prefixlen})
+
+        if network_objects is None:
+            raise AnsibleError('unable to find network-container object %s' % network.with_prefixlen)
+
         num = kwargs.get('num', 1)
         exclude_ip = kwargs.get('exclude', [])
         network_view = kwargs.get('network_view', 'default')
 
         try:
-            ref_list = [network['_ref'] for network in network_obj if network['network_view'] == network_view]
+            ref_list = [network_obj['_ref'] for network_obj in network_objects if network_obj['network_view'] == network_view]
             if not ref_list:
                 raise AnsibleError('no records found')
             else:

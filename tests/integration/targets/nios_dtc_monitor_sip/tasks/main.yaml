@@ -1,0 +1,3 @@
+---
+- name: Include tasks from nios_dtc_monitor_sip_idempotence.yaml
+  ansible.builtin.include_tasks: nios_dtc_monitor_sip_idempotence.yaml

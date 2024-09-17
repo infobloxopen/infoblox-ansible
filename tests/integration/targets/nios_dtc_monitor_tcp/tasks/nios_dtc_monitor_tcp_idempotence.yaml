@@ -1,0 +1,79 @@
+---
+- name: Clean up the parent object
+  infoblox.nios_modules.nios_zone:
+    name: ansible.com
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Create the parent object
+  infoblox.nios_modules.nios_zone:
+    name: ansible.com
+    state: present
+    provider: "{{ nios_provider }}"
+
+- name: Clean up the DTC TCP monitor
+  infoblox.nios_modules.nios_dtc_monitor_tcp:
+    name: tcp_monitor
+    port: 8080
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Create a DTC TCP monitor
+  infoblox.nios_modules.nios_dtc_monitor_tcp:
+    name: tcp_monitor
+    port: 8080
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_tcp_create1
+
+- name: Recreate a DTC TCP monitor
+  infoblox.nios_modules.nios_dtc_monitor_tcp:
+    name: tcp_monitor
+    port: 8080
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_tcp_create2
+
+- name: Add a comment to an existing DTC TCP monitor
+  infoblox.nios_modules.nios_dtc_monitor_tcp:
+    name: tcp_monitor
+    port: 8080
+    comment: this is a test comment
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_tcp_update1
+
+- name: Readd a comment to an existing DTC TCP monitor
+  infoblox.nios_modules.nios_dtc_monitor_tcp:
+    name: tcp_monitor
+    port: 8080
+    comment: this is a test comment
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_tcp_update2
+
+- name: Remove a DTC TCP monitor from the system
+  infoblox.nios_modules.nios_dtc_monitor_tcp:
+    name: tcp_monitor
+    port: 8080
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_tcp_delete1
+
+- name: Reremove a DTC TCP monitor from the system
+  infoblox.nios_modules.nios_dtc_monitor_tcp:
+    name: tcp_monitor
+    port: 8080
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_tcp_delete2
+
+- name: Verify outcomes
+  ansible.builtin.assert:
+    that:
+      - dtc_monitor_tcp_create1.changed
+      - not dtc_monitor_tcp_create2.changed
+      - dtc_monitor_tcp_update1.changed
+      - not dtc_monitor_tcp_update2.changed
+      - dtc_monitor_tcp_delete1.changed
+      - not dtc_monitor_tcp_delete2.changed

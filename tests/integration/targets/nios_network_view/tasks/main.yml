@@ -1,1 +1,3 @@
-- include: nios_network_view_idempotence.yml
+---
+- name: Include network view idempotence tests
+  ansible.builtin.include_tasks: nios_network_view_idempotence.yml

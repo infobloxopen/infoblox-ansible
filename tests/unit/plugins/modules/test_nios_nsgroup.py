@@ -21,7 +21,6 @@ __metaclass__ = type
 from ansible_collections.infoblox.nios_modules.plugins.modules import nios_nsgroup
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
-from ansible.module_utils.common.validation import check_type_dict
 from .test_nios_module import TestNiosModule, load_fixture
 
 
@@ -108,10 +107,11 @@ class TestNiosNSGroupModule(TestNiosModule):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'default',
                               'comment': 'updated comment', 'grid_primary': None}
 
+        ref = "nsgroup/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
         test_object = [
             {
                 "comment": "test comment",
-                "_ref": "nsgroup/ZG5zLm5ldHdvcmtfdmlldyQw:default/true",
+                "_ref": ref,
                 "name": "default",
                 "grid_primary": {}
             }
@@ -127,4 +127,6 @@ class TestNiosNSGroupModule(TestNiosModule):
         res = wapi.run('testobject', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.update_object.called_once_with(test_object)
+        wapi.update_object.assert_called_once_with(
+            ref, {'comment': 'updated comment', 'name': 'default'}
+        )

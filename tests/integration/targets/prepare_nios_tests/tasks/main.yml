@@ -1,1 +1,3 @@
-- include: prepare_nios_tests_idempotence.yml
+---
+- name: Include idempotence tests for NIOS
+  ansible.builtin.include_tasks: prepare_nios_tests_idempotence.yml

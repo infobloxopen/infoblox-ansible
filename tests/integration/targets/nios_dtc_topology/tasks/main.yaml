@@ -1,0 +1,3 @@
+---
+- name: Include DTC topology idempotence tests
+  ansible.builtin.include_tasks: nios_dtc_topology_idempotence.yaml

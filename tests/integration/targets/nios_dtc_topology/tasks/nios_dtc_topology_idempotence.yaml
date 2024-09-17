@@ -1,0 +1,123 @@
+---
+- name: Clean up the parent object
+  infoblox.nios_modules.nios_zone:
+    name: ansible.com
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Create the parent object
+  infoblox.nios_modules.nios_zone:
+    name: ansible.com
+    state: present
+    provider: "{{ nios_provider }}"
+
+- name: Clean up the DTC Topology
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Clean up the DTC pool
+  infoblox.nios_modules.nios_dtc_pool:
+    name: web_pool
+    lb_preferred_method: ROUND_ROBIN
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Clean up the DTC server
+  infoblox.nios_modules.nios_dtc_server:
+    name: Server1
+    host: 192.168.10.1
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Create DTC server
+  infoblox.nios_modules.nios_dtc_server:
+    name: Server1
+    host: 192.168.10.1
+    comment: Created with Ansible
+    state: present
+    provider: "{{ nios_provider }}"
+
+- name: Create DTC Pool
+  infoblox.nios_modules.nios_dtc_pool:
+    name: web_pool
+    lb_preferred_method: ROUND_ROBIN
+    servers:
+      - server: Server1
+        ratio: 1
+    comment: Created with Ansible
+    state: present
+    provider: "{{ nios_provider }}"
+
+- name: Create a DTC Topology
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology
+    rules:
+      - dest_type: POOL
+        destination_link: web_pool
+        return_type: REGULAR
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_create1
+
+- name: Recreate a DTC Topology
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_create2
+
+- name: Add a comment to an existing DTC Topology
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology
+    comment: this is a test comment
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_update1
+
+- name: Readd a comment to an existing DTC Topology
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology
+    comment: this is a test comment
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_update2
+
+- name: Remove a DTC Topology
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_delete1
+
+- name: Reremove a DTC Topology
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_delete2
+
+- name: Remove the DTC pool
+  infoblox.nios_modules.nios_dtc_pool:
+    name: web_pool
+    lb_preferred_method: ROUND_ROBIN
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Remove the DTC server
+  infoblox.nios_modules.nios_dtc_server:
+    name: Server1
+    host: 192.168.10.1
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Verify outcomes
+  ansible.builtin.assert:
+    that:
+      - dtc_topology_create1.changed
+      - not dtc_topology_create2.changed
+      - dtc_topology_update1.changed
+      - not dtc_topology_update2.changed
+      - dtc_topology_delete1.changed
+      - not dtc_topology_delete2.changed

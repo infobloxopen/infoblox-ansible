@@ -3,6 +3,75 @@ Infoblox.Nios_Modules Release Notes
 ===================================
 
 .. contents:: Topics
+v1.6.1
+======
+
+Release Summary
+---------------
+This release includes the updates of plug-in version 1.6.0 and the following documentation changes:
+Ansible core version in the dependencies updated to 2.14 or later.
+
+Minor Changes
+-------------
+Ansible core version in the dependencies updated to 2.14 or later.
+
+v1.6.0
+======
+
+Release Summary
+---------------
+Added new modules with CRUD features to manage NIOS DTC health check monitors: DTC HTTP Monitor,
+DTC ICMP Monitor, DTC PDP Monitor, DTC SIP Monitor, DTC SNMP Monitor, DTC TCP Monitor.
+Added a new module with CRUD features to manage topology rulesets in NIOS.
+Added a new field to define topology ruleset for the DTC Pool and DTC LBDN modules.
+
+Major Changes
+-------------
+- Upgrade Ansible version support from 2.13 to 2.16.
+- Upgrade Python version support from 3.8 to 3.10.
+
+New Modules
+-----------
+- infoblox.nios_modules.nios_dtc_monitor_http - Configures the Infoblox NIOS DTC HTTP monitor
+- infoblox.nios_modules.nios_dtc_monitor_icmp - Configures the Infoblox NIOS DTC ICMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_pdp - Configures the Infoblox NIOS DTC PDP monitor
+- infoblox.nios_modules.nios_dtc_monitor_sip - Configures the Infoblox NIOS DTC SIP monitor
+- infoblox.nios_modules.nios_dtc_monitor_snmp - Configures the Infoblox NIOS DTC SNMP monitor
+- infoblox.nios_modules.nios_dtc_monitor_tcp - Configures the Infoblox NIOS DTC TCP monitor
+- infoblox.nios_modules.nios_dtc_topology - Configures the Infoblox NIOS DTC Topology
+
+Bugfixes
+---------
+- Fixes typo for environment variable INFOBLOX_WAPI_VERSION `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+- Fixes environment variable max_results using INFOBLOX_MAX_RESULTS `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+- Fixes index error for transform fields in DTC LBDN (auth_zone and Pool) and DTC POOL (servers and monitors) `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+
+v1.5.0
+======
+
+Release Summary
+---------------
+- Added new module - NIOS Range with Create, Update and Delete features
+- Added new feature - Member Assignment to Networks with add and remove functionality
+- Fixes Unable to Update/Delete EAs using Ansible plugin
+- Fixes Static Allocation of IPV4 address of A Record
+- Updates default WAPI version to 2.9
+- Added Grid Master Candidate feature
+
+Major Changes
+-------------
+- Added NIOS Range module with Create, Update and Delete features `#152 <https://github.com/infobloxopen/infoblox-ansible/pull/152>`_
+- Added Member Assignment to network and ranges `#152 <https://github.com/infobloxopen/infoblox-ansible/pull/152>`_
+- Added Grid Master Candidate feature `#152 <https://github.com/infobloxopen/infoblox-ansible/pull/152>`_
+- Fixes issue unable to update/delete EAs using Ansible plugin `#180 <https://github.com/infobloxopen/infoblox-ansible/pull/180>`_
+- Fixes static and dynamic allocation of IPV4 address of A Record `#182 <https://github.com/infobloxopen/infoblox-ansible/pull/182>`_
+- Fixes to Update host name of  NIOS member `#176 <https://github.com/infobloxopen/infoblox-ansible/pull/176>`_
+- Updates default WAPI version to 2.9 `#176 <https://github.com/infobloxopen/infoblox-ansible/pull/176>`_
+
+Bugfixes
+---------
+- Fixes Update A Record having multiple records with same name and different IP `#182 <https://github.com/infobloxopen/infoblox-ansible/pull/182>`_
+
 
 v1.4.1
 ======

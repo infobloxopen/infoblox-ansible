@@ -1,45 +1,47 @@
-- name: cleanup the parent object
-  nios_zone:
+---
+- name: Cleanup the parent object
+  infoblox.nios_modules.nios_zone:
     name: ansible.com
     state: absent
     provider: "{{ nios_provider }}"
 
-- name: create the parent object
-  nios_zone:
+- name: Create the parent object
+  infoblox.nios_modules.nios_zone:
     name: ansible.com
     state: present
     provider: "{{ nios_provider }}"
 
-- name: cleanup txt record
-  nios_txt_record:
+- name: Cleanup txt record
+  infoblox.nios_modules.nios_txt_record:
     name: txt.ansible.com
-    text: mytext  
+    text: mytext
     state: absent
     provider: "{{ nios_provider }}"
 
-- name: create txt record
-  nios_txt_record:
+- name: Create txt record
+  infoblox.nios_modules.nios_txt_record:
     name: txt.ansible.com
     text: mytext
     state: present
     provider: "{{ nios_provider }}"
   register: txt_create1
 
-- name: create txt record
-  nios_txt_record:
+- name: Create txt record
+  infoblox.nios_modules.nios_txt_record:
     name: txt.ansible.com
     text: mytext
     state: present
     provider: "{{ nios_provider }}"
   register: txt_create2
 
-- assert:
+- name: Assert TXT record creation idempotence
+  ansible.builtin.assert:
     that:
-      - "txt_create1.changed"
-      - "not txt_create2.changed"
+      - txt_create1.changed
+      - not txt_create2.changed
 
-- name: add a comment to an existing txt record
-  nios_txt_record:
+- name: Add a comment to an existing txt record
+  infoblox.nios_modules.nios_txt_record:
     name: txt.ansible.com
     text: mytext
     state: present
@@ -47,8 +49,8 @@
     provider: "{{ nios_provider }}"
   register: txt_update1
 
-- name: add a comment to an existing txt record
-  nios_txt_record:
+- name: Add a comment to an existing txt record
+  infoblox.nios_modules.nios_txt_record:
     name: txt.ansible.com
     text: mytext
     state: present
@@ -56,27 +58,28 @@
     provider: "{{ nios_provider }}"
   register: txt_update2
 
-- name: remove a txt record from the system
-  nios_txt_record:
+- name: Remove a txt record from the system
+  infoblox.nios_modules.nios_txt_record:
     name: txt.ansible.com
     text: mytext
     state: absent
     provider: "{{ nios_provider }}"
   register: txt_delete1
 
-- name: remove a txt record from the system
-  nios_txt_record:
+- name: Remove a txt record from the system
+  infoblox.nios_modules.nios_txt_record:
     name: txt.ansible.com
     text: mytext
     state: absent
     provider: "{{ nios_provider }}"
   register: txt_delete2
 
-- assert:
+- name: Verify idempotence and changes of TXT record operations
+  ansible.builtin.assert:
     that:
-      - "txt_create1.changed"
-      - "not txt_create2.changed"
-      - "txt_update1.changed"
-      - "not txt_update2.changed"
-      - "txt_delete1.changed"
-      - "not txt_delete2.changed"
+      - txt_create1.changed
+      - not txt_create2.changed
+      - txt_update1.changed
+      - not txt_update2.changed
+      - txt_delete1.changed
+      - not txt_delete2.changed

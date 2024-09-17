@@ -9,7 +9,9 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: nios_member
-author: "Krishna Vasudevan (@krisvasudevan)"
+author:
+  - "Krishna Vasudevan (@krisvasudevan)"
+  - "Matthew Dennett (@matthewdennett)"
 short_description: Configure Infoblox NIOS members
 version_added: "1.0.0"
 description:
@@ -23,7 +25,8 @@ options:
   host_name:
     description:
       - Specifies the host name of the member to either add or remove from
-        the NIOS instance.
+        the NIOS instance. Users can also update the name as it is possible
+        to pass a dict containing I(new_name), I(old_name). See examples.
     required: true
     aliases:
       - name
@@ -366,6 +369,13 @@ options:
       - Flag for initiating a create token request for pre-provisioned members.
     type: bool
     default: False
+  master_candidate:
+    description:
+      - Configures the instance of this object to be enabled as a Grid Master
+        Candidate or a regular member node.
+      - True enables the member as a Master Candidate
+    type: bool
+    default: false
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -397,6 +407,41 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Add a Grid Master Candidate to the grid with IPv4 address
+  infoblox.nios_modules.nios_member:
+    host_name: member01.localdomain
+    master_candidate: true
+    vip_setting:
+      - address: 192.168.1.100
+        subnet_mask: 255.255.255.0
+        gateway: 192.168.1.1
+    config_addr_type: IPV4
+    platform: VNIOS
+    comment: "Created by Ansible"
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Update host name of member
+  infoblox.nios_modules.nios_member:
+    host_name: {old_name: block1.localdomain, new_name: member01.localdomain}
+    master_candidate: false
+    vip_setting:
+      - address: 120.0.0.25
+        subnet_mask: 255.255.255.0
+        gateway: 120.0.0.1
+    config_addr_type: IPV4
+    platform: VNIOS
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
 - name: Add a HA member to the grid
   infoblox.nios_modules.nios_member:
     host_name: memberha.localdomain
@@ -410,11 +455,11 @@ EXAMPLES = '''
     router_id: 150
     node_info:
       - lan_ha_port_setting:
-         - ha_ip_address: 192.168.1.70
-           mgmt_lan: 192.168.1.80
+          - ha_ip_address: 192.168.1.70
+            mgmt_lan: 192.168.1.80
       - lan_ha_port_setting:
-         - ha_ip_address: 192.168.1.71
-           mgmt_lan: 192.168.1.81
+          - ha_ip_address: 192.168.1.71
+            mgmt_lan: 192.168.1.81
     comment: "Created by Ansible"
     state: present
     provider:
@@ -428,13 +473,13 @@ EXAMPLES = '''
     name: member01.localdomain
     pre_provisioning:
       - hardware_info:
-         - hwmodel: IB-VM-820
-           hwtype: IB-VNIOS
+          - hwmodel: IB-VM-820
+            hwtype: IB-VNIOS
         licenses:
-         - dns
-         - dhcp
-         - enterprise
-         - vnios
+          - dns
+          - dhcp
+          - enterprise
+          - vnios
     comment: "Updated by Ansible"
     state: present
     provider:
@@ -457,7 +502,6 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_MEMBER
 from ..module_utils.api import normalize_ib_spec
@@ -553,6 +597,7 @@ def main():
         pre_provisioning=dict(type='list', elements='dict', options=pre_prov_spec),
         extattrs=dict(type='dict'),
         create_token=dict(type='bool', default=False),
+        master_candidate=dict(type='bool', default=False)
     )
 
     argument_spec = dict(

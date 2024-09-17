@@ -1,1 +1,3 @@
-- include: nios_dns_view_idempotence.yml
+---
+- name: Include the tasks for the nios_dns_view_idempotence
+  ansible.builtin.include_tasks: nios_dns_view_idempotence.yml

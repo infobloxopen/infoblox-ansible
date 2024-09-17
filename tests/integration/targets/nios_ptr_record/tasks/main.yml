@@ -1,1 +1,3 @@
-- include: nios_ptr_record_idempotence.yml
+---
+- name: Include PTR record idempotence tests
+  ansible.builtin.include_tasks: nios_ptr_record_idempotence.yml
