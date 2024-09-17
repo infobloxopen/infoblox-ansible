@@ -348,7 +348,7 @@ def ipaddr(module, key, filtered_keys=None):
 
 
 def ipv4addrs(module):
-    return ipaddr(module, 'ipv4addrs', filtered_keys=['address', 'dhcp'])
+    return ipaddr(module, 'ipv4addrs', filtered_keys=['address', 'dhcp', 'pxe', 'use_pxe'])
 
 
 def ipv6addrs(module):

@@ -628,6 +628,9 @@ class WapiModule(WapiBase):
         '''
         for obj in objects:
             if isinstance(item, dict):
+                # Normalize MAC address for comparission
+                if 'mac' in item:
+                    item['mac'] = item['mac'].replace('-', ':').lower()
                 if all(entry in obj.items() for entry in item.items()):
                     return True
             else:
@@ -675,6 +678,15 @@ class WapiModule(WapiBase):
                     return False
 
                 for subitem in proposed_item:
+                    # Host IPv4addrs wont contain use_nextserver and nextserver
+                    # If DHCP is false.
+                    dhcp_flag = current_item[0].get('configure_for_dhcp', False)
+                    use_nextserver = subitem.get('use_nextserver', False)
+                    if key == 'ipv4addrs' and not dhcp_flag:
+                        subitem.pop('use_nextserver', None)
+                        subitem.pop('nextserver', None)
+                    elif key == 'ipv4addrs' and dhcp_flag and not use_nextserver:
+                        subitem.pop('nextserver', None)
                     if not self.issubset(subitem, current_item):
                         return False
 
@@ -708,7 +720,6 @@ class WapiModule(WapiBase):
 
     def get_object_ref(self, module, ib_obj_type, obj_filter, ib_spec):
         ''' this function gets the reference object of pre-existing nios objects '''
-
         update = False
         old_name = new_name = None
         old_ipv4addr_exists = old_text_exists = False
@@ -821,7 +832,20 @@ class WapiModule(WapiBase):
             # check if test_obj_filter is empty copy passed obj_filter
             else:
                 test_obj_filter = obj_filter
-            ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=list(ib_spec.keys()))
+            return_fields = list(ib_spec.keys())
+            if ib_obj_type == NIOS_HOST_RECORD:
+                ipv4addrs_return = [
+                    'ipv4addrs.ipv4addr', 'ipv4addrs.mac', 'ipv4addrs.configure_for_dhcp', 'ipv4addrs.host',
+                    'ipv4addrs.nextserver', 'ipv4addrs.use_nextserver'
+                ]
+                ipv6addrs_return = [
+                    'ipv6addrs.ipv6addr', 'ipv6addrs.duid', 'ipv6addrs.configure_for_dhcp', 'ipv6addrs.host',
+                    'ipv6addrs.use_nextserver', 'ipv6addrs.nextserver'
+                ]
+                return_fields.extend(ipv4addrs_return)
+                return_fields.extend(ipv6addrs_return)
+
+            ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=return_fields)
 
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
             if old_ipv4addr_exists and (ib_obj is None or len(ib_obj) == 0):
