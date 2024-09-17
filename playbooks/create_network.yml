@@ -13,6 +13,10 @@
       infoblox.nios_modules.nios_network:
         network: 10.0.0.0/24
         network_view: ansibleCollectionsView
+        use_logic_filter_rules: true
+        logic_filter_rules:
+          - filter: PXE-UEFI
+            type: Option
         options:
           - name: domain-name
             value: infoblox-ansible.com
