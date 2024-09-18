@@ -678,15 +678,16 @@ class WapiModule(WapiBase):
                     return False
 
                 for subitem in proposed_item:
-                    # Host IPv4addrs wont contain use_nextserver and nextserver
-                    # If DHCP is false.
-                    dhcp_flag = current_item[0].get('configure_for_dhcp', False)
-                    use_nextserver = subitem.get('use_nextserver', False)
-                    if key == 'ipv4addrs' and not dhcp_flag:
-                        subitem.pop('use_nextserver', None)
-                        subitem.pop('nextserver', None)
-                    elif key == 'ipv4addrs' and dhcp_flag and not use_nextserver:
-                        subitem.pop('nextserver', None)
+                    if current_item:
+                        # Host IPv4addrs wont contain use_nextserver and nextserver
+                        # If DHCP is false.
+                        dhcp_flag = current_item[0].get('configure_for_dhcp', False)
+                        use_nextserver = subitem.get('use_nextserver', False)
+                        if key == 'ipv4addrs' and not dhcp_flag:
+                            subitem.pop('use_nextserver', None)
+                            subitem.pop('nextserver', None)
+                        elif key == 'ipv4addrs' and dhcp_flag and not use_nextserver:
+                            subitem.pop('nextserver', None)
                     if not self.issubset(subitem, current_item):
                         return False
 
