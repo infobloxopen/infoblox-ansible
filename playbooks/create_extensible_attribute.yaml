@@ -1,6 +1,6 @@
 ---
-
-- hosts: localhost
+- name: Configure nios extensible attribute
+  hosts: localhost
   vars:
     nios_provider:
       host: 10.120.1.11
@@ -9,12 +9,12 @@
 
   connection: local
   tasks:
-     - name: Create INT extensible attribute
-       infoblox.nios_modules.nios_extensible_attribute:
-          name: integer_ea
-          type: INTEGER
-          default_value: 11
-          comment: Created with Ansible
-          flags: 'I'
-          state: present
-          provider: "{{ nios_provider }}"
+    - name: Create INT extensible attribute
+      infoblox.nios_modules.nios_extensible_attribute:
+        name: integer_ea
+        type: INTEGER
+        default_value: 11
+        comment: Created with Ansible
+        flags: I
+        state: present
+        provider: "{{ nios_provider }}"

@@ -9,10 +9,10 @@
 
   connection: local
   tasks:
-    - name: create infoblox nameserver stub member group
+    - name: Create infoblox nameserver stub member group
       infoblox.nios_modules.nios_nsgroup_stubmember:
         name: my-stubmember-group
-        comment: "this is a stub member nameserver group"
+        comment: this is a stub member nameserver group
         extattrs:
           Site: Test Site
         stub_members:

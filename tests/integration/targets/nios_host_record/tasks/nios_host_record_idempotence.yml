@@ -97,7 +97,7 @@
     ipv4:
       - address: 192.168.10.1
         dhcp: true
-        mac: 00-80-C8-E3-4C-BD
+        mac: "00-80-C8-E3-4C-BD"
     state: present
     provider: "{{ nios_provider }}"
   register: ipv4_create5
@@ -108,7 +108,7 @@
     ipv4:
       - address: 192.168.10.1
         dhcp: true
-        mac: 00-80-C8-E3-4C-BD
+        mac: "00-80-C8-E3-4C-BD"
     state: present
     provider: "{{ nios_provider }}"
   register: ipv4_create6

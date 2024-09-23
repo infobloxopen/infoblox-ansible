@@ -9,10 +9,10 @@
 
   connection: local
   tasks:
-    - name: create infoblox nameserver forward/stub group
+    - name: Create infoblox nameserver forward/stub group
       infoblox.nios_modules.nios_nsgroup_forwardstubserver:
         name: new-forwardstub-group
-        comment: "this is a forward/stub nameserver group"
+        comment: this is a forward/stub nameserver group
         extattrs:
           Site: Test Site
         external_servers:

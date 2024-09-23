@@ -1,4 +1,5 @@
-- name: cleanup nsgroup stubmember
+---
+- name: Cleanup nsgroup stubmember
   nios_nsgroup_stubmember:
     name: ansible-nsgroup_stubmember
     state: absent
@@ -6,7 +7,7 @@
     stub_members:
       - name: ns1
 
-- name: configure a nsgroup stubmember on the system
+- name: Configure a nsgroup stubmember on the system
   nios_nsgroup_stubmember:
     name: ansible-nsgroup_stubmember
     state: present
@@ -15,7 +16,7 @@
       - name: ns1
   register: nsgroup_stubmember_create1
 
-- name: configure another nsgroup stubmember on the system
+- name: Configure another nsgroup stubmember on the system
   nios_nsgroup_stubmember:
     name: ansible-nsgroup_stubmember
     state: present
@@ -24,7 +25,7 @@
       - name: ns1
   register: nsgroup_stubmember_create2
 
-- name: update the comment and ext attributes for an existing nsgroup stubmember
+- name: Update the comment and ext attributes for an existing nsgroup stubmember
   nios_nsgroup_stubmember:
     name: ansible-nsgroup_stubmember
     comment: this is an example comment
@@ -36,7 +37,7 @@
       - name: ns1
   register: nsgroup_stubmember_update1
 
-- name: update again the comment and ext attributes for an existing nsgroup stubmember
+- name: Update again the comment and ext attributes for an existing nsgroup stubmember
   nios_nsgroup_stubmember:
     name: ansible-nsgroup_stubmember
     comment: this is an example comment
@@ -48,7 +49,7 @@
       - name: ns1
   register: nsgroup_stubmember_update2
 
-- name: remove the nsgroup stubmember
+- name: Remove the nsgroup stubmember
   nios_nsgroup_stubmember:
     name: ansible-nsgroup_stubmember
     state: absent
@@ -57,7 +58,7 @@
       - name: ns1
   register: nsgroup_stubmember_delete1
 
-- name: remove again the nsgroup stubmember
+- name: Remove again the nsgroup stubmember
   nios_nsgroup_stubmember:
     name: ansible-nsgroup_stubmember
     state: absent
@@ -66,11 +67,12 @@
       - name: ns1
   register: nsgroup_stubmember_delete2
 
-- assert:
+- name: Assert changes in nsgroup_stubmember tasks
+  ansible.builtin.assert:
     that:
-      - "nsgroup_stubmember_create1.changed"
-      - "not nsgroup_stubmember_create2.changed"
-      - "nsgroup_stubmember_update1.changed"
-      - "not nsgroup_stubmember_update2.changed"
-      - "nsgroup_stubmember_delete1.changed"
-      - "not nsgroup_stubmember_delete2.changed"
+      - nsgroup_stubmember_create1.changed
+      - not nsgroup_stubmember_create2.changed
+      - nsgroup_stubmember_update1.changed
+      - not nsgroup_stubmember_update2.changed
+      - nsgroup_stubmember_delete1.changed
+      - not nsgroup_stubmember_delete2.changed
