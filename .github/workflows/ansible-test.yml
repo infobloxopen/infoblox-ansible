@@ -16,10 +16,10 @@ jobs:
         ansible-version: [stable-2.15]
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -66,7 +66,7 @@ jobs:
 
     steps:
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -131,12 +131,12 @@ jobs:
             python-version: '3.12'
     steps:
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install ansible-base (${{ matrix.ansible-version }})
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
@@ -170,7 +170,7 @@ jobs:
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
         working-directory: /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/
 
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v4
         with:
           fail_ci_if_error: false
 
@@ -191,7 +191,7 @@ jobs:
 
     steps:
       - name: Set up Python 3.11
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           # it is just required to run that once as "ansible-test sanity" in the docker image
           # will run on all python versions it supports.
