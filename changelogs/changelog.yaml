@@ -3,9 +3,8 @@ ancestor:
 releases:
   1.0.0:
     changes:
-      release_summary: "First release of the `nios_modules` collection! This release includes multiple plugins:- an
-        `api` plugin, a `network` plugin, a `nios` plugin, a `nios_inventory` plugin, a `lookup plugin`,
-        a `nios_next_ip` plugin, a `nios_next_network` plugin "
+      release_summary: "First release of the `nios_modules` collection! This release includes multiple plugins:- an `api` plugin, a `network` plugin, a `nios`
+        plugin, a `nios_inventory` plugin, a `lookup plugin`, a `nios_next_ip` plugin, a `nios_next_network` plugin "
     modules:
       - description: Configure Infoblox NIOS A records
         name: nios_a_record
@@ -114,8 +113,8 @@ releases:
         - Sanity fixes as per Ansible guidelines to all modules
       minor_changes:
         - The modules are standardized as per Ansible guidelines
-      release_summary: Support for creating IPv6 Fixed Address with DUID, Support added to return the next available IP address
-        for an IPv6 network, Modules made compatible to work with ansible-core 2.11, Issue fixes and standardization of modules as per Ansible guidelines
+      release_summary: Support for creating IPv6 Fixed Address with DUID, Support added to return the next available IP address for an IPv6 network, Modules
+       made compatible to work with ansible-core 2.11, Issue fixes and standardization of modules as per Ansible guidelines
     release_date: "2021-09-07"
   1.1.2:
     changes:
@@ -125,8 +124,8 @@ releases:
       minor_changes:
         - Changes in inventory and lookup plugins documentation `#85 <https://github.com/infobloxopen/infoblox-ansible/pull/85>`_
         - Directory restructure and added integration & unit tests `#87 <https://github.com/infobloxopen/infoblox-ansible/pull/87>`_
-      release_summary: Issue fixes and standardization of inventory plugin and lookup modules as per Ansible guidelines,
-        Directory restructure and added integration & unit tests
+      release_summary: Issue fixes and standardization of inventory plugin and lookup modules as per Ansible guidelines, Directory restructure and added
+          integration & unit tests
     release_date: "2021-10-12"
   1.2.0:
     changes:
@@ -135,11 +134,10 @@ releases:
         - Ansible playbook fails to update canonical name of CName Record `#97 <https://github.com/infobloxopen/infoblox-ansible/pull/97>`_
       minor_changes:
         - Updated 'required' field in modules `#99 <https://github.com/infobloxopen/infoblox-ansible/pull/99>`_
-        - Following options are made required in the modules
-          | Record | Option made required | | ------ | -------------------- | | A | ipv4addr | | AAAA | ipv6addr|
-          | CNAME | canonical | | MX | mail_exchanger, preference | | PTR | ptrdname |
-      release_summary: Issue fixes to update A Record using `next_available_ip` function, Added a new feature
-        - Update canonical name of the CNAME Record, Updated the `required` fields in modules
+        - Following options are made required in the modules | Record | Option made required | | ------ | -------- | | A | ipv4addr | | AAAA | ipv6addr| | CNAME
+          | canonical | | MX | mail_exchanger, preference | | PTR | ptrdname |
+      release_summary: Issue fixes to update A Record using `next_available_ip` function, Added a new feature - Update canonical name of the CNAME Record,
+          Updated the `required` fields in modules
     release_date: "2021-12-13"
   1.2.1:
     changes:
@@ -161,20 +159,20 @@ releases:
   1.3.0:
     changes:
       major_changes:
-        - Update operation using `old_name` and `new_name` for the object with dummy name in `old_name`
-          (which does not exist in system) will not create a new object in the system. An error will be thrown stating the object does not exist in the
-          system `#129 <https://github.com/infobloxopen/infoblox-ansible/pull/129>`_
+        - Update operation using `old_name` and `new_name` for the object with dummy name in `old_name` (which does not exist in system) will not create a
+          new object in the system. An error will be thrown stating the object does not exist in the system
+          `#129 <https://github.com/infobloxopen/infoblox-ansible/pull/129>`_
         - Update `text` field of TXT Record `#128 <https://github.com/infobloxopen/infoblox-ansible/pull/128>`_
       bugfixes:
         - Fix to create TXT record with equals sign `#128 <https://github.com/infobloxopen/infoblox-ansible/pull/128>`_
-      release_summary: Issue fixes to create TXT record with equals sign, For nonexistent record, update operation
-        creates the new record, For nonexistent IPv4Address, update operation creates a new A record with new_ipv4addr
+      release_summary: Issue fixes to create TXT record with equals sign, For nonexistent record, update operation creates the new record, For nonexistent
+        IPv4Address, update operation creates a new A record with new_ipv4addr
     release_date: "2022-07-01"
   1.4.0:
     changes:
       major_changes:
-        - Feature for extra layer security , with `cert` and `key` parameters in playbooks for authenticating
-          using certificate and key ``*.pem`` file absolute path `#154 <https://github.com/infobloxopen/infoblox-ansible/pull/154>`_
+        - Feature for extra layer security , with `cert` and `key` parameters in playbooks for authenticating using certificate and key ``*.pem`` file
+          absolute path `#154 <https://github.com/infobloxopen/infoblox-ansible/pull/154>`_
         - Fix to remove issue causing due to template attr in deleting network using Ansible module nios network
           `#147 <https://github.com/infobloxopen/infoblox-ansible/pull/147>`_
       release_summary: For ansible module, added certificate authentication feature, Few bugs fix in ansible module nios network
@@ -187,9 +185,8 @@ releases:
         - Fix to allocate ip to a_record dynamically `#163 <https://github.com/infobloxopen/infoblox-ansible/pull/163>`_
         - Fix to update 'nios_a_record' name with multiple ips having same name `#164 <https://github.com/infobloxopen/infoblox-ansible/pull/164>`_
         - Fix to changelog yaml file with linting issues `#161 <https://github.com/infobloxopen/infoblox-ansible/pull/161>`_
-      release_summary: Ansible Lookup modules can specify network_view to which a network/ip belongs,
-        Fixes camelCase issue while updating `nios_network_view` with `new_name`, Fixes issue to allocate ip to a_record dynamically,
-        Updates `nios_a_record` name with multiple ips having same name
+      release_summary: Ansible Lookup modules can specify network_view to which a network/ip belongs, Fixes camelCase issue while updating
+        `nios_network_view` with `new_name`, Fixes issue to allocate ip to a_record dynamically, Updates `nios_a_record` name with multiple ips having same name
     release_date: "2022-11-24"
   1.5.0:
     changes:
@@ -203,23 +200,23 @@ releases:
         - Updates default WAPI version to 2.9 `#176 <https://github.com/infobloxopen/infoblox-ansible/pull/176>`_
       bugfixes:
         - Fixes Update A Record having multiple records with same name and different IP `#182 <https://github.com/infobloxopen/infoblox-ansible/pull/182>`_
-      release_summary: Added new module NIOS Range with Create, Update and Delete features, Added new feature Member Assignment to Networks with add
-        remove functionality, Fixes Unable to Update/Delete EAs using Ansible plugin, Fixes Static Allocation of IPV4 address of A Record,
-        Updates default WAPI version to `2.9`, Added Grid Master Candidate feature
+      release_summary: Added new module NIOS Range with Create, Update and Delete features, Added new feature Member Assignment to Networks with add remove
+          functionality, Fixes Unable to Update/Delete EAs using Ansible plugin, Fixes Static Allocation of IPV4 address of A Record, Updates default WAPI
+          version to `2.9`, Added Grid Master Candidate feature
     release_date: "2023-05-11"
   1.6.0:
     changes:
       major_changes:
         - Upgrade Ansible version support from 2.13 to 2.16.
         - Upgrade Python version support from 3.8 to 3.10.
-      release_summary: "Added new modules with CRUD features to manage NIOS DTC health check monitors: DTC HTTP Monitor, DTC ICMP Monitor,
-        DTC PDP Monitor, DTC SIP Monitor, DTC SNMP Monitor, DTC TCP Monitor. Added a new module with CRUD features to manage topology rulesets in NIOS.
-        Added a new field to define topology ruleset for the DTC Pool and DTC LBDN modules."
+      release_summary: "Added new modules with CRUD features to manage NIOS DTC health check monitors: DTC HTTP Monitor, DTC ICMP Monitor, DTC PDP Monitor,
+      DTC SIP Monitor, DTC SNMP Monitor, DTC TCP Monitor. Added a new module with CRUD features to manage topology rulesets in NIOS. Added a new field to
+      define topology ruleset for the DTC Pool and DTC LBDN modules."
       bugfixes:
         - Fixes typo for environment variable INFOBLOX_WAPI_VERSION `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
         - Fixes environment variable max_results using INFOBLOX_MAX_RESULTS `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
-        - Fixes index error for transform fields in DTC LBDN (auth_zone and Pool) and DTC POOL (servers and monitors)
-          `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
+        - Fixes index error for transform fields in DTC LBDN (auth_zone and Pool) and DTC POOL (servers and monitors).
+         `#209 <https://github.com/infobloxopen/infoblox-ansible/pull/209>`_
     modules:
       - description: Configures the Infoblox NIOS DTC HTTP monitor.
         name: nios_dtc_monitor_http
@@ -247,6 +244,6 @@ releases:
     changes:
       minor_changes:
         - Ansible core version in the dependencies updated to 2.14 or later.
-      release_summary: "This release includes the updates of plug-in version 1.6.0 and
-        the following documentation changes: Ansible core version in the dependencies updated to 2.14 or later."
+      release_summary: "This release includes the updates of plug-in version 1.6.0 and the following documentation changes: Ansible core version in the
+      dependencies updated to 2.14 or later."
     release_date: "2023-12-19"

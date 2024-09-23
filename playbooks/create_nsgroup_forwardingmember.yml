@@ -9,10 +9,10 @@
 
   connection: local
   tasks:
-    - name: create infoblox nameserver forwarding member group with external forwarders
+    - name: Create infoblox nameserver forwarding member group with external forwarders
       infoblox.nios_modules.nios_nsgroup_forwardingmember:
         name: my-forwardingmember-group
-        comment: "this is a forwarding member nameserver group with external forwarders"
+        comment: this is a forwarding member nameserver group with external forwarders
         extattrs:
           Site: Test Site
         forwarding_servers:

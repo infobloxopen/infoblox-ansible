@@ -1,3 +1,4 @@
+---
 - name: Clean up existing EA
   infoblox.nios_modules.nios_extensible_attribute:
     name: stringEA
@@ -9,7 +10,7 @@
   infoblox.nios_modules.nios_extensible_attribute:
     name: stringEA
     type: STRING
-    default_value: "string"
+    default_value: string
     min: 1
     max: 15
     comment: Created string EA with Ansible
@@ -21,7 +22,7 @@
   infoblox.nios_modules.nios_extensible_attribute:
     name: stringEA
     type: STRING
-    default_value: "string"
+    default_value: string
     min: 1
     max: 15
     comment: Updated string EA with Ansible
@@ -36,7 +37,7 @@
     default_value: "15"
     min: 1
     max: 15
-    flags: 'I'
+    flags: I
     comment: Created string EA with Ansible
     state: present
     provider: "{{ nios_provider }}"
@@ -49,7 +50,7 @@
     default_value: "14"
     min: 1
     max: 15
-    flags: 'I'
+    flags: I
     comment: Created string EA with Ansible
     state: present
     provider: "{{ nios_provider }}"
@@ -59,7 +60,7 @@
   infoblox.nios_modules.nios_extensible_attribute:
     name: stringEA
     type: STRING
-    default_value: "string"
+    default_value: string
     min: 1
     max: 15
     state: present
@@ -73,7 +74,7 @@
     default_value: "14"
     min: 1
     max: 15
-    flags: 'I'
+    flags: I
     comment: Created string EA with Ansible
     state: absent
     provider: "{{ nios_provider }}"
@@ -86,7 +87,7 @@
     list_values:
       - option1
       - option2
-    default_value: "option1"
+    default_value: option1
     comment: Created enum EA with Ansible
     state: present
     provider: "{{ nios_provider }}"
@@ -99,7 +100,7 @@
     list_values:
       - option1
       - option2
-    default_value: "option2"
+    default_value: option2
     comment: Updated enum EA default value with Ansible
     state: present
     provider: "{{ nios_provider }}"
@@ -135,13 +136,13 @@
 - name: Verify outcomes including new tests
   ansible.builtin.assert:
     that:
-      - "create_string_ea.changed"
-      - "update_string_ea.changed"
-      - "create_integer_ea.changed"
-      - "update_integer_ea.changed"
-      - "remove_string_ea.changed"
-      - "remove_integer_ea.changed"
-      - "create_enum_ea.changed"
-      - "update_enum_ea.changed"
-      - "create_date_ea.changed"
-      - "update_date_ea.changed"
+      - create_string_ea.changed
+      - update_string_ea.changed
+      - create_integer_ea.changed
+      - update_integer_ea.changed
+      - remove_string_ea.changed
+      - remove_integer_ea.changed
+      - create_enum_ea.changed
+      - update_enum_ea.changed
+      - create_date_ea.changed
+      - update_date_ea.changed

@@ -9,7 +9,7 @@
 
   connection: local
   tasks:
-    - name: create infoblox nameserver delegation group
+    - name: Create infoblox nameserver delegation group
       infoblox.nios_modules.nios_nsgroup_delegation:
         name: my-delegation-group
         delegate_to:
@@ -17,7 +17,7 @@
             address: 192.168.0.10
           - name: second
             address: 192.168.0.20
-        comment: "this is a delegation nameserver group"
+        comment: this is a delegation nameserver group
         extattrs:
           Site: Test Site
         state: present

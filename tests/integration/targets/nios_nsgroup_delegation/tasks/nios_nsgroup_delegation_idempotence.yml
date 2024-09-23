@@ -1,4 +1,5 @@
-- name: cleanup nsgroup delegation
+---
+- name: Cleanup nsgroup delegation
   nios_nsgroup_delegation:
     name: ansible-nsgroup_delegation
     state: absent
@@ -7,7 +8,7 @@
       - name: ns1
         address: 192.168.0.1
 
-- name: configure a nsgroup delegation on the system
+- name: Configure a nsgroup delegation on the system
   nios_nsgroup_delegation:
     name: ansible-nsgroup_delegation
     state: present
@@ -17,7 +18,7 @@
         address: 192.168.0.1
   register: nsgroup_delegation_create1
 
-- name: configure another nsgroup delegation on the system
+- name: Configure another nsgroup delegation on the system
   nios_nsgroup_delegation:
     name: ansible-nsgroup_delegation
     state: present
@@ -27,7 +28,7 @@
         address: 192.168.0.1
   register: nsgroup_delegation_create2
 
-- name: update the comment and ext attributes for an existing nsgroup delegation
+- name: Update the comment and ext attributes for an existing nsgroup delegation
   nios_nsgroup_delegation:
     name: ansible-nsgroup_delegation
     comment: this is an example comment
@@ -40,7 +41,7 @@
         address: 192.168.0.1
   register: nsgroup_delegation_update1
 
-- name: update again the comment and ext attributes for an existing nsgroup delegation
+- name: Update again the comment and ext attributes for an existing nsgroup delegation
   nios_nsgroup_delegation:
     name: ansible-nsgroup_delegation
     comment: this is an example comment
@@ -53,7 +54,7 @@
         address: 192.168.0.1
   register: nsgroup_delegation_update2
 
-- name: remove the nsgroup delegation
+- name: Remove the nsgroup delegation
   nios_nsgroup_delegation:
     name: ansible-nsgroup_delegation
     state: absent
@@ -63,7 +64,7 @@
         address: 192.168.0.1
   register: nsgroup_delegation_delete1
 
-- name: remove again the nsgroup delegation
+- name: Remove again the nsgroup delegation
   nios_nsgroup_delegation:
     name: ansible-nsgroup_delegation
     state: absent
@@ -73,11 +74,12 @@
         address: 192.168.0.1
   register: nsgroup_delegation_delete2
 
-- assert:
+- name: Assert changes in nsgroup delegation
+  ansible.builtin.assert:
     that:
-      - "nsgroup_delegation_create1.changed"
-      - "not nsgroup_delegation_create2.changed"
-      - "nsgroup_delegation_update1.changed"
-      - "not nsgroup_delegation_update2.changed"
-      - "nsgroup_delegation_delete1.changed"
-      - "not nsgroup_delegation_delete2.changed"
+      - nsgroup_delegation_create1.changed
+      - not nsgroup_delegation_create2.changed
+      - nsgroup_delegation_update1.changed
+      - not nsgroup_delegation_update2.changed
+      - nsgroup_delegation_delete1.changed
+      - not nsgroup_delegation_delete2.changed

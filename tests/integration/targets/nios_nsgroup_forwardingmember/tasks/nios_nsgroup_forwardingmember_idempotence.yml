@@ -1,4 +1,5 @@
-- name: cleanup nsgroup forwardingmember
+---
+- name: Cleanup nsgroup forwardingmember
   nios_nsgroup_forwardingmember:
     name: ansible-nsgroup_forwardingmember
     state: absent
@@ -10,7 +11,7 @@
           - name: ns1
             address: 192.168.10.1
 
-- name: configure a nsgroup forwardingmember on the system
+- name: Configure a nsgroup forwardingmember on the system
   nios_nsgroup_forwardingmember:
     name: ansible-nsgroup_forwardingmember
     state: present
@@ -23,7 +24,7 @@
             address: 192.168.10.1
   register: nsgroup_forwardingmember_create1
 
-- name: configure another nsgroup forwardingmember on the system
+- name: Configure another nsgroup forwardingmember on the system
   nios_nsgroup_forwardingmember:
     name: ansible-nsgroup_forwardingmember
     state: present
@@ -36,7 +37,7 @@
             address: 192.168.10.1
   register: nsgroup_forwardingmember_create2
 
-- name: update the comment and ext attributes for an existing nsgroup forwardingmember
+- name: Update the comment and ext attributes for an existing nsgroup forwardingmember
   nios_nsgroup_forwardingmember:
     name: ansible-nsgroup_forwardingmember
     comment: this is an example comment
@@ -52,7 +53,7 @@
             address: 192.168.10.1
   register: nsgroup_forwardingmember_update1
 
-- name: update again the comment and ext attributes for an existing nsgroup forwardingmember
+- name: Update again the comment and ext attributes for an existing nsgroup forwardingmember
   nios_nsgroup_forwardingmember:
     name: ansible-nsgroup_forwardingmember
     comment: this is an example comment
@@ -68,7 +69,7 @@
             address: 192.168.10.1
   register: nsgroup_forwardingmember_update2
 
-- name: remove the nsgroup forwardingmember
+- name: Remove the nsgroup forwardingmember
   nios_nsgroup_forwardingmember:
     name: ansible-nsgroup_forwardingmember
     state: absent
@@ -81,7 +82,7 @@
             address: 192.168.10.1
   register: nsgroup_forwardingmember_delete1
 
-- name: remove again the nsgroup forwardingmember
+- name: Remove again the nsgroup forwardingmember
   nios_nsgroup_forwardingmember:
     name: ansible-nsgroup_forwardingmember
     state: absent
@@ -94,11 +95,12 @@
             address: 192.168.10.1
   register: nsgroup_forwardingmember_delete2
 
-- assert:
+- name: Assert changes in nsgroup forwardingmember
+  ansible.builtin.assert:
     that:
-      - "nsgroup_forwardingmember_create1.changed"
-      - "not nsgroup_forwardingmember_create2.changed"
-      - "nsgroup_forwardingmember_update1.changed"
-      - "not nsgroup_forwardingmember_update2.changed"
-      - "nsgroup_forwardingmember_delete1.changed"
-      - "not nsgroup_forwardingmember_delete2.changed"
+      - nsgroup_forwardingmember_create1.changed
+      - not nsgroup_forwardingmember_create2.changed
+      - nsgroup_forwardingmember_update1.changed
+      - not nsgroup_forwardingmember_update2.changed
+      - nsgroup_forwardingmember_delete1.changed
+      - not nsgroup_forwardingmember_delete2.changed
