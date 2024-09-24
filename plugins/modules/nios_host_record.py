@@ -46,6 +46,11 @@ options:
     default: true
     aliases:
       - dns
+  use_dns_ea_inheritance:
+    description:
+        - When use_dns_ea_inheritance is True, the EA is inherited from associated zone. The default value is False.
+    type: bool
+    default: false
   ipv4addrs:
     description:
       - Configures the IPv4 addresses for this host record.  This argument
@@ -370,6 +375,7 @@ def main():
         ipv4addrs=dict(type='list', aliases=['ipv4'], elements='dict', options=ipv4addr_spec, transform=ipv4addrs),
         ipv6addrs=dict(type='list', aliases=['ipv6'], elements='dict', options=ipv6addr_spec, transform=ipv6addrs),
         configure_for_dns=dict(type='bool', default=True, required=False, aliases=['dns'], ib_req=True),
+        use_dns_ea_inheritance=dict(type='bool', default=False, required=False),
         aliases=dict(type='list', elements='str'),
 
         ttl=dict(type='int'),
