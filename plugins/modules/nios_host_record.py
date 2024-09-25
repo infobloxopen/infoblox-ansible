@@ -64,9 +64,9 @@ options:
       use_for_ea_inheritance:
         version_added: "1.7.0"
         description:
-            - When use_for_ea_inheritance is True, the EA is inherited from Host address. The default value is False.
+            - When use_for_ea_inheritance is True, the EA is inherited from Host address. The default value is True.
         type: bool
-        default: false
+        default: true
         required: false
       ipv4addr:
         description:
@@ -378,7 +378,7 @@ def main():
         add=dict(type='bool', required=False),
         use_nextserver=dict(type='bool', required=False, aliases=['use_pxe']),
         nextserver=dict(required=False, aliases=['pxe']),
-        use_for_ea_inheritance=dict(type='bool', required=False, default=False),
+        use_for_ea_inheritance=dict(type='bool', required=False, default=True),
         remove=dict(type='bool', required=False)
     )
 
