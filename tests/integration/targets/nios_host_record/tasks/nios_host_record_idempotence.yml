@@ -94,6 +94,7 @@
 - name: Create an ipv4 host record via DHCP and MAC
   infoblox.nios_modules.nios_host_record:
     name: host
+    configure_for_dns: false
     ipv4:
       - address: 192.168.10.1
         dhcp: true
@@ -105,6 +106,7 @@
 - name: Recreate an ipv4 host record via DHCP and MAC
   infoblox.nios_modules.nios_host_record:
     name: host
+    configure_for_dns: false
     ipv4:
       - address: 192.168.10.1
         dhcp: true
