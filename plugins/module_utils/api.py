@@ -438,6 +438,8 @@ class WapiModule(WapiBase):
 
         check_remove = []
         if (ib_obj_type == NIOS_HOST_RECORD):
+            if sum(addr.get('use_for_ea_inheritance', False) for addr in proposed_object['ipv4addrs']) > 1:
+                raise AnsibleError('Only one address allowed to be used for extensible attributes inheritance')
             # this check is for idempotency, as if the same ip address shall be passed
             # add param will be removed, and same exists true for remove case as well.
             if 'ipv4addrs' in [current_object and proposed_object]:
@@ -510,7 +512,13 @@ class WapiModule(WapiBase):
                     result['changed'] = True
                 if not self.module.check_mode and res is None:
                     proposed_object = self.on_update(proposed_object, ib_spec)
-                    res = self.update_object(ref, proposed_object)
+                    if ib_obj_type == NIOS_HOST_RECORD:
+                        # Remove 'use_for_ea_inheritance' from each dictionary in 'ipv4addrs'
+                        update_proposed = {**proposed_object, 'ipv4addrs': [
+                            {k: v for k, v in addr.items() if k != 'use_for_ea_inheritance'} for addr in proposed_object['ipv4addrs']]}
+                        res = self.update_object(ref, update_proposed)
+                    else:
+                        res = self.update_object(ref, proposed_object)
                     result['changed'] = True
 
                     if ib_obj_type == NIOS_HOST_RECORD and res:
@@ -521,7 +529,8 @@ class WapiModule(WapiBase):
                         if host_ref:
                             # Create a dictionary for quick lookups
                             ref_dict = {obj['ipv4addr']: obj['_ref'] for obj in host_ref['ipv4addrs']}
-                            for proposed in proposed_object['ipv4addrs']:
+                            sorted_ipv4addrs = sorted(proposed_object['ipv4addrs'], key=lambda x: x.get('use_for_ea_inheritance', False))
+                            for proposed in sorted_ipv4addrs:
                                 ipv4addr = proposed['ipv4addr']
                                 if ipv4addr in ref_dict and 'use_for_ea_inheritance' in proposed:
                                     self.update_object(ref_dict[ipv4addr], {'use_for_ea_inheritance': proposed['use_for_ea_inheritance']})
