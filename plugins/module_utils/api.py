@@ -31,6 +31,7 @@ __metaclass__ = type
 
 import json
 import os
+import copy
 from functools import partial
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
@@ -438,7 +439,7 @@ class WapiModule(WapiBase):
 
         check_remove = []
         if (ib_obj_type == NIOS_HOST_RECORD):
-            if sum(addr.get('use_for_ea_inheritance', False) for addr in proposed_object['ipv4addrs']) > 1:
+            if 'ipv4addrs' in proposed_object and sum(addr.get('use_for_ea_inheritance', False) for addr in proposed_object['ipv4addrs']) > 1:
                 raise AnsibleError('Only one address allowed to be used for extensible attributes inheritance')
             # this check is for idempotency, as if the same ip address shall be passed
             # add param will be removed, and same exists true for remove case as well.
@@ -512,10 +513,13 @@ class WapiModule(WapiBase):
                     result['changed'] = True
                 if not self.module.check_mode and res is None:
                     proposed_object = self.on_update(proposed_object, ib_spec)
-                    if ib_obj_type == NIOS_HOST_RECORD:
+                    if ib_obj_type == NIOS_HOST_RECORD and 'ipv4addrs' in proposed_object:
                         # Remove 'use_for_ea_inheritance' from each dictionary in 'ipv4addrs'
-                        update_proposed = {**proposed_object, 'ipv4addrs': [
-                            {k: v for k, v in addr.items() if k != 'use_for_ea_inheritance'} for addr in proposed_object['ipv4addrs']]}
+                        update_proposed = copy.deepcopy(proposed_object)
+                        update_proposed['ipv4addrs'] = [
+                            {k: v for k, v in addr.items() if k != 'use_for_ea_inheritance'}
+                            for addr in proposed_object['ipv4addrs']
+                        ]
                         res = self.update_object(ref, update_proposed)
                     else:
                         res = self.update_object(ref, proposed_object)
