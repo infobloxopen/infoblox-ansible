@@ -1,5 +1,0 @@
----
-bugfixes:
-  - nios_host_record - rename logic included DNS view in filter critera, even when DNS had been bypassed.
-  - Omits DNS view from filter critera when renaming a host object and DNS is bypassed.
-    (https://github.com/infobloxopen/infoblox-ansible/issues/230)
