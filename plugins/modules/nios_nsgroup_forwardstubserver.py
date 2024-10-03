@@ -11,10 +11,11 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: nios_nsgroup_forwardstubserver
-short_description: Configure InfoBlox DNS Nameserver Forwarding Member Groups
+short_description: Configure Infoblox DNS Nameserver Forward/Stub Server Groups
 extends_documentation_fragment: infoblox.nios_modules.nios
 author:
   - Mauricio Teixeira (@badnetmask)
+version_added: "1.7.0"
 description:
   - Adds and/or removes nameserver groups of type "Forward/Stub Server" form Infoblox NIOS servers.
     This module manages NIOS C(nsgroup:forwardstubserver) objects using the Infoblox. WAPI interface over REST.
