@@ -46,6 +46,12 @@ options:
     default: true
     aliases:
       - dns
+  use_dns_ea_inheritance:
+    version_added: "1.7.0"
+    description:
+      - When use_dns_ea_inheritance is True, the EA is inherited from associated zone. The default value is False.
+    type: bool
+    default: false
   ipv4addrs:
     description:
       - Configures the IPv4 addresses for this host record.  This argument
@@ -55,6 +61,13 @@ options:
     aliases:
       - ipv4
     suboptions:
+      use_for_ea_inheritance:
+        version_added: "1.7.0"
+        description:
+            - When use_for_ea_inheritance is True, the EA is inherited from Host address. The default value is False.
+        type: bool
+        default: false
+        required: false
       ipv4addr:
         description:
           - Configures the IPv4 address for the host record. Users can dynamically
@@ -365,6 +378,7 @@ def main():
         add=dict(type='bool', required=False),
         use_nextserver=dict(type='bool', required=False, aliases=['use_pxe']),
         nextserver=dict(required=False, aliases=['pxe']),
+        use_for_ea_inheritance=dict(type='bool', required=False, default=False),
         remove=dict(type='bool', required=False)
     )
 
@@ -381,6 +395,7 @@ def main():
         ipv4addrs=dict(type='list', aliases=['ipv4'], elements='dict', options=ipv4addr_spec, transform=ipv4addrs),
         ipv6addrs=dict(type='list', aliases=['ipv6'], elements='dict', options=ipv6addr_spec, transform=ipv6addrs),
         configure_for_dns=dict(type='bool', default=True, required=False, aliases=['dns'], ib_req=True),
+        use_dns_ea_inheritance=dict(type='bool', default=False, required=False),
         aliases=dict(type='list', elements='str'),
 
         ttl=dict(type='int'),

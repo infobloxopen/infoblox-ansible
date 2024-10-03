@@ -31,6 +31,7 @@ __metaclass__ = type
 
 import json
 import os
+import copy
 from functools import partial
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
@@ -351,7 +352,6 @@ class WapiModule(WapiBase):
         if not proposed_object.get('configure_for_dns') and proposed_object.get('view') == 'default' \
                 and ib_obj_type == NIOS_HOST_RECORD:
             del proposed_object['view']
-
         if ib_obj_ref:
             if len(ib_obj_ref) > 1:
                 for each in ib_obj_ref:
@@ -439,6 +439,8 @@ class WapiModule(WapiBase):
 
         check_remove = []
         if (ib_obj_type == NIOS_HOST_RECORD):
+            if 'ipv4addrs' in proposed_object and sum(addr.get('use_for_ea_inheritance', False) for addr in proposed_object['ipv4addrs']) > 1:
+                raise AnsibleError('Only one address allowed to be used for extensible attributes inheritance')
             # this check is for idempotency, as if the same ip address shall be passed
             # add param will be removed, and same exists true for remove case as well.
             if 'ipv4addrs' in [current_object and proposed_object]:
@@ -511,9 +513,31 @@ class WapiModule(WapiBase):
                     result['changed'] = True
                 if not self.module.check_mode and res is None:
                     proposed_object = self.on_update(proposed_object, ib_spec)
-                    self.update_object(ref, proposed_object)
+                    if ib_obj_type == NIOS_HOST_RECORD and 'ipv4addrs' in proposed_object:
+                        # Remove 'use_for_ea_inheritance' from each dictionary in 'ipv4addrs'
+                        update_proposed = copy.deepcopy(proposed_object)
+                        update_proposed['ipv4addrs'] = [
+                            {k: v for k, v in addr.items() if k != 'use_for_ea_inheritance'}
+                            for addr in proposed_object['ipv4addrs']
+                        ]
+                        res = self.update_object(ref, update_proposed)
+                    else:
+                        res = self.update_object(ref, proposed_object)
                     result['changed'] = True
 
+                    if ib_obj_type == NIOS_HOST_RECORD and res:
+                        # WAPI always reset the use_for_ea_inheritance for each update operation
+                        # Handle use_for_ea_inheritance flag changes for IPv4addr in a host record
+                        # Fetch the updated reference of host to avoid drift.
+                        host_ref = self.connector.get_object(obj_type=str(res), return_fields=['ipv4addrs'])
+                        if host_ref:
+                            # Create a dictionary for quick lookups
+                            ref_dict = {obj['ipv4addr']: obj['_ref'] for obj in host_ref['ipv4addrs']}
+                            sorted_ipv4addrs = sorted(proposed_object['ipv4addrs'], key=lambda x: x.get('use_for_ea_inheritance', False))
+                            for proposed in sorted_ipv4addrs:
+                                ipv4addr = proposed['ipv4addr']
+                                if ipv4addr in ref_dict and 'use_for_ea_inheritance' in proposed:
+                                    self.update_object(ref_dict[ipv4addr], {'use_for_ea_inheritance': proposed['use_for_ea_inheritance']})
         elif state == 'absent':
             if ref is not None:
                 if 'ipv4addrs' in proposed_object:
@@ -628,7 +652,7 @@ class WapiModule(WapiBase):
         '''
         for obj in objects:
             if isinstance(item, dict):
-                # Normalize MAC address for comparission
+                # Normalize MAC address for comparison
                 if 'mac' in item:
                     item['mac'] = item['mac'].replace('-', ':').lower()
                 if all(entry in obj.items() for entry in item.items()):
@@ -837,7 +861,7 @@ class WapiModule(WapiBase):
             if ib_obj_type == NIOS_HOST_RECORD:
                 ipv4addrs_return = [
                     'ipv4addrs.ipv4addr', 'ipv4addrs.mac', 'ipv4addrs.configure_for_dhcp', 'ipv4addrs.host',
-                    'ipv4addrs.nextserver', 'ipv4addrs.use_nextserver'
+                    'ipv4addrs.nextserver', 'ipv4addrs.use_nextserver', 'ipv4addrs.use_for_ea_inheritance'
                 ]
                 ipv6addrs_return = [
                     'ipv6addrs.ipv6addr', 'ipv6addrs.duid', 'ipv6addrs.configure_for_dhcp', 'ipv6addrs.host',
@@ -845,7 +869,6 @@ class WapiModule(WapiBase):
                 ]
                 return_fields.extend(ipv4addrs_return)
                 return_fields.extend(ipv6addrs_return)
-
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=return_fields)
 
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
