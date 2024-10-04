@@ -26,7 +26,7 @@ options:
     use_range:
       description: Use DHCP range to retrieve the next available IP address(es). Requested number of IP Addresses must be between 1 and 20.
       required: false
-      default: no
+      default: false
       type: bool
     num:
       description: The number of IP address(es) to return.

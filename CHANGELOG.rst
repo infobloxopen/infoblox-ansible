@@ -3,6 +3,42 @@ Infoblox.Nios_Modules Release Notes
 ===================================
 
 .. contents:: Topics
+
+v1.7.0
+======
+
+Release Summary
+---------------
+This release brings new modules for managing extensible attribute definition and DNS name server groups.
+Additionally, it includes various enhancements, new features, and bug fixes aimed at improving the system's overall functionality and performance.
+
+Minor Changes
+-------------
+- Added support for the `use_for_ea_inheritance` parameter in Host Record to inherit extensible attribute from Host address. `#265 <https://github.com/infobloxopen/infoblox-ansible/pull/265>`_
+- Added support for the `use_dns_ea_inheritance` parameter in Host Record to inherit extensible attribute from associated zone. `#265 <https://github.com/infobloxopen/infoblox-ansible/pull/265>`_
+- Enabled IPv4 support for PXE server configuration in the Host Record module. `#146 <https://github.com/infobloxopen/infoblox-ansible/pull/146>`_
+- Introduced `use_logic_filter_rules` & `logic_filter_rules` support for both IPv4 and IPv6 networks and network containers. `#233 <https://github.com/infobloxopen/infoblox-ansible/pull/233>`_
+- Added IPv6 network container support for the `nios_next_network` lookup plugin. `#178 <https://github.com/infobloxopen/infoblox-ansible/pull/178>`_
+- Added `use_range` parameter to the `nios_next_ip` lookup plug-in to enable it to lookup the next available IP address in a network range. `#200 <https://github.com/infobloxopen/infoblox-ansible/pull/200>`_
+- Upgraded the base WAPI version to 2.12.3. `#233 <https://github.com/infobloxopen/infoblox-ansible/pull/233>`_
+- Improved handling of DHCP options in DHCP Range, Network, and Network Container modules.
+
+New Modules
+-----------
+- infoblox.nios_modules.nios_extensible_attribute - Configure Infoblox NIOS extensible attribute definition
+- infoblox.nios_modules.nios_nsgroup_delegation - Configure InfoBlox DNS Delegation Name server Groups
+- infoblox.nios_modules.nios_nsgroup_forwardingmember - Configure InfoBlox DNS Forwarding Member Name server Groups
+- infoblox.nios_modules.nios_nsgroup_forwardstubserver - Configure InfoBlox DNS Forward/Stub Server Name server Groups
+- infoblox.nios_modules.nios_nsgroup_stubmember - Configure InfoBlox DNS Stub Member Name server Groups
+
+Bugfixes
+--------
+- Omits DNS view from filter criteria when renaming a host object and bypasses the DNS. (https://github.com/infobloxopen/infoblox-ansible/issues/230)
+- nios_host_record - rename logic included DNS view in filter criteria, even when DNS had been bypassed.
+- Fixed the handling of `mac` parameter in the `nios_host_record` module.
+- Fixed the update operation in the `nios_network` module where the `network` parameter was not handled correctly.
+- Adjusted unit test assertions for Mock.called_once_with. `#254 <https://github.com/infobloxopen/infoblox-ansible/pull/254>`_
+
 v1.6.1
 ======
 
@@ -124,7 +160,7 @@ Bugfixes
 ---------
 - Fix to create TXT record with equals sign `#128 <https://github.com/infobloxopen/infoblox-ansible/pull/128>`_
 
-  
+
 v1.2.2
 ======
 
@@ -167,7 +203,7 @@ Minor Changes
 - Updated 'required' field in modules `#99 <https://github.com/infobloxopen/infoblox-ansible/pull/99>`_
 - Following options are made required in the modules
 
-.. list-table:: 
+.. list-table::
    :widths: 25 25
    :header-rows: 1
 
@@ -178,12 +214,12 @@ Minor Changes
    * - AAAA
      - ipv6addr
    * - CNAME
-     - canonical     
+     - canonical
    * - MX
-     - mail_exchanger, preference     
+     - mail_exchanger, preference
    * - PTR
      - ptrdname
-     
+
 Bugfixes
 -------------
 - nios_a_record module - KeyError: 'old_ipv4addr' `#79 <https://github.com/infobloxopen/infoblox-ansible/issues/79>`_
@@ -225,8 +261,8 @@ Bugfixes
 -------------
 - Implemented the bugfixes provided by Ansible `community.general`
 - Update the name of existing A and AAAA records `#70 <https://github.com/infobloxopen/infoblox-ansible/pull/70>`_
-- Update of comment field of SRV, PTR and NAPTR records failing with the following error: 
-  ```[Err: fatal: [localhost]: FAILED! => {"changed": false, "code": "Client.Ibap.Proto", "msg": "Field is not allowed for update: view", "operation": "update_object", "type": "AdmConProtoError"}]``` 
+- Update of comment field of SRV, PTR and NAPTR records failing with the following error:
+  ```[Err: fatal: [localhost]: FAILED! => {"changed": false, "code": "Client.Ibap.Proto", "msg": "Field is not allowed for update: view", "operation": "update_object", "type": "AdmConProtoError"}]```
   `#70 <https://github.com/infobloxopen/infoblox-ansible/pull/70>`_
 - PTR Record failed to update and raises KeyError for view field `#70 <https://github.com/infobloxopen/infoblox-ansible/pull/70>`_
 - Update comment field and delete an existing Fixed Address `#73 <https://github.com/infobloxopen/infoblox-ansible/pull/73>`_
@@ -287,7 +323,7 @@ v1.0.0
 Release Summary
 ---------------
 
-First release of the `nios_modules` collection! This release includes multiple plugins:- an `api` plugin, a `network` plugin, a `nios` plugin, a `nios_inventory` plugin, a `lookup plugin`, a `nios_next_ip` plugin, a `nios_next_network` plugin 
+First release of the `nios_modules` collection! This release includes multiple plugins:- an `api` plugin, a `network` plugin, a `nios` plugin, a `nios_inventory` plugin, a `lookup plugin`, a `nios_next_ip` plugin, a `nios_next_network` plugin
 
 New Plugins
 -----------
@@ -313,7 +349,7 @@ New Modules
 - infoblox.nios_modules.nios_naptr_record - Configure Infoblox NIOS NAPTR records
 - infoblox.nios_modules.nios_network - Configure Infoblox NIOS network object
 - infoblox.nios_modules.nios_network_view - Configure Infoblox NIOS network views
-- infoblox.nios_modules.nios_nsgroup - Configure Infoblox NIOS Nameserver Groups
+- infoblox.nios_modules.nios_nsgroup - Configure Infoblox NIOS Name server Groups
 - infoblox.nios_modules.nios_ptr_record - Configure Infoblox NIOS PTR records
 - infoblox.nios_modules.nios_srv_record - Configure Infoblox NIOS SRV records
 - infoblox.nios_modules.nios_txt_record - Configure Infoblox NIOS txt records

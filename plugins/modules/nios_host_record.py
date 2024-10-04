@@ -275,6 +275,37 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Create an ipv4 host record with DNS EA inheritance enabled
+  infoblox.nios_modules.nios_host_record:
+    name: host.ansible.com
+    configure_for_dns: true
+    use_dns_ea_inheritance: true
+    ipv4:
+      - address: 192.168.10.1
+        dhcp: true
+        mac: 00-80-C8-E3-4C-BD
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Create an ipv4 host record with host address EA inheritance enabled
+  infoblox.nios_modules.nios_host_record:
+    name: host.ansible.com
+    configure_for_dns: true
+    ipv4:
+      - address: 192.168.10.1
+        dhcp: true
+        mac: 00-80-C8-E3-4C-BD
+        use_for_ea_inheritance: true
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
 
 - name: Create an ipv4 host record over DHCP with PXE server
   infoblox.nios_modules.nios_host_record:

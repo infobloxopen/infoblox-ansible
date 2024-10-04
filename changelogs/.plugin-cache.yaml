@@ -95,6 +95,11 @@ plugins:
       name: nios_dtc_topology
       namespace: ""
       version_added: 1.6.0
+    nios_extensible_attribute:
+      description: Configure Infoblox NIOS extensible attribute definition
+      name: nios_extensible_attribute
+      namespace: ""
+      version_added: 1.7.0
     nios_fixed_address:
       description: Configure Infoblox NIOS DHCP Fixed Address
       name: nios_fixed_address
@@ -131,15 +136,40 @@ plugins:
       namespace: ""
       version_added: 1.0.0
     nios_nsgroup:
-      description: Configure InfoBlox DNS Nameserver Groups
+      description: Configure Infoblox DNS Nameserver Authoritative Groups
       name: nios_nsgroup
       namespace: ""
       version_added: 1.0.0
+    nios_nsgroup_delegation:
+      description: Configure Infoblox DNS Nameserver Delegation Groups
+      name: nios_nsgroup_delegation
+      namespace: ""
+      version_added: 1.7.0
+    nios_nsgroup_forwardingmember:
+      description: Configure Infoblox DNS Nameserver Forwarding Member Groups
+      name: nios_nsgroup_forwardingmember
+      namespace: ""
+      version_added: 1.7.0
+    nios_nsgroup_forwardstubserver:
+      description: Configure Infoblox DNS Nameserver Forward/Stub Server Groups
+      name: nios_nsgroup_forwardstubserver
+      namespace: ""
+      version_added: 1.7.0
+    nios_nsgroup_stubmember:
+      description: Configure Infoblox DNS Nameserver Stub Member Groups
+      name: nios_nsgroup_stubmember
+      namespace: ""
+      version_added: 1.7.0
     nios_ptr_record:
       description: Configure Infoblox NIOS PTR records
       name: nios_ptr_record
       namespace: ""
       version_added: 1.0.0
+    nios_range:
+      description: Configure Infoblox NIOS network range object
+      name: nios_range
+      namespace: ""
+      version_added: 1.5.0
     nios_restartservices:
       description: Restart grid services.
       name: nios_restartservices
@@ -164,4 +194,4 @@ plugins:
   shell: {}
   strategy: {}
   vars: {}
-version: 1.6.1
+version: 1.7.0

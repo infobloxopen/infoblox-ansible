@@ -11,7 +11,7 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: nios_nsgroup
-short_description: Configure InfoBlox DNS Nameserver Authoritative Groups
+short_description: Configure Infoblox DNS Nameserver Authoritative Groups
 version_added: "1.0.0"
 extends_documentation_fragment: infoblox.nios_modules.nios
 author:
