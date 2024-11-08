@@ -864,8 +864,7 @@ class WapiModule(WapiBase):
                     'ipv4addrs.nextserver', 'ipv4addrs.use_nextserver', 'ipv4addrs.use_for_ea_inheritance'
                 ]
                 ipv6addrs_return = [
-                    'ipv6addrs.ipv6addr', 'ipv6addrs.duid', 'ipv6addrs.configure_for_dhcp', 'ipv6addrs.host',
-                    'ipv6addrs.use_nextserver', 'ipv6addrs.nextserver'
+                    'ipv6addrs.ipv6addr', 'ipv6addrs.duid', 'ipv6addrs.configure_for_dhcp', 'ipv6addrs.host'
                 ]
                 return_fields.extend(ipv4addrs_return)
                 return_fields.extend(ipv6addrs_return)
