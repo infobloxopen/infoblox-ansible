@@ -154,6 +154,8 @@ options:
             changes it to true, user need to mention DUID address to configure.
         type: bool
         required: false
+        aliases:
+          - dhcp
       duid:
         description:
           - Configures the hardware DUID address for the host record. If user makes
@@ -415,7 +417,7 @@ def main():
 
     ipv6addr_spec = dict(
         ipv6addr=dict(required=True, aliases=['address']),
-        configure_for_dhcp=dict(type='bool', required=False),
+        configure_for_dhcp=dict(type='bool', required=False, aliases=['dhcp']),
         duid=dict(required=False)
     )
 

@@ -655,6 +655,8 @@ class WapiModule(WapiBase):
                 # Normalize MAC address for comparison
                 if 'mac' in item:
                     item['mac'] = item['mac'].replace('-', ':').lower()
+                elif 'duid' in item:
+                    item['duid'] = item['duid'].replace('-', ':').lower()
                 if all(entry in obj.items() for entry in item.items()):
                     return True
             else:
