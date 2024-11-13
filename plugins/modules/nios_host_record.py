@@ -151,17 +151,17 @@ options:
       configure_for_dhcp:
         description:
           - Configure the host_record over DHCP instead of DNS, if user
-            changes it to true, user need to mention MAC address to configure.
+            changes it to true, user need to mention DUID address to configure.
         type: bool
         required: false
-      mac:
+      duid:
         description:
-          - Configures the hardware MAC address for the host record. If user makes
-            DHCP to true, user need to mention MAC address.
+          - Configures the hardware DUID address for the host record. If user makes
+            DHCP to true, user need to mention DUID address.
         type: str
         required: false
         aliases:
-          - mac
+          - duid
   aliases:
     description:
       - Configures an optional list of additional aliases to add to the host
@@ -416,7 +416,7 @@ def main():
     ipv6addr_spec = dict(
         ipv6addr=dict(required=True, aliases=['address']),
         configure_for_dhcp=dict(type='bool', required=False),
-        mac=dict(required=False)
+        duid=dict(required=False)
     )
 
     ib_spec = dict(
