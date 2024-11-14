@@ -530,7 +530,7 @@ class WapiModule(WapiBase):
                         # Handle use_for_ea_inheritance flag changes for IPv4addr in a host record
                         # Fetch the updated reference of host to avoid drift.
                         host_ref = self.connector.get_object(obj_type=str(res), return_fields=['ipv4addrs'])
-                        if host_ref:
+                        if host_ref and 'ipv4addrs' in host_ref:
                             # Create a dictionary for quick lookups
                             ref_dict = {obj['ipv4addr']: obj['_ref'] for obj in host_ref['ipv4addrs']}
                             sorted_ipv4addrs = sorted(proposed_object['ipv4addrs'], key=lambda x: x.get('use_for_ea_inheritance', False))
