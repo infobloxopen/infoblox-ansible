@@ -530,7 +530,7 @@ class WapiModule(WapiBase):
                         # Handle use_for_ea_inheritance flag changes for IPv4addr in a host record
                         # Fetch the updated reference of host to avoid drift.
                         host_ref = self.connector.get_object(obj_type=str(res), return_fields=['ipv4addrs'])
-                        if host_ref:
+                        if host_ref and 'ipv4addrs' in host_ref:
                             # Create a dictionary for quick lookups
                             ref_dict = {obj['ipv4addr']: obj['_ref'] for obj in host_ref['ipv4addrs']}
                             sorted_ipv4addrs = sorted(proposed_object['ipv4addrs'], key=lambda x: x.get('use_for_ea_inheritance', False))
@@ -655,6 +655,8 @@ class WapiModule(WapiBase):
                 # Normalize MAC address for comparison
                 if 'mac' in item:
                     item['mac'] = item['mac'].replace('-', ':').lower()
+                elif 'duid' in item:
+                    item['duid'] = item['duid'].replace('-', ':').lower()
                 if all(entry in obj.items() for entry in item.items()):
                     return True
             else:
@@ -864,8 +866,7 @@ class WapiModule(WapiBase):
                     'ipv4addrs.nextserver', 'ipv4addrs.use_nextserver', 'ipv4addrs.use_for_ea_inheritance'
                 ]
                 ipv6addrs_return = [
-                    'ipv6addrs.ipv6addr', 'ipv6addrs.duid', 'ipv6addrs.configure_for_dhcp', 'ipv6addrs.host',
-                    'ipv6addrs.use_nextserver', 'ipv6addrs.nextserver'
+                    'ipv6addrs.ipv6addr', 'ipv6addrs.duid', 'ipv6addrs.configure_for_dhcp', 'ipv6addrs.host'
                 ]
                 return_fields.extend(ipv4addrs_return)
                 return_fields.extend(ipv6addrs_return)
