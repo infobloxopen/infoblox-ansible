@@ -84,6 +84,7 @@ NIOS_DTC_MONITOR_SNMP = 'dtc:monitor:snmp'
 NIOS_DTC_MONITOR_TCP = 'dtc:monitor:tcp'
 NIOS_DTC_TOPOLOGY = 'dtc:topology'
 NIOS_EXTENSIBLE_ATTRIBUTE = 'extensibleattributedef'
+NIOS_VLAN = 'vlan'
 
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),

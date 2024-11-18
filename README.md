@@ -45,6 +45,7 @@ The `infoblox.nios_modules` collection has the following content:
 - `nios_restartservices` - Controlled restart of Infoblox NIOS services
 - `nios_srv_record` – Configure Infoblox NIOS SRV records
 - `nios_txt_record` – Configure Infoblox NIOS txt records
+- `nios_vlan` – Configure Infoblox NIOS vlan
 - `nios_zone` – Configure Infoblox NIOS DNS zones
 
 #### Plugins
