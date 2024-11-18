@@ -1,0 +1,3 @@
+---
+- name: Including idempotence tasks for nsgroup forwardingmember
+  ansible.builtin.include_tasks: nios_nsgroup_forwardingmember_idempotence.yml

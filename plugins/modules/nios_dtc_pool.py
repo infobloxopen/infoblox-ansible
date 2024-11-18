@@ -41,6 +41,12 @@ options:
       - TOPOLOGY
     required: true
     type: str
+  lb_preferred_topology:
+    description:
+      - Configures the topology rules for the C(TOPOLOGY) load balancing method.
+      - Required only when I(lb_preferred_method) is set to C(TOPOLOGY).
+    required: false
+    type: str
   servers:
     description:
       - Configure the DTC Servers related to the pool
@@ -170,9 +176,11 @@ def main():
             for server in module.params['servers']:
                 server_obj = wapi.get_object('dtc:server',
                                              {'name': server['server']})
-                if server_obj is not None:
+                if server_obj:
                     server_list.append({'server': server_obj[0]['_ref'],
                                         'ratio': server['ratio']})
+                else:
+                    module.fail_json(msg='Server %s cannot be found.' % server)
         return server_list
 
     def monitors_transform(module):
@@ -181,9 +189,22 @@ def main():
             for monitor in module.params['monitors']:
                 monitor_obj = wapi.get_object('dtc:monitor:' + monitor['type'],
                                               {'name': monitor['name']})
-                if monitor_obj is not None:
+                if monitor_obj:
                     monitor_list.append(monitor_obj[0]['_ref'])
+                else:
+                    module.fail_json(
+                        msg='monitor %s cannot be found.' % monitor)
         return monitor_list
+
+    def topology_transform(module):
+        topology = module.params['lb_preferred_topology']
+        if topology:
+            topo_obj = wapi.get_object('dtc:topology', {'name': topology})
+            if topo_obj:
+                return topo_obj[0]['_ref']
+            else:
+                module.fail_json(
+                    msg='topology %s cannot be found.' % topology)
 
     servers_spec = dict(
         server=dict(required=True),
@@ -203,6 +224,7 @@ def main():
                                                          'RATIO',
                                                          'ROUND_ROBIN',
                                                          'TOPOLOGY']),
+        lb_preferred_topology=dict(type='str', transform=topology_transform),
 
         servers=dict(type='list', elements='dict', options=servers_spec,
                      transform=servers_transform),

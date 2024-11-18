@@ -1,6 +1,6 @@
 ---
-  
-- hosts: localhost
+- name: Infoblox Member Configuration
+  hosts: localhost
   vars:
     nios_provider:
       host: 10.36.118.2
@@ -9,10 +9,10 @@
 
   connection: local
   tasks:
-   - name: Create Nios CNAME record
-     infoblox.nios_modules.nios_cname_record:
-       name: cname.ansible.com
-       canonical: realhost.ansible.com
-       comment: Created with Ansible
-       state: absent
-       provider: "{{ nios_provider }}"
+    - name: Delete Nios CNAME record
+      infoblox.nios_modules.nios_cname_record:
+        name: cname.ansible.com
+        canonical: realhost.ansible.com
+        comment: Created with Ansible
+        state: absent
+        provider: "{{ nios_provider }}"

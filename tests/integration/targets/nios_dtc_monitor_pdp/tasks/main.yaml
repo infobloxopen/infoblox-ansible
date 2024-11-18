@@ -1,0 +1,3 @@
+---
+- name: Include the tasks from the idempotence test
+  ansible.builtin.include_tasks: nios_dtc_monitor_pdp_idempotence.yaml

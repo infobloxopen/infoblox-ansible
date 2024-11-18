@@ -1,0 +1,78 @@
+---
+- name: Cleanup nsgroup stubmember
+  nios_nsgroup_stubmember:
+    name: ansible-nsgroup_stubmember
+    state: absent
+    provider: "{{ nios_provider }}"
+    stub_members:
+      - name: ns1
+
+- name: Configure a nsgroup stubmember on the system
+  nios_nsgroup_stubmember:
+    name: ansible-nsgroup_stubmember
+    state: present
+    provider: "{{ nios_provider }}"
+    stub_members:
+      - name: ns1
+  register: nsgroup_stubmember_create1
+
+- name: Configure another nsgroup stubmember on the system
+  nios_nsgroup_stubmember:
+    name: ansible-nsgroup_stubmember
+    state: present
+    provider: "{{ nios_provider }}"
+    stub_members:
+      - name: ns1
+  register: nsgroup_stubmember_create2
+
+- name: Update the comment and ext attributes for an existing nsgroup stubmember
+  nios_nsgroup_stubmember:
+    name: ansible-nsgroup_stubmember
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+    stub_members:
+      - name: ns1
+  register: nsgroup_stubmember_update1
+
+- name: Update again the comment and ext attributes for an existing nsgroup stubmember
+  nios_nsgroup_stubmember:
+    name: ansible-nsgroup_stubmember
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+    stub_members:
+      - name: ns1
+  register: nsgroup_stubmember_update2
+
+- name: Remove the nsgroup stubmember
+  nios_nsgroup_stubmember:
+    name: ansible-nsgroup_stubmember
+    state: absent
+    provider: "{{ nios_provider }}"
+    stub_members:
+      - name: ns1
+  register: nsgroup_stubmember_delete1
+
+- name: Remove again the nsgroup stubmember
+  nios_nsgroup_stubmember:
+    name: ansible-nsgroup_stubmember
+    state: absent
+    provider: "{{ nios_provider }}"
+    stub_members:
+      - name: ns1
+  register: nsgroup_stubmember_delete2
+
+- name: Assert changes in nsgroup_stubmember tasks
+  ansible.builtin.assert:
+    that:
+      - nsgroup_stubmember_create1.changed
+      - not nsgroup_stubmember_create2.changed
+      - nsgroup_stubmember_update1.changed
+      - not nsgroup_stubmember_update2.changed
+      - nsgroup_stubmember_delete1.changed
+      - not nsgroup_stubmember_delete2.changed

@@ -1,2 +1,4 @@
-- pip:
+---
+- name: Install infoblox-client using pip
+  ansible.builtin.pip:
     name: infoblox-client

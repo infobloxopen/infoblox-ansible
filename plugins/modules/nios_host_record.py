@@ -46,6 +46,12 @@ options:
     default: true
     aliases:
       - dns
+  use_dns_ea_inheritance:
+    version_added: "1.7.0"
+    description:
+      - When use_dns_ea_inheritance is True, the EA is inherited from associated zone. The default value is False.
+    type: bool
+    default: false
   ipv4addrs:
     description:
       - Configures the IPv4 addresses for this host record.  This argument
@@ -55,6 +61,13 @@ options:
     aliases:
       - ipv4
     suboptions:
+      use_for_ea_inheritance:
+        version_added: "1.7.0"
+        description:
+            - When use_for_ea_inheritance is True, the EA is inherited from Host address. The default value is False.
+        type: bool
+        default: false
+        required: false
       ipv4addr:
         description:
           - Configures the IPv4 address for the host record. Users can dynamically
@@ -92,6 +105,23 @@ options:
         required: false
         aliases:
           - add
+      use_nextserver:
+        version_added: "1.0.0"
+        description:
+          - Enable the use of the nextserver option
+        type: bool
+        required: false
+        aliases:
+          - use_pxe
+      nextserver:
+        version_added: "1.0.0"
+        description:
+          - Takes as input the name in FQDN format and/or IPv4 Address of
+            the next server that the host needs to boot from.
+        type: str
+        required: false
+        aliases:
+          - pxe
       remove:
         version_added: "1.0.0"
         description:
@@ -121,17 +151,19 @@ options:
       configure_for_dhcp:
         description:
           - Configure the host_record over DHCP instead of DNS, if user
-            changes it to true, user need to mention MAC address to configure.
+            changes it to true, user need to mention DUID address to configure.
         type: bool
         required: false
-      mac:
+        aliases:
+          - dhcp
+      duid:
         description:
-          - Configures the hardware MAC address for the host record. If user makes
-            DHCP to true, user need to mention MAC address.
+          - Configures the hardware DUID address for the host record. If user makes
+            DHCP to true, user need to mention DUID address.
         type: str
         required: false
         aliases:
-          - mac
+          - duid
   aliases:
     description:
       - Configures an optional list of additional aliases to add to the host
@@ -245,6 +277,55 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Create an ipv4 host record with DNS EA inheritance enabled
+  infoblox.nios_modules.nios_host_record:
+    name: host.ansible.com
+    configure_for_dns: true
+    use_dns_ea_inheritance: true
+    ipv4:
+      - address: 192.168.10.1
+        dhcp: true
+        mac: 00-80-C8-E3-4C-BD
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Create an ipv4 host record with host address EA inheritance enabled
+  infoblox.nios_modules.nios_host_record:
+    name: host.ansible.com
+    configure_for_dns: true
+    ipv4:
+      - address: 192.168.10.1
+        dhcp: true
+        mac: 00-80-C8-E3-4C-BD
+        use_for_ea_inheritance: true
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Create an ipv4 host record over DHCP with PXE server
+  infoblox.nios_modules.nios_host_record:
+    name: host.ansible.com
+    ipv4:
+      - address: 192.168.10.1
+        dhcp: true
+        mac: 00-80-C8-E3-4C-BD
+        use_nextserver: true
+        nextserver: pxe-server.com
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+
 - name: Dynamically add host record to next available ip
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
@@ -283,6 +364,22 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
+
+- name: Create host record with IPv4 and IPv6 addresses
+  infoblox.nios_modules.nios_host_record:
+    name: hostrec.ansible.com
+    ipv4:
+      - address: 192.168.10.7
+        mac: 12:80:C8:E3:4C:AB
+    ipv6:
+      - address: fe80::10
+        duid: 12:80:C8:E3:4C:B4
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+    connection: local
 '''
 
 RETURN = ''' # '''
@@ -313,7 +410,7 @@ def ipaddr(module, key, filtered_keys=None):
 
 
 def ipv4addrs(module):
-    return ipaddr(module, 'ipv4addrs', filtered_keys=['address', 'dhcp'])
+    return ipaddr(module, 'ipv4addrs', filtered_keys=['address', 'dhcp', 'pxe', 'use_pxe'])
 
 
 def ipv6addrs(module):
@@ -328,13 +425,16 @@ def main():
         configure_for_dhcp=dict(type='bool', required=False, aliases=['dhcp']),
         mac=dict(required=False),
         add=dict(type='bool', required=False),
+        use_nextserver=dict(type='bool', required=False, aliases=['use_pxe']),
+        nextserver=dict(required=False, aliases=['pxe']),
+        use_for_ea_inheritance=dict(type='bool', required=False, default=False),
         remove=dict(type='bool', required=False)
     )
 
     ipv6addr_spec = dict(
         ipv6addr=dict(required=True, aliases=['address']),
-        configure_for_dhcp=dict(type='bool', required=False),
-        mac=dict(required=False)
+        configure_for_dhcp=dict(type='bool', required=False, aliases=['dhcp']),
+        duid=dict(required=False)
     )
 
     ib_spec = dict(
@@ -344,6 +444,7 @@ def main():
         ipv4addrs=dict(type='list', aliases=['ipv4'], elements='dict', options=ipv4addr_spec, transform=ipv4addrs),
         ipv6addrs=dict(type='list', aliases=['ipv6'], elements='dict', options=ipv6addr_spec, transform=ipv6addrs),
         configure_for_dns=dict(type='bool', default=True, required=False, aliases=['dns'], ib_req=True),
+        use_dns_ea_inheritance=dict(type='bool', default=False, required=False),
         aliases=dict(type='list', elements='str'),
 
         ttl=dict(type='int'),

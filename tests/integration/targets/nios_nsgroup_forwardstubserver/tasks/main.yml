@@ -1,0 +1,3 @@
+---
+- name: Include idempotence tasks for nsgroup forwardstubserver
+  ansible.builtin.include_tasks: nios_nsgroup_forwardstubserver_idempotence.yml

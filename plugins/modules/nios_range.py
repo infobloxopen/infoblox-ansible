@@ -11,7 +11,7 @@ DOCUMENTATION = '''
 module: nios_range
 author: "Matthew Dennett (@matthewdennett)"
 short_description: Configure Infoblox NIOS network range object
-version_added: "1.4.0"
+version_added: "1.5.0"
 description:
   - Adds and/or removes instances of range objects from
     Infoblox NIOS servers.  This module manages NIOS DHCP range objects
@@ -44,6 +44,7 @@ options:
         of values (see suboptions).  When configuring suboptions at
         least one of C(name) or C(num) must be specified.
     type: list
+    default: []
     elements: dict
     suboptions:
       name:
@@ -252,8 +253,8 @@ EXAMPLES = '''
     start_addr: 18.10.0.12
     end_addr: 18.10.0.14
     options:
-     - name: domain-name
-       value: zone1.com
+      - name: domain-name
+        value: zone1.com
     comment: Created with Ansible
     state: present
     provider:
@@ -375,7 +376,7 @@ def main():
         new_end_addr=dict(aliases=['new_end', 'new_last_addr', 'new_last'], type='str'),
         name=dict(type='str'),
         disable=dict(type='bool', default='false',),
-        options=dict(type='list', elements='dict', options=option_spec, transform=options),
+        options=dict(type='list', elements='dict', options=option_spec, transform=options, default=[]),
         member=dict(type='str'),
         failover_association=dict(type='str'),
         ms_server=dict(type='str'),

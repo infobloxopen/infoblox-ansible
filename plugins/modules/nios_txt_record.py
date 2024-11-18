@@ -75,39 +75,39 @@ options:
 '''
 
 EXAMPLES = '''
-    - name: Ensure a text Record Exists
-      infoblox.nios_modules.nios_txt_record:
-        name: fqdn.txt.record.com
-        text: mytext
-        state: present
-        view: External
-        provider:
-          host: "{{ inventory_hostname_short }}"
-          username: admin
-          password: admin
+- name: Ensure a text Record Exists
+  infoblox.nios_modules.nios_txt_record:
+    name: fqdn.txt.record.com
+    text: mytext
+    state: present
+    view: External
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
 
-    - name: Update name of TXT record
-      infoblox.nios_modules.nios_txt_record:
-        name: {old_name: sample.txtrecord.com, new_name: newsample.txtrecord.com}
-        text: mytext
-        state: present
-        view: External
-        provider:
-          host: "{{ inventory_hostname_short }}"
-          username: admin
-          password: admin
-      connection: local
+- name: Update name of TXT record
+  infoblox.nios_modules.nios_txt_record:
+    name: {old_name: sample.txtrecord.com, new_name: newsample.txtrecord.com}
+    text: mytext
+    state: present
+    view: External
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
 
-    - name: Ensure a text Record does not exist
-      infoblox.nios_modules.nios_txt_record:
-        name: fqdn.txt.record.com
-        text: mytext
-        state: absent
-        view: External
-        provider:
-          host: "{{ inventory_hostname_short }}"
-          username: admin
-          password: admin
+- name: Ensure a text Record does not exist
+  infoblox.nios_modules.nios_txt_record:
+    name: fqdn.txt.record.com
+    text: mytext
+    state: absent
+    view: External
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
 '''
 
 RETURN = ''' # '''

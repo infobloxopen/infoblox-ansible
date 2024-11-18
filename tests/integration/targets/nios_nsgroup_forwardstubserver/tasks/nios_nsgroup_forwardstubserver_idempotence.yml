@@ -1,0 +1,85 @@
+---
+- name: Cleanup nsgroup forwardstubserver
+  nios_nsgroup_forwardstubserver:
+    name: ansible-nsgroup_forwardstubserver
+    state: absent
+    provider: "{{ nios_provider }}"
+    external_servers:
+      - name: ns1
+        address: 192.168.0.1
+
+- name: Configure a nsgroup forwardstubserver on the system
+  nios_nsgroup_forwardstubserver:
+    name: ansible-nsgroup_forwardstubserver
+    state: present
+    provider: "{{ nios_provider }}"
+    external_servers:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_forwardstubserver_create1
+
+- name: Configure another nsgroup forwardstubserver on the system
+  nios_nsgroup_forwardstubserver:
+    name: ansible-nsgroup_forwardstubserver
+    state: present
+    provider: "{{ nios_provider }}"
+    external_servers:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_forwardstubserver_create2
+
+- name: Update the comment and ext attributes for an existing nsgroup forwardstubserver
+  nios_nsgroup_forwardstubserver:
+    name: ansible-nsgroup_forwardstubserver
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+    external_servers:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_forwardstubserver_update1
+
+- name: Update again the comment and ext attributes for an existing nsgroup forwardstubserver
+  nios_nsgroup_forwardstubserver:
+    name: ansible-nsgroup_forwardstubserver
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+    external_servers:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_forwardstubserver_update2
+
+- name: Remove the nsgroup forwardstubserver
+  nios_nsgroup_forwardstubserver:
+    name: ansible-nsgroup_forwardstubserver
+    state: absent
+    provider: "{{ nios_provider }}"
+    external_servers:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_forwardstubserver_delete1
+
+- name: Remove again the nsgroup forwardstubserver
+  nios_nsgroup_forwardstubserver:
+    name: ansible-nsgroup_forwardstubserver
+    state: absent
+    provider: "{{ nios_provider }}"
+    external_servers:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_forwardstubserver_delete2
+
+- name: Assert changes in nsgroup forwardstubserver
+  ansible.builtin.assert:
+    that:
+      - nsgroup_forwardstubserver_create1.changed
+      - not nsgroup_forwardstubserver_create2.changed
+      - nsgroup_forwardstubserver_update1.changed
+      - not nsgroup_forwardstubserver_update2.changed
+      - nsgroup_forwardstubserver_delete1.changed
+      - not nsgroup_forwardstubserver_delete2.changed

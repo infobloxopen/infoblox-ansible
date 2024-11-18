@@ -1,1 +1,3 @@
-- include: nios_zone_idempotence.yml
+---
+- name: Include NIOS zone idempotence tests
+  ansible.builtin.include_tasks: nios_zone_idempotence.yml

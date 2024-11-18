@@ -455,11 +455,11 @@ EXAMPLES = '''
     router_id: 150
     node_info:
       - lan_ha_port_setting:
-         - ha_ip_address: 192.168.1.70
-           mgmt_lan: 192.168.1.80
+          - ha_ip_address: 192.168.1.70
+            mgmt_lan: 192.168.1.80
       - lan_ha_port_setting:
-         - ha_ip_address: 192.168.1.71
-           mgmt_lan: 192.168.1.81
+          - ha_ip_address: 192.168.1.71
+            mgmt_lan: 192.168.1.81
     comment: "Created by Ansible"
     state: present
     provider:
@@ -473,13 +473,13 @@ EXAMPLES = '''
     name: member01.localdomain
     pre_provisioning:
       - hardware_info:
-         - hwmodel: IB-VM-820
-           hwtype: IB-VNIOS
+          - hwmodel: IB-VM-820
+            hwtype: IB-VNIOS
         licenses:
-         - dns
-         - dhcp
-         - enterprise
-         - vnios
+          - dns
+          - dhcp
+          - enterprise
+          - vnios
     comment: "Updated by Ansible"
     state: present
     provider:
