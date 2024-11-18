@@ -364,6 +364,22 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
+
+- name: Create host record with IPv4 and IPv6 addresses
+  infoblox.nios_modules.nios_host_record:
+    name: hostrec.ansible.com
+    ipv4:
+      - address: 192.168.10.7
+        mac: 12:80:C8:E3:4C:AB
+    ipv6:
+      - address: fe80::10
+        duid: 12:80:C8:E3:4C:B4
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+    connection: local
 '''
 
 RETURN = ''' # '''
