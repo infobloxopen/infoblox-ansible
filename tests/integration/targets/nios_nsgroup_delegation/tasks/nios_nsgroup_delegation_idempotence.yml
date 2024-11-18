@@ -1,0 +1,85 @@
+---
+- name: Cleanup nsgroup delegation
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    state: absent
+    provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
+
+- name: Configure a nsgroup delegation on the system
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    state: present
+    provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_delegation_create1
+
+- name: Configure another nsgroup delegation on the system
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    state: present
+    provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_delegation_create2
+
+- name: Update the comment and ext attributes for an existing nsgroup delegation
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_delegation_update1
+
+- name: Update again the comment and ext attributes for an existing nsgroup delegation
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_delegation_update2
+
+- name: Remove the nsgroup delegation
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    state: absent
+    provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_delegation_delete1
+
+- name: Remove again the nsgroup delegation
+  nios_nsgroup_delegation:
+    name: ansible-nsgroup_delegation
+    state: absent
+    provider: "{{ nios_provider }}"
+    delegate_to:
+      - name: ns1
+        address: 192.168.0.1
+  register: nsgroup_delegation_delete2
+
+- name: Assert changes in nsgroup delegation
+  ansible.builtin.assert:
+    that:
+      - nsgroup_delegation_create1.changed
+      - not nsgroup_delegation_create2.changed
+      - nsgroup_delegation_update1.changed
+      - not nsgroup_delegation_update2.changed
+      - nsgroup_delegation_delete1.changed
+      - not nsgroup_delegation_delete2.changed

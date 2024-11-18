@@ -1,1 +1,3 @@
-- include: nios_cname_record_idempotence.yml
+---
+- name: Include CNAME record idempotence tests
+  ansible.builtin.include_tasks: nios_cname_record_idempotence.yml

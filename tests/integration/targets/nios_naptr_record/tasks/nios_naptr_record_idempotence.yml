@@ -1,27 +1,28 @@
-- name: cleanup the parent object
-  nios_zone:
+---
+- name: Cleanup the parent object
+  infoblox.nios_modules.nios_zone:
     name: ansible.com
     state: absent
     provider: "{{ nios_provider }}"
 
-- name: create the parent object
-  nios_zone:
+- name: Create the parent object
+  infoblox.nios_modules.nios_zone:
     name: ansible.com
     state: present
     provider: "{{ nios_provider }}"
 
-- name: cleanup naptr record
-  nios_naptr_record:
-    name: '*.subscriber-100.ansiblezone.com'
+- name: Cleanup naptr record
+  infoblox.nios_modules.nios_naptr_record:
+    name: "*.subscriber-100.ansiblezone.com"
     order: 1000
     preference: 10
     replacement: replacement1.network.ansiblezone.com
     state: absent
     provider: "{{ nios_provider }}"
 
-- name: create an naptr record
-  nios_naptr_record:
-    name: '*.subscriber-100.ansiblezone.com'
+- name: Create an naptr record
+  infoblox.nios_modules.nios_naptr_record:
+    name: "*.subscriber-100.ansiblezone.com"
     order: 1000
     preference: 10
     replacement: replacement1.network.ansiblezone.com
@@ -29,9 +30,9 @@
     provider: "{{ nios_provider }}"
   register: naptr_record_create1
 
-- name: recreate an naptr record
-  nios_naptr_record:
-    name: '*.subscriber-100.ansiblezone.com'
+- name: Recreate an naptr record
+  infoblox.nios_modules.nios_naptr_record:
+    name: "*.subscriber-100.ansiblezone.com"
     order: 1000
     preference: 10
     replacement: replacement1.network.ansiblezone.com
@@ -39,9 +40,9 @@
     provider: "{{ nios_provider }}"
   register: naptr_record_create2
 
-- name: add a comment to an existing naptr record
-  nios_naptr_record:
-    name: '*.subscriber-100.ansiblezone.com'
+- name: Add a comment to an existing naptr record
+  infoblox.nios_modules.nios_naptr_record:
+    name: "*.subscriber-100.ansiblezone.com"
     order: 1000
     preference: 10
     replacement: replacement1.network.ansiblezone.com
@@ -50,9 +51,9 @@
     provider: "{{ nios_provider }}"
   register: naptr_record_update1
 
-- name: add a comment to an existing naptr record
-  nios_naptr_record:
-    name: '*.subscriber-100.ansiblezone.com'
+- name: Add a comment to an existing naptr record
+  infoblox.nios_modules.nios_naptr_record:
+    name: "*.subscriber-100.ansiblezone.com"
     order: 1000
     preference: 10
     replacement: replacement1.network.ansiblezone.com
@@ -61,9 +62,9 @@
     provider: "{{ nios_provider }}"
   register: naptr_record_update2
 
-- name: remove a naptr record from the system
-  nios_naptr_record:
-    name: '*.subscriber-100.ansiblezone.com'
+- name: Remove a naptr record from the system
+  infoblox.nios_modules.nios_naptr_record:
+    name: "*.subscriber-100.ansiblezone.com"
     order: 1000
     preference: 10
     replacement: replacement1.network.ansiblezone.com
@@ -71,9 +72,9 @@
     provider: "{{ nios_provider }}"
   register: naptr_record_delete1
 
-- name: remove a naptr record from the system
-  nios_naptr_record:
-    name: '*.subscriber-100.ansiblezone.com'
+- name: Remove a naptr record from the system
+  infoblox.nios_modules.nios_naptr_record:
+    name: "*.subscriber-100.ansiblezone.com"
     order: 1000
     preference: 10
     replacement: replacement1.network.ansiblezone.com
@@ -81,11 +82,12 @@
     provider: "{{ nios_provider }}"
   register: naptr_record_delete2
 
-- assert:
+- name: Verify idempotence and changes of NAPTR record operations
+  ansible.builtin.assert:
     that:
-      - "naptr_record_create1.changed"
-      - "not naptr_record_create2.changed"
-      - "naptr_record_update1.changed"
-      - "not naptr_record_update2.changed"
-      - "naptr_record_delete1.changed"
-      - "not naptr_record_delete2.changed"
+      - naptr_record_create1.changed
+      - not naptr_record_create2.changed
+      - naptr_record_update1.changed
+      - not naptr_record_update2.changed
+      - naptr_record_delete1.changed
+      - not naptr_record_delete2.changed

@@ -1,0 +1,3 @@
+---
+- name: Include tasks for extensible attributes
+  ansible.builtin.include_tasks: nios_extensible_attribute.yaml

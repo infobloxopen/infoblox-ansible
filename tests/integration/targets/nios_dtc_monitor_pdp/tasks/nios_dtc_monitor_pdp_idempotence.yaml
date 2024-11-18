@@ -1,0 +1,72 @@
+---
+- name: Clean up the parent object
+  infoblox.nios_modules.nios_zone:
+    name: ansible.com
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Create the parent object
+  infoblox.nios_modules.nios_zone:
+    name: ansible.com
+    state: present
+    provider: "{{ nios_provider }}"
+
+- name: Clean up the DTC PDP monitor
+  infoblox.nios_modules.nios_dtc_monitor_pdp:
+    name: pdp_monitor
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Create a DTC PDP monitor
+  infoblox.nios_modules.nios_dtc_monitor_pdp:
+    name: pdp_monitor
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_pdp_create1
+
+- name: Recreate a DTC PDP monitor
+  infoblox.nios_modules.nios_dtc_monitor_pdp:
+    name: pdp_monitor
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_pdp_create2
+
+- name: Add a comment to an existing DTC PDP monitor
+  infoblox.nios_modules.nios_dtc_monitor_pdp:
+    name: pdp_monitor
+    comment: this is a test comment
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_pdp_update1
+
+- name: Readd a comment to an existing DTC PDP monitor
+  infoblox.nios_modules.nios_dtc_monitor_pdp:
+    name: pdp_monitor
+    comment: this is a test comment
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_pdp_update2
+
+- name: Remove a DTC PDP monitor from the system
+  infoblox.nios_modules.nios_dtc_monitor_pdp:
+    name: pdp_monitor
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_pdp_delete1
+
+- name: Reremove a DTC PDP monitor from the system
+  infoblox.nios_modules.nios_dtc_monitor_pdp:
+    name: pdp_monitor
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: dtc_monitor_pdp_delete2
+
+- name: Verify outcomes
+  ansible.builtin.assert:
+    that:
+      - dtc_monitor_pdp_create1.changed
+      - not dtc_monitor_pdp_create2.changed
+      - dtc_monitor_pdp_update1.changed
+      - not dtc_monitor_pdp_update2.changed
+      - dtc_monitor_pdp_delete1.changed
+      - not dtc_monitor_pdp_delete2.changed

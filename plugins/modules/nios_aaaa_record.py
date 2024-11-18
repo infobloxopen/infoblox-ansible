@@ -22,7 +22,8 @@ options:
   name:
     description:
       - Specifies the fully qualified hostname to add or remove from
-        the system.
+        the system. User can also update the name as it is possible
+        to pass a dict containing I(new_name), I(old_name). See examples
     required: true
     type: str
   view:
@@ -123,7 +124,6 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_AAAA_RECORD
 from ..module_utils.api import normalize_ib_spec

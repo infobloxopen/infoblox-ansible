@@ -1,0 +1,106 @@
+---
+- name: Cleanup nsgroup forwardingmember
+  nios_nsgroup_forwardingmember:
+    name: ansible-nsgroup_forwardingmember
+    state: absent
+    provider: "{{ nios_provider }}"
+    forwarding_servers:
+      - name: ns1
+        use_override_forwarders: true
+        forward_to:
+          - name: ns1
+            address: 192.168.10.1
+
+- name: Configure a nsgroup forwardingmember on the system
+  nios_nsgroup_forwardingmember:
+    name: ansible-nsgroup_forwardingmember
+    state: present
+    provider: "{{ nios_provider }}"
+    forwarding_servers:
+      - name: ns1
+        use_override_forwarders: true
+        forward_to:
+          - name: ns1
+            address: 192.168.10.1
+  register: nsgroup_forwardingmember_create1
+
+- name: Configure another nsgroup forwardingmember on the system
+  nios_nsgroup_forwardingmember:
+    name: ansible-nsgroup_forwardingmember
+    state: present
+    provider: "{{ nios_provider }}"
+    forwarding_servers:
+      - name: ns1
+        use_override_forwarders: true
+        forward_to:
+          - name: ns1
+            address: 192.168.10.1
+  register: nsgroup_forwardingmember_create2
+
+- name: Update the comment and ext attributes for an existing nsgroup forwardingmember
+  nios_nsgroup_forwardingmember:
+    name: ansible-nsgroup_forwardingmember
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+    forwarding_servers:
+      - name: ns1
+        use_override_forwarders: true
+        forward_to:
+          - name: ns1
+            address: 192.168.10.1
+  register: nsgroup_forwardingmember_update1
+
+- name: Update again the comment and ext attributes for an existing nsgroup forwardingmember
+  nios_nsgroup_forwardingmember:
+    name: ansible-nsgroup_forwardingmember
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+    forwarding_servers:
+      - name: ns1
+        use_override_forwarders: true
+        forward_to:
+          - name: ns1
+            address: 192.168.10.1
+  register: nsgroup_forwardingmember_update2
+
+- name: Remove the nsgroup forwardingmember
+  nios_nsgroup_forwardingmember:
+    name: ansible-nsgroup_forwardingmember
+    state: absent
+    provider: "{{ nios_provider }}"
+    forwarding_servers:
+      - name: ns1
+        use_override_forwarders: true
+        forward_to:
+          - name: ns1
+            address: 192.168.10.1
+  register: nsgroup_forwardingmember_delete1
+
+- name: Remove again the nsgroup forwardingmember
+  nios_nsgroup_forwardingmember:
+    name: ansible-nsgroup_forwardingmember
+    state: absent
+    provider: "{{ nios_provider }}"
+    forwarding_servers:
+      - name: ns1
+        use_override_forwarders: true
+        forward_to:
+          - name: ns1
+            address: 192.168.10.1
+  register: nsgroup_forwardingmember_delete2
+
+- name: Assert changes in nsgroup forwardingmember
+  ansible.builtin.assert:
+    that:
+      - nsgroup_forwardingmember_create1.changed
+      - not nsgroup_forwardingmember_create2.changed
+      - nsgroup_forwardingmember_update1.changed
+      - not nsgroup_forwardingmember_update2.changed
+      - nsgroup_forwardingmember_delete1.changed
+      - not nsgroup_forwardingmember_delete2.changed

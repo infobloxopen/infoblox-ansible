@@ -1,1 +1,3 @@
-- include: nios_a_record_idempotence.yml
+---
+- name: Include A record idempotence tests
+  ansible.builtin.include_tasks: nios_a_record_idempotence.yml
