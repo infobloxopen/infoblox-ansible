@@ -88,6 +88,7 @@ options:
         of values (see suboptions).  When configuring suboptions at
         least one of C(name) or C(id) must be specified.
     type: list
+    default: []
     elements: dict
     suboptions:
       name:
@@ -430,7 +431,7 @@ def main():
         network=dict(required=True, aliases=['name', 'cidr'], ib_req=True),
         network_view=dict(default='default', ib_req=True),
         options=dict(type='list', elements='dict', options=option_spec, transform=options, default=[]),
-        vlans=dict(type='list', elements='dict', options=vlans_spec, transform=vlans),
+        vlans=dict(type='list', elements='dict', options=vlans_spec, transform=vlans, default=[]),
         template=dict(type='str'),
         extattrs=dict(type='dict'),
         comment=dict(),
