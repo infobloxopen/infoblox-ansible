@@ -42,7 +42,7 @@ options:
         name. Fetches the required _ref object automatically.
         If not specified defaults to vlan view C(default).
     type: str
-    required: true
+    default: default
   comment:
     description:
       - Configures a text string comment to be associated with the instance

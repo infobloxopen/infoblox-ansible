@@ -103,6 +103,7 @@ options:
         description:
           - The name of the parent vlanview or vlanrange.
         type: str
+        default: default
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
