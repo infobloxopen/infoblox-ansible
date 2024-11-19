@@ -401,7 +401,7 @@ def main():
                     vlan_filtered['parent'] = obj_vlanrange[0]['_ref']
                 else:
                     module.fail_json(msg='VLAN View/Range \'%s\' cannot be found.' % vlan_filtered['parent'])
-                    
+
                 obj_vlan = wapi.get_object('vlan', vlan_filtered)
 
                 if obj_vlan:
@@ -410,7 +410,7 @@ def main():
                     module.fail_json(msg='VLAN  `%s` cannot be found.' % vlan['name'])
 
         return vlans_list
-    
+
     option_spec = dict(
         # one of name or num is required; enforced by the function options()
         name=dict(),
