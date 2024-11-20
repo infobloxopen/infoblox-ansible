@@ -287,3 +287,10 @@ releases:
         name: nios_nsgroup_stubmember
         namespace: ""
     release_date: "2024-10-04"
+  1.7.1:
+    changes:
+      bugfixes:
+        - Refined Host record return fields to ensure use_nextserver and nextserver are only included for IPv4, as these fields are not applicable to IPv6.
+        - For Host IPv6, the mac parameter has been renamed to duid.
+      release_summary: "This update focuses on specific improvements and bug fixes for Host records to enhance system functionality and performance."
+    release_date: "2024-11-18"

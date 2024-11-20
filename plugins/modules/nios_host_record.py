@@ -151,17 +151,19 @@ options:
       configure_for_dhcp:
         description:
           - Configure the host_record over DHCP instead of DNS, if user
-            changes it to true, user need to mention MAC address to configure.
+            changes it to true, user need to mention DUID address to configure.
         type: bool
         required: false
-      mac:
+        aliases:
+          - dhcp
+      duid:
         description:
-          - Configures the hardware MAC address for the host record. If user makes
-            DHCP to true, user need to mention MAC address.
+          - Configures the hardware DUID address for the host record. If user makes
+            DHCP to true, user need to mention DUID address.
         type: str
         required: false
         aliases:
-          - mac
+          - duid
   aliases:
     description:
       - Configures an optional list of additional aliases to add to the host
@@ -362,6 +364,22 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
+
+- name: Create host record with IPv4 and IPv6 addresses
+  infoblox.nios_modules.nios_host_record:
+    name: hostrec.ansible.com
+    ipv4:
+      - address: 192.168.10.7
+        mac: 12:80:C8:E3:4C:AB
+    ipv6:
+      - address: fe80::10
+        duid: 12:80:C8:E3:4C:B4
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+    connection: local
 '''
 
 RETURN = ''' # '''
@@ -415,8 +433,8 @@ def main():
 
     ipv6addr_spec = dict(
         ipv6addr=dict(required=True, aliases=['address']),
-        configure_for_dhcp=dict(type='bool', required=False),
-        mac=dict(required=False)
+        configure_for_dhcp=dict(type='bool', required=False, aliases=['dhcp']),
+        duid=dict(required=False)
     )
 
     ib_spec = dict(

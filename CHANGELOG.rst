@@ -4,6 +4,19 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
+v1.7.1
+======
+
+Release Summary
+---------------
+This update focuses on specific improvements and bug fixes for Host records to enhance system functionality and performance.
+
+Bugfixes
+--------
+- Refined Host record return fields to ensure use_nextserver and nextserver are only included for IPv4, as these fields are not applicable to IPv6. `#274 <https://github.com/infobloxopen/infoblox-ansible/pull/274>`_
+- For Host IPv6, the mac parameter has been renamed to duid. `#274 <https://github.com/infobloxopen/infoblox-ansible/pull/274>`_
+
+
 v1.7.0
 ======
 
