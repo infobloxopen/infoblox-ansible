@@ -705,7 +705,7 @@ class WapiModule(WapiBase):
                     return False
 
                 for subitem in proposed_item:
-                    if current_item:
+                    if key == 'ipv4addrs' and current_item:
                         # Host IPv4addrs wont contain use_nextserver and nextserver
                         # If DHCP is false.
                         dhcp_flag = current_item[0].get('configure_for_dhcp', False)
