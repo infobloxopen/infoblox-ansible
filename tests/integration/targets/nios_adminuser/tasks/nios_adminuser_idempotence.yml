@@ -1,13 +1,13 @@
 ---
 - name: Cleanup adminuser
-  nios_adminuser:
+  infoblox.nios_modules.nios_adminuser:
     name: ansible-adminuser
     admin_groups: admin-group
     state: absent
     provider: "{{ nios_provider }}"
 
 - name: Configure a adminuser on the system
-  nios_adminuser:
+  infoblox.nios_modules.nios_adminuser:
     name: ansible-adminuser
     admin_groups: admin-group
     password: Pwd@1234
@@ -16,7 +16,7 @@
   register: adminuser_create1
 
 - name: Configure another adminuser on the system
-  nios_adminuser:
+  infoblox.nios_modules.nios_adminuser:
     name: ansible-adminuser
     admin_groups: admin-group
     state: present
@@ -24,7 +24,7 @@
   register: adminuser_create2
 
 - name: Update the comment and ext attributes for an existing adminuser
-  nios_adminuser:
+  infoblox.nios_modules.nios_adminuser:
     name: ansible-adminuser
     admin_groups: admin-group
     comment: this is an example comment
@@ -35,7 +35,7 @@
   register: adminuser_update1
 
 - name: Update again the comment and ext attributes for an existing adminuser
-  nios_adminuser:
+  infoblox.nios_modules.nios_adminuser:
     name: ansible-adminuser
     admin_groups: admin-group
     comment: this is an example comment
@@ -46,7 +46,7 @@
   register: adminuser_update2
 
 - name: Remove the adminuser
-  nios_adminuser:
+  infoblox.nios_modules.nios_adminuser:
     name: ansible-adminuser
     admin_groups: admin-group
     state: absent
@@ -54,7 +54,7 @@
   register: adminuser_delete1
 
 - name: Remove again the adminuser
-  nios_adminuser:
+  infoblox.nios_modules.nios_adminuser:
     name: ansible-adminuser
     admin_groups: admin-group
     state: absent

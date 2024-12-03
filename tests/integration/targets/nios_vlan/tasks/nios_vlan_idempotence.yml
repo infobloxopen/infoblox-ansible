@@ -8,7 +8,7 @@
     provider: "{{ nios_provider }}"
 
 - name: Configure a VLAN on the system
-  nios_vlan:
+  infoblox.nios_modules.nios_vlan:
     name: ansible-vlan
     id: 10
     parent: default
@@ -21,6 +21,7 @@
   register: vlan_create1
 
 - name: Configure another VLAN on the system
+  infoblox.nios_modules.nios_vlan:
     name: ansible-vlan
     id: 10
     parent: default
@@ -33,6 +34,7 @@
   register: vlan_create2
 
 - name: Update the comment and ext attributes for an existing VLAN
+  infoblox.nios_modules.nios_vlan:
     name: ansible-vlan
     id: 10
     parent: default
@@ -48,6 +50,7 @@
   register: vlan_update1
 
 - name: Update again the comment and ext attributes for an existing VLAN
+  infoblox.nios_modules.nios_vlan:
     name: ansible-vlan
     id: 10
     parent: default
@@ -63,7 +66,7 @@
   register: vlan_update2
 
 - name: Remove the VLAN
-  nios_vlan:
+  infoblox.nios_modules.nios_vlan:
     name: ansible-vlan
     id: 10
     parent: default
@@ -72,6 +75,7 @@
   register: vlan_delete1
 
 - name: Remove again the VLAN
+  infoblox.nios_modules.nios_vlan:
     name: ansible-vlan
     id: 10
     parent: default
