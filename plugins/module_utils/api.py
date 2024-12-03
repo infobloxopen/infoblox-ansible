@@ -85,6 +85,7 @@ NIOS_DTC_MONITOR_TCP = 'dtc:monitor:tcp'
 NIOS_DTC_TOPOLOGY = 'dtc:topology'
 NIOS_EXTENSIBLE_ATTRIBUTE = 'extensibleattributedef'
 NIOS_VLAN = 'vlan'
+NIOS_ADMINUSER = 'adminuser'
 
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
@@ -696,7 +697,7 @@ class WapiModule(WapiBase):
                 # If the lists are of a different length, the objects cannot be
                 # equal, and False will be returned before comparing the list items
                 # this code part will work for members' assignment
-                if (key in ('members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members')
+                if (key in ('members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys')
                         and (len(proposed_item) != len(current_item))):
                     return False
 
@@ -704,19 +705,20 @@ class WapiModule(WapiBase):
                 if key in ('external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
                     return False
 
-                for subitem in proposed_item:
-                    if current_item:
-                        # Host IPv4addrs wont contain use_nextserver and nextserver
-                        # If DHCP is false.
-                        dhcp_flag = current_item[0].get('configure_for_dhcp', False)
-                        use_nextserver = subitem.get('use_nextserver', False)
-                        if key == 'ipv4addrs' and not dhcp_flag:
-                            subitem.pop('use_nextserver', None)
-                            subitem.pop('nextserver', None)
-                        elif key == 'ipv4addrs' and dhcp_flag and not use_nextserver:
-                            subitem.pop('nextserver', None)
-                    if not self.issubset(subitem, current_item):
-                        return False
+                if key == 'ipv4addrs':
+                    for subitem in proposed_item:
+                        if current_item:
+                            # Host IPv4addrs wont contain use_nextserver and nextserver
+                            # If DHCP is false.
+                            dhcp_flag = current_item[0].get('configure_for_dhcp', False)
+                            use_nextserver = subitem.get('use_nextserver', False)
+                            if key == 'ipv4addrs' and not dhcp_flag:
+                                subitem.pop('use_nextserver', None)
+                                subitem.pop('nextserver', None)
+                            elif key == 'ipv4addrs' and dhcp_flag and not use_nextserver:
+                                subitem.pop('nextserver', None)
+                        if not self.issubset(subitem, current_item):
+                            return False
 
                 # If the lists are of a different length, the objects and order of element mismatch
                 # Ignore DHCP options while comparing due to extra num param is get response
@@ -766,6 +768,11 @@ class WapiModule(WapiBase):
             except TypeError:
                 name = obj_filter['name']
 
+            return_fields = list(ib_spec.keys())
+
+            if (ib_obj_type == NIOS_ADMINUSER):
+                if 'password' in return_fields: return_fields.remove('password')
+
             if old_name and new_name:
                 if (ib_obj_type == NIOS_HOST_RECORD):
                     # to check only by old_name if dns bypassing is set
@@ -789,7 +796,7 @@ class WapiModule(WapiBase):
                 else:
                     test_obj_filter = dict([('name', old_name)])
                 # get the object reference
-                ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=list(ib_spec.keys()))
+                ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=return_fields)
                 if ib_obj:
                     obj_filter['name'] = new_name
                 elif old_ipv4addr_exists and (len(ib_obj) == 0):
@@ -860,7 +867,7 @@ class WapiModule(WapiBase):
             # check if test_obj_filter is empty copy passed obj_filter
             else:
                 test_obj_filter = obj_filter
-            return_fields = list(ib_spec.keys())
+
             if ib_obj_type == NIOS_HOST_RECORD:
                 ipv4addrs_return = [
                     'ipv4addrs.ipv4addr', 'ipv4addrs.mac', 'ipv4addrs.configure_for_dhcp', 'ipv4addrs.host',
@@ -871,6 +878,7 @@ class WapiModule(WapiBase):
                 ]
                 return_fields.extend(ipv4addrs_return)
                 return_fields.extend(ipv6addrs_return)
+
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=return_fields)
 
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
