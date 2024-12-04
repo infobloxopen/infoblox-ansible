@@ -11,7 +11,7 @@ DOCUMENTATION = '''
 module: nios_vlan
 author: "Christoph Spatt (@edeka-spatt)"
 short_description: Configure Infoblox NIOS VLANs
-version_added: "1.4.3"
+version_added: "1.8.0"
 description:
   - Adds and/or removes instances of vlan  objects from
     Infoblox NIOS servers.  This module manages NIOS C(vlan) objects
@@ -39,11 +39,10 @@ options:
     description:
       - Specifies the vlan parent to add or remove from
         the system. Can be either a C(vlanview) or C(vlanrange)
-        name. Feteches the required _ref object automatically.
+        name. Fetches the required _ref object automatically.
         If not specified defaults to vlan view C(default).
     type: str
     default: default
-    required: true
   comment:
     description:
       - Configures a text string comment to be associated with the instance
@@ -151,10 +150,10 @@ def main():
         if module.params['parent']:
             parent_obj_vlanview = wapi.get_object('vlanview', {'name': module.params['parent']})
             parent_obj_vlanrange = wapi.get_object('vlanrange', {'name': module.params['parent']})
-            if parent_obj_vlanview and not parent_obj_vlanrange:
-                parent_ref = parent_obj_vlanview[0]['_ref']
-            elif not parent_obj_vlanview and parent_obj_vlanrange:
+            if parent_obj_vlanrange:
                 parent_ref = parent_obj_vlanrange[0]['_ref']
+            elif parent_obj_vlanview:
+                parent_ref = parent_obj_vlanview[0]['_ref']
             else:
                 module.fail_json(msg='VLAN View/Range \'%s\' cannot be found.' % module.params['parent'])
         return parent_ref
