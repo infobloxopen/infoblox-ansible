@@ -395,10 +395,10 @@ def main():
                 if 'parent' in vlan_filtered:
                     obj_vlanview = wapi.get_object('vlanview', {'name': vlan_filtered['parent']})
                     obj_vlanrange = wapi.get_object('vlanrange', {'name': vlan_filtered['parent']})
-                if obj_vlanview and not obj_vlanrange:
-                    vlan_filtered['parent'] = obj_vlanview[0]['_ref']
-                elif not obj_vlanview and obj_vlanrange:
+                if obj_vlanrange:
                     vlan_filtered['parent'] = obj_vlanrange[0]['_ref']
+                elif obj_vlanview:
+                    vlan_filtered['parent'] = obj_vlanview[0]['_ref']
                 else:
                     module.fail_json(msg='VLAN View/Range \'%s\' cannot be found.' % vlan_filtered['parent'])
 
