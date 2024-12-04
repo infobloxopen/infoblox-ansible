@@ -110,7 +110,7 @@
       Site: "USA"
     state: present
     provider: "{{ nios_provider }}"
-  register: adminuser_create3
+  register: adminuser_create4
 
 - name: Delete adminuser
   infoblox.nios_modules.nios_adminuser:
@@ -147,5 +147,5 @@
       - adminuser_delete1.changed
       - not adminuser_delete2.changed
       - adminuser_create3.changed
-      - not adminuser_create3.changed
+      - not adminuser_create4.changed
       - adminuser_delete3.changed

@@ -16,7 +16,7 @@
     department: 'IT'
     description: 'This is an example VLAN'
     reserved: true
-    state: absent
+    state: present
     provider: "{{ nios_provider }}"
   register: vlan_create1
 
@@ -29,7 +29,7 @@
     department: 'IT'
     description: 'This is an example VLAN'
     reserved: true
-    state: absent
+    state: present
     provider: "{{ nios_provider }}"
   register: vlan_create2
 
@@ -45,7 +45,7 @@
     comment: this is an example comment
     extattrs:
       Site: west-dc
-    state: absent
+    state: present
     provider: "{{ nios_provider }}"
   register: vlan_update1
 
@@ -61,7 +61,7 @@
     comment: this is an example comment
     extattrs:
       Site: west-dc
-    state: absent
+    state: present
     provider: "{{ nios_provider }}"
   register: vlan_update2
 
