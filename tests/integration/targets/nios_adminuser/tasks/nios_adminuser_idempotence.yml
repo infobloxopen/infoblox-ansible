@@ -69,14 +69,14 @@
     auth_method: KEYPAIR_PASSWORD
     auth_type: LOCAL
     use_ssh_keys: true
-    ssh_keys: 
+    ssh_keys:
       - key_name: "ansiblekey"
         key_type: "RSA"
         key_value: "ssh-rsa AAAA..."
     password: "Pwd@1234"
     ca_certificate_issuer: "cacertificate/b25lLmVhcF9j..."
     client_certificate_serial_number: "397F9435000100000031"
-    disable : false
+    disable: false
     email: "example@email.com"
     enable_certificate_authentication: true
     time_zone: "UTC"
@@ -95,13 +95,13 @@
     auth_method: KEYPAIR_PASSWORD
     auth_type: LOCAL
     use_ssh_keys: true
-    ssh_keys: 
+    ssh_keys:
       - key_name: "ansiblekey"
         key_type: "RSA"
         key_value: "ssh-rsa AAAA..."
     ca_certificate_issuer: "cacertificate/b25lLmVhcF9j..."
     client_certificate_serial_number: "397F9435000100000031"
-    disable : false
+    disable: false
     email: "example@email.com"
     enable_certificate_authentication: true
     time_zone: "UTC"
@@ -120,13 +120,13 @@
     auth_method: KEYPAIR_PASSWORD
     auth_type: LOCAL
     use_ssh_keys: true
-    ssh_keys: 
+    ssh_keys:
       - key_name: "ansiblekey"
         key_type: "RSA"
         key_value: "ssh-rsa AAAA..."
     ca_certificate_issuer: "cacertificate/b25lLmVhcF9j..."
     client_certificate_serial_number: "397F9435000100000031"
-    disable : false
+    disable: false
     email: "example@email.com"
     enable_certificate_authentication: true
     time_zone: "UTC"

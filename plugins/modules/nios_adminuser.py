@@ -39,7 +39,6 @@ options:
     description:
       - The password for the administrator to use when logging in.
     type: str
-    no_log: true
   auth_method:
     description:
       - Authentication method for the admin user.
@@ -198,10 +197,10 @@ EXAMPLES = '''
     ssh_keys: 
       - key_name: "sshkey1"
         key_type: "RSA"
-        key_value: "ssh-rsa AAAAB..."
+        key_value: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
       - key_name: "sshkey2"
         key_type: "ECDSA"
-        key_value: "ecdsa-sha2-nistp256 AAAAE..."
+        key_value: "{{ lookup('file', '~/.ssh/id_ecdsa.pub') }}"
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -246,26 +245,46 @@ from ..module_utils.api import normalize_ib_spec
 def main():
     ''' Main entry point for module execution
     '''
+
+    def cacert_transform(module):
+        cacert_ref = str()
+        if not module.params['client_certificate_serial_number']:
+          module.fail_json(msg='Client certificate Serial Number is required.')
+
+        cacert = wapi.get_object(
+          'cacertificate',
+          {
+            'issuer': module.params['ca_certificate_issuer'],
+            'serial': module.params['client_certificate_serial_number']
+          })
+        if cacert:
+            cacert_ref = cacert[0]['_ref']
+        else:
+            module.fail_json(msg='CA Certificate \'%s\' could not be found. '
+                             'Provide a valid certificate Issuer and Serial Number.'
+                             % module.params['ca_certificate_issuer'])
+        return cacert_ref
+
     ssh_key_spec = dict(
         key_name=dict(type='str'),
         key_type=dict(type='str', choices=['ECDSA', 'ED25519', 'RSA']),
-        key_value=dict(type='str')
+        key_value=dict(type='str', no_log=True)
     )
 
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
-        admin_groups=dict(type='list', required=True, ib_req=True),
+        admin_groups=dict(type='list', elements='str', required=True, ib_req=True),
         password=dict(no_log=True),
         auth_method=dict(default='KEYPAIR', choices=['KEYPAIR', 'KEYPAIR_PASSWORD']),
         auth_type=dict(default='LOCAL', choices=['LOCAL', 'REMOTE', 'SAML', 'SAML_LOCAL']),
-        ca_certificate_issuer=dict(),
+        ca_certificate_issuer=dict(transform=cacert_transform),
         client_certificate_serial_number=dict(),
         disable=dict(type='bool',default=False),
         email=dict(),
         enable_certificate_authentication=dict(type='bool',default=False),
         time_zone=dict(default='UTC'),
         use_time_zone=dict(type='bool',default=False),
-        ssh_keys=dict(type='list', default=[], elements='dict', options=ssh_key_spec),
+        ssh_keys=dict(type='list', default=[], no_log=True, elements='dict', options=ssh_key_spec),
         use_ssh_keys=dict(type='bool',default=False),
         extattrs=dict(type='dict'),
         comment=dict()
