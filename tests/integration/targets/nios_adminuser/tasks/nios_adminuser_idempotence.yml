@@ -1,0 +1,151 @@
+---
+- name: Cleanup adminuser
+  infoblox.nios_modules.nios_adminuser:
+    name: ansible-adminuser
+    admin_groups: admin-group
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Configure a adminuser on the system
+  infoblox.nios_modules.nios_adminuser:
+    name: ansible-adminuser
+    admin_groups: admin-group
+    password: Pwd@1234
+    state: present
+    provider: "{{ nios_provider }}"
+  register: adminuser_create1
+
+- name: Configure another adminuser on the system
+  infoblox.nios_modules.nios_adminuser:
+    name: ansible-adminuser
+    admin_groups: admin-group
+    state: present
+    provider: "{{ nios_provider }}"
+  register: adminuser_create2
+
+- name: Update the comment and ext attributes for an existing adminuser
+  infoblox.nios_modules.nios_adminuser:
+    name: ansible-adminuser
+    admin_groups: admin-group
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+  register: adminuser_update1
+
+- name: Update again the comment and ext attributes for an existing adminuser
+  infoblox.nios_modules.nios_adminuser:
+    name: ansible-adminuser
+    admin_groups: admin-group
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+  register: adminuser_update2
+
+- name: Remove the adminuser
+  infoblox.nios_modules.nios_adminuser:
+    name: ansible-adminuser
+    admin_groups: admin-group
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: adminuser_delete1
+
+- name: Remove again the adminuser
+  infoblox.nios_modules.nios_adminuser:
+    name: ansible-adminuser
+    admin_groups: admin-group
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: adminuser_delete2
+
+- name: Create a new adminuser with all attributes
+  infoblox.nios_modules.nios_adminuser:
+    name: ansible-adminuser
+    admin_groups: admin-group
+    comment: "Created by Ansible"
+    auth_method: KEYPAIR_PASSWORD
+    auth_type: LOCAL
+    use_ssh_keys: true
+    ssh_keys:
+      - key_name: "ansiblekey"
+        key_type: "RSA"
+        key_value: "ssh-rsa AAAA..."
+    password: "Pwd@1234"
+    ca_certificate_issuer: 'CN=\"infoblox-ca\"'
+    client_certificate_serial_number: "397F9435000100000031"
+    disable: false
+    email: "example@email.com"
+    enable_certificate_authentication: true
+    time_zone: "UTC"
+    use_time_zone: true
+    extattrs:
+      Site: "USA"
+    state: present
+    provider: "{{ nios_provider }}"
+  register: adminuser_create3
+
+- name: Rerun adminuser with all attributes
+  infoblox.nios_modules.nios_adminuser:
+    name: ansible-adminuser
+    admin_groups: admin-group
+    comment: "Created by Ansible"
+    auth_method: KEYPAIR_PASSWORD
+    auth_type: LOCAL
+    use_ssh_keys: true
+    ssh_keys:
+      - key_name: "ansiblekey"
+        key_type: "RSA"
+        key_value: "ssh-rsa AAAA..."
+    ca_certificate_issuer: 'CN=\"infoblox-ca\"'
+    client_certificate_serial_number: "397F9435000100000031"
+    disable: false
+    email: "example@email.com"
+    enable_certificate_authentication: true
+    time_zone: "UTC"
+    use_time_zone: true
+    extattrs:
+      Site: "USA"
+    state: present
+    provider: "{{ nios_provider }}"
+  register: adminuser_create4
+
+- name: Delete adminuser
+  infoblox.nios_modules.nios_adminuser:
+    name: ansible-adminuser
+    admin_groups: admin-group
+    comment: "Created by Ansible"
+    auth_method: KEYPAIR_PASSWORD
+    auth_type: LOCAL
+    use_ssh_keys: true
+    ssh_keys:
+      - key_name: "ansiblekey"
+        key_type: "RSA"
+        key_value: "ssh-rsa AAAA..."
+    ca_certificate_issuer: 'CN=\"infoblox-ca\"'
+    client_certificate_serial_number: "397F9435000100000031"
+    disable: false
+    email: "example@email.com"
+    enable_certificate_authentication: true
+    time_zone: "UTC"
+    use_time_zone: true
+    extattrs:
+      Site: "USA"
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: adminuser_delete3
+
+- name: Assert changes in adminuser
+  ansible.builtin.assert:
+    that:
+      - adminuser_create1.changed
+      - not adminuser_create2.changed
+      - adminuser_update1.changed
+      - not adminuser_update2.changed
+      - adminuser_delete1.changed
+      - not adminuser_delete2.changed
+      - adminuser_create3.changed
+      - not adminuser_create4.changed
+      - adminuser_delete3.changed
