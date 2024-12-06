@@ -24,17 +24,18 @@ notes:
 options:
   name:
     description:
-      - Specifies the adminuser name to add or remove from the system. 
+      - Specifies the adminuser name to add or remove from the system.
         Users can also update the name as it is possible
         to pass a dict containing I(new_name), I(old_name). See examples.
     required: true
     type: str
   admin_groups:
     description:
-      - The names of the Admin Groups to which this Admin User belongs. 
+      - The names of the Admin Groups to which this Admin User belongs.
         Currently, this is limited to only one Admin Group.
     required: true
     type: list
+    elements: str
   password:
     description:
       - The password for the administrator to use when logging in.
@@ -67,7 +68,7 @@ options:
     type: str
   disable:
     description:
-      - Determines whether the admin user is disabled or not. When this is set 
+      - Determines whether the admin user is disabled or not. When this is set
         to False, the admin user is enabled.
     default: false
     type: bool
@@ -78,7 +79,7 @@ options:
   enable_certificate_authentication:
     description:
       - Determines whether the user is allowed to log in only with the
-        certificate. Regular username/password authentication will be disabled 
+        certificate. Regular username/password authentication will be disabled
         for this user.
     default: false
     type: bool
@@ -157,7 +158,7 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
-  
+
 - name: Update admin user name
   infoblox.nios_modules.nios_adminuser:
     name: {new_name: new_user, old_name: ansible_user}
@@ -194,7 +195,7 @@ EXAMPLES = '''
     disable : false
     password: "secure_password"
     use_ssh_keys: true
-    ssh_keys: 
+    ssh_keys:
       - key_name: "sshkey1"
         key_type: "RSA"
         key_value: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
@@ -213,7 +214,7 @@ EXAMPLES = '''
     name: admin_user
     admin_groups: admin-group
     enable_certificate_authentication: true
-    ca_certificate_issuer: "cacertificate/b25lLmVhcF9j..."
+    ca_certificate_issuer: 'CN="ib-root-ca"'
     client_certificate_serial_number: "397F9435000100000031"
     state: present
     provider:
@@ -249,20 +250,22 @@ def main():
     def cacert_transform(module):
         cacert_ref = str()
         if not module.params['client_certificate_serial_number']:
-          module.fail_json(msg='Client certificate Serial Number is required.')
+            module.fail_json(
+                msg='Client certificate Serial Number is required.')
 
         cacert = wapi.get_object(
-          'cacertificate',
-          {
-            'issuer': module.params['ca_certificate_issuer'],
-            'serial': module.params['client_certificate_serial_number']
-          })
+            'cacertificate',
+            {
+                'issuer': module.params['ca_certificate_issuer'],
+                'serial': module.params['client_certificate_serial_number']
+            })
         if cacert:
             cacert_ref = cacert[0]['_ref']
         else:
-            module.fail_json(msg='CA Certificate \'%s\' could not be found. '
-                             'Provide a valid certificate Issuer and Serial Number.'
-                             % module.params['ca_certificate_issuer'])
+            module.fail_json(
+                msg='CA Certificate \'%s\' could not be found. '
+                'Provide a valid certificate Issuer and Serial Number.' %
+                module.params['ca_certificate_issuer'])
         return cacert_ref
 
     ssh_key_spec = dict(
@@ -279,13 +282,13 @@ def main():
         auth_type=dict(default='LOCAL', choices=['LOCAL', 'REMOTE', 'SAML', 'SAML_LOCAL']),
         ca_certificate_issuer=dict(transform=cacert_transform),
         client_certificate_serial_number=dict(),
-        disable=dict(type='bool',default=False),
+        disable=dict(type='bool', default=False),
         email=dict(),
-        enable_certificate_authentication=dict(type='bool',default=False),
+        enable_certificate_authentication=dict(type='bool', default=False),
         time_zone=dict(default='UTC'),
-        use_time_zone=dict(type='bool',default=False),
-        ssh_keys=dict(type='list', default=[], no_log=True, elements='dict', options=ssh_key_spec),
-        use_ssh_keys=dict(type='bool',default=False),
+        use_time_zone=dict(type='bool', default=False),
+        ssh_keys=dict(type='list', default=[], no_log=False, elements='dict', options=ssh_key_spec),
+        use_ssh_keys=dict(type='bool', default=False),
         extattrs=dict(type='dict'),
         comment=dict()
     )

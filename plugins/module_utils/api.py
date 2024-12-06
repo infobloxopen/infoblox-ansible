@@ -771,7 +771,8 @@ class WapiModule(WapiBase):
             return_fields = list(ib_spec.keys())
 
             if (ib_obj_type == NIOS_ADMINUSER):
-                if 'password' in return_fields: return_fields.remove('password')
+                if 'password' in return_fields:
+                    return_fields.remove('password')
 
             if old_name and new_name:
                 if (ib_obj_type == NIOS_HOST_RECORD):

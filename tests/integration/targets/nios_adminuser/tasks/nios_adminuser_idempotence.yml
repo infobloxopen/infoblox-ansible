@@ -74,7 +74,7 @@
         key_type: "RSA"
         key_value: "ssh-rsa AAAA..."
     password: "Pwd@1234"
-    ca_certificate_issuer: "cacertificate/b25lLmVhcF9j..."
+    ca_certificate_issuer: 'CN=\"infoblox-ca\"'
     client_certificate_serial_number: "397F9435000100000031"
     disable: false
     email: "example@email.com"
@@ -99,7 +99,7 @@
       - key_name: "ansiblekey"
         key_type: "RSA"
         key_value: "ssh-rsa AAAA..."
-    ca_certificate_issuer: "cacertificate/b25lLmVhcF9j..."
+    ca_certificate_issuer: 'CN=\"infoblox-ca\"'
     client_certificate_serial_number: "397F9435000100000031"
     disable: false
     email: "example@email.com"
@@ -124,7 +124,7 @@
       - key_name: "ansiblekey"
         key_type: "RSA"
         key_value: "ssh-rsa AAAA..."
-    ca_certificate_issuer: "cacertificate/b25lLmVhcF9j..."
+    ca_certificate_issuer: 'CN=\"infoblox-ca\"'
     client_certificate_serial_number: "397F9435000100000031"
     disable: false
     email: "example@email.com"
