@@ -1,0 +1,3 @@
+---
+- name: Include idempotence tasks for vlan
+  ansible.builtin.include_tasks: nios_vlan_idempotence.yml

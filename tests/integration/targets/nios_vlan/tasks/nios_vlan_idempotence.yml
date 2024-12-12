@@ -1,0 +1,94 @@
+---
+- name: Cleanup VLAN
+  nios_vlan:
+    name: ansible-vlan
+    id: 10
+    parent: default
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Configure a VLAN on the system
+  infoblox.nios_modules.nios_vlan:
+    name: ansible-vlan
+    id: 10
+    parent: default
+    contact: 'example@email.com'
+    department: 'IT'
+    description: 'This is an example VLAN'
+    reserved: true
+    state: present
+    provider: "{{ nios_provider }}"
+  register: vlan_create1
+
+- name: Configure another VLAN on the system
+  infoblox.nios_modules.nios_vlan:
+    name: ansible-vlan
+    id: 10
+    parent: default
+    contact: 'example@email.com'
+    department: 'IT'
+    description: 'This is an example VLAN'
+    reserved: true
+    state: present
+    provider: "{{ nios_provider }}"
+  register: vlan_create2
+
+- name: Update the comment and ext attributes for an existing VLAN
+  infoblox.nios_modules.nios_vlan:
+    name: ansible-vlan
+    id: 10
+    parent: default
+    contact: 'example@email.com'
+    department: 'IT'
+    description: 'This is an example VLAN'
+    reserved: true
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+  register: vlan_update1
+
+- name: Update again the comment and ext attributes for an existing VLAN
+  infoblox.nios_modules.nios_vlan:
+    name: ansible-vlan
+    id: 10
+    parent: default
+    contact: 'example@email.com'
+    department: 'IT'
+    description: 'This is an example VLAN'
+    reserved: true
+    comment: this is an example comment
+    extattrs:
+      Site: west-dc
+    state: present
+    provider: "{{ nios_provider }}"
+  register: vlan_update2
+
+- name: Remove the VLAN
+  infoblox.nios_modules.nios_vlan:
+    name: ansible-vlan
+    id: 10
+    parent: default
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: vlan_delete1
+
+- name: Remove again the VLAN
+  infoblox.nios_modules.nios_vlan:
+    name: ansible-vlan
+    id: 10
+    parent: default
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: vlan_delete2
+
+- name: Assert changes in VLAN
+  ansible.builtin.assert:
+    that:
+      - vlan_create1.changed
+      - not vlan_create2.changed
+      - vlan_update1.changed
+      - not vlan_update2.changed
+      - vlan_delete1.changed
+      - not vlan_delete2.changed
