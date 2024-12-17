@@ -91,7 +91,7 @@ EXAMPLES = '''
   infoblox.nios_modules.nios_vlan:
     name: ansible
     id: 10
-    parent: default
+    parent: my_vlanview
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -103,6 +103,7 @@ EXAMPLES = '''
   infoblox.nios_modules.nios_vlan:
     name: ansible
     id: 10
+    parent: my_vlanview
     comment: this is an example comment
     state: present
     provider:
@@ -115,6 +116,7 @@ EXAMPLES = '''
   infoblox.nios_modules.nios_vlan:
     name: ansible
     id: 10
+    parent: my_vlanview
     state: absent
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -125,6 +127,27 @@ EXAMPLES = '''
 - name: Update an existing vlan
   infoblox.nios_modules.nios_vlan:
     name: {new_name: ansible-new, old_name: ansible}
+    id: 10
+    parent: my_vlanview
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Create vlan with extensible attributes
+  infoblox.nios_modules.nios_vlan:
+    name: ansible
+    id: 11
+    parent: my_vlanview
+    comment: "this is an example comment"
+    contact: "itlab@email.com"
+    department: "IT"
+    description: "test"
+    reserved: True
+    extattrs:
+      Site: "HQ"
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
