@@ -314,3 +314,93 @@ class TestNiosNetworkModule(TestNiosModule):
                                                          'use_logic_filter_rules': True,
                                                          'logic_filter_rules': []}
                                                    )
+        
+    def test_nios_network_ipv4_create_with_vlan(self):
+        self.module.params = {'provider': None, 'state': 'present', 'network': '192.168.10.0/24',
+                              'comment': None, 'extattrs': None, 'vlans': [{'name':'ansible_vlan',
+                                                                            'parent': 'default' ,'id': '10'}]}
+
+        test_object = None
+        test_spec = {
+            "network": {"ib_req": True},
+            "comment": {},
+            "extattrs": {},
+            "vlans": {}
+        }
+
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('NIOS_IPV4_NETWORK', test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.create_object.assert_called_once_with('NIOS_IPV4_NETWORK', {'network': '192.168.10.0/24',
+                                                                  'vlans': [{'name':'ansible_vlan',
+                                                                             'parent': 'default' ,'id': '10'}]
+                                                                  }
+                                                   )
+        
+    def test_nios_network_ipv4_update_vlan(self):
+        self.module.params = {'provider': None, 'state': 'present', 'network': '192.168.10.0/24',
+                              'comment': None, 'extattrs': None, 'vlans': [{'name':'ansible_vlan1',
+                                                                            'parent': 'default' ,'id': '10'},
+                                                                           {'name':'ansible_vlan2',
+                                                                            'parent': 'default' ,'id': '20'}]}
+        ref = "network/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
+
+        test_object = [
+            {
+                "comment": "test comment",
+                "_ref": ref,
+                "network": "192.168.10.0/24",
+                "vlans": [{'name':'ansible_vlan1', 'parent': 'default' ,'id': '10'}]
+            }
+        ]
+        test_spec = {
+            "network": {"ib_req": True},
+            "comment": {},
+            "extattrs": {},
+            "vlans": {}
+        }
+
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('NIOS_IPV4_NETWORK', test_spec)
+
+        self.assertTrue(res['changed'])
+        
+        wapi.update_object.assert_called_once_with(ref, {'network': '192.168.10.0/24',
+                                                                  'vlans': [{'name':'ansible_vlan1',
+                                                                            'parent': 'default' ,'id': '10'},
+                                                                           {'name':'ansible_vlan2',
+                                                                            'parent': 'default' ,'id': '20'}]
+                                                                  }
+                                                   )
+        
+    def test_nios_network_ipv4_remove_vlan(self):
+        self.module.params = {'provider': None, 'state': 'present', 'network': '192.168.10.0/24',
+                              'comment': None, 'extattrs': None, 'vlans': []}
+        ref = "network/ZG5zLm5ldHdvcmtfdmlldyQw:default/true"
+
+        test_object = [
+            {
+                "comment": "test comment",
+                "_ref": ref,
+                "network": "192.168.10.0/24",
+                "vlans": [{'name':'ansible_vlan1', 'parent': 'default' ,'id': '10'},
+                          {'name':'ansible_vlan2', 'parent': 'default' ,'id': '20'}
+                          ]
+            }
+        ]
+        test_spec = {
+            "network": {"ib_req": True},
+            "comment": {},
+            "extattrs": {},
+            "vlans": {}
+        }
+
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('NIOS_IPV4_NETWORK', test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.update_object.assert_called_once_with(ref, {'network': '192.168.10.0/24',
+                                                                  'vlans': []
+                                                                  }
+                                                   )
