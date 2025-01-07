@@ -40,7 +40,6 @@ class TestNiosNetworkModule(TestNiosModule):
         self.mock_wapi_run = patch(
             'ansible_collections.infoblox.nios_modules.plugins.modules.nios_network.WapiModule.run'
         )
-        self.mock_wapi_run.start()
         self.load_config = self.mock_wapi_run.start()
 
     def tearDown(self):
@@ -314,7 +313,7 @@ class TestNiosNetworkModule(TestNiosModule):
                                                          'use_logic_filter_rules': True,
                                                          'logic_filter_rules': []}
                                                    )
-        
+
     def test_nios_network_ipv4_create_with_vlan(self):
         self.module.params = {'provider': None, 'state': 'present', 'network': '192.168.10.0/24',
                               'comment': None, 'extattrs': None, 'vlans': [{'name':'ansible_vlan',
@@ -337,7 +336,7 @@ class TestNiosNetworkModule(TestNiosModule):
                                                                              'parent': 'default' ,'id': '10'}]
                                                                   }
                                                    )
-        
+
     def test_nios_network_ipv4_update_vlan(self):
         self.module.params = {'provider': None, 'state': 'present', 'network': '192.168.10.0/24',
                               'comment': None, 'extattrs': None, 'vlans': [{'name':'ansible_vlan1',
@@ -365,7 +364,7 @@ class TestNiosNetworkModule(TestNiosModule):
         res = wapi.run('NIOS_IPV4_NETWORK', test_spec)
 
         self.assertTrue(res['changed'])
-        
+
         wapi.update_object.assert_called_once_with(ref, {'network': '192.168.10.0/24',
                                                                   'vlans': [{'name':'ansible_vlan1',
                                                                             'parent': 'default' ,'id': '10'},
@@ -373,7 +372,7 @@ class TestNiosNetworkModule(TestNiosModule):
                                                                             'parent': 'default' ,'id': '20'}]
                                                                   }
                                                    )
-        
+
     def test_nios_network_ipv4_remove_vlan(self):
         self.module.params = {'provider': None, 'state': 'present', 'network': '192.168.10.0/24',
                               'comment': None, 'extattrs': None, 'vlans': []}
