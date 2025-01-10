@@ -36,7 +36,6 @@ class TestNiosDtcIcmpMonitorModule(TestNiosModule):
         self.mock_wapi = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_dtc_monitor_icmp.WapiModule')
         self.exec_command = self.mock_wapi.start()
         self.mock_wapi_run = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_dtc_monitor_icmp.WapiModule.run')
-        self.mock_wapi_run.start()
         self.load_config = self.mock_wapi_run.start()
         self.mock_check_type_dict = patch('ansible.module_utils.common.validation.check_type_dict')
         self.mock_check_type_dict_obj = self.mock_check_type_dict.start()

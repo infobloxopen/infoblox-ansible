@@ -418,6 +418,10 @@ class WapiModule(WapiBase):
                 if 'default_value' in obj:
                     obj['default_value'] = str(obj['default_value'])
 
+        if (ib_obj_type == NIOS_VLAN):
+            if 'parent' in current_object:
+                current_object['parent'] = current_object['parent']['_ref']
+
         # checks if the 'text' field has to be updated for the TXT Record
         if (ib_obj_type == NIOS_TXT_RECORD):
             text_obj = proposed_object["text"]
@@ -697,7 +701,8 @@ class WapiModule(WapiBase):
                 # If the lists are of a different length, the objects cannot be
                 # equal, and False will be returned before comparing the list items
                 # this code part will work for members' assignment
-                if (key in ('members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys')
+                
+                if (key in ('members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans')
                         and (len(proposed_item) != len(current_item))):
                     return False
 
