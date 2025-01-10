@@ -88,6 +88,7 @@ options:
         of values (see suboptions).  When configuring suboptions at
         least one of C(name) or C(id) must be specified.
     type: list
+    default: []
     elements: dict
     suboptions:
       name:
@@ -102,6 +103,7 @@ options:
         description:
           - The name of the parent vlanview or vlanrange.
         type: str
+        default: default
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
@@ -393,13 +395,13 @@ def main():
                 if 'parent' in vlan_filtered:
                     obj_vlanview = wapi.get_object('vlanview', {'name': vlan_filtered['parent']})
                     obj_vlanrange = wapi.get_object('vlanrange', {'name': vlan_filtered['parent']})
-                if obj_vlanview and not obj_vlanrange:
-                    vlan_filtered['parent'] = obj_vlanview[0]['_ref']
-                elif not obj_vlanview and obj_vlanrange:
+                if obj_vlanrange:
                     vlan_filtered['parent'] = obj_vlanrange[0]['_ref']
+                elif obj_vlanview:
+                    vlan_filtered['parent'] = obj_vlanview[0]['_ref']
                 else:
                     module.fail_json(msg='VLAN View/Range \'%s\' cannot be found.' % vlan_filtered['parent'])
-                    
+
                 obj_vlan = wapi.get_object('vlan', vlan_filtered)
 
                 if obj_vlan:
@@ -408,7 +410,7 @@ def main():
                     module.fail_json(msg='VLAN  `%s` cannot be found.' % vlan['name'])
 
         return vlans_list
-    
+
     option_spec = dict(
         # one of name or num is required; enforced by the function options()
         name=dict(),
@@ -430,7 +432,7 @@ def main():
         network=dict(required=True, aliases=['name', 'cidr'], ib_req=True),
         network_view=dict(default='default', ib_req=True),
         options=dict(type='list', elements='dict', options=option_spec, transform=options, default=[]),
-        vlans=dict(type='list', elements='dict', options=vlans_spec, transform=vlans),
+        vlans=dict(type='list', elements='dict', options=vlans_spec, transform=vlans, default=[]),
         template=dict(type='str'),
         extattrs=dict(type='dict'),
         comment=dict(),
