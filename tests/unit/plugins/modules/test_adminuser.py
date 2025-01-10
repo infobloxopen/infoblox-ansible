@@ -38,7 +38,6 @@ class TestNiosAdminUserModule(TestNiosModule):
         self.mock_wapi = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_adminuser.WapiModule')
         self.exec_command = self.mock_wapi.start()
         self.mock_wapi_run = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_adminuser.WapiModule.run')
-        self.mock_wapi_run.start()
         self.load_config = self.mock_wapi_run.start()
         self.mock_check_type_dict = patch('ansible.module_utils.common.validation.check_type_dict')
         self.mock_check_type_dict_obj = self.mock_check_type_dict.start()
@@ -81,9 +80,14 @@ class TestNiosAdminUserModule(TestNiosModule):
         res = wapi.run('NIOS_ADMINUSER', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('NIOS_ADMINUSER', {'name': 'ansible_user',
-                                                                  'admin_groups': ['admin-group'],
-                                                                  'password': 'Pwd@1234'})
+        wapi.create_object.assert_called_once_with(
+            'NIOS_ADMINUSER',
+            {
+                'name': 'ansible_user',
+                'admin_groups': ['admin-group'],
+                'password': 'Pwd@1234'
+            }
+        )
 
     def test_nios_adminuser_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible_user',
@@ -169,9 +173,9 @@ class TestNiosAdminUserModule(TestNiosModule):
         self.assertTrue(res['changed'])
         wapi.update_object.assert_called_once_with(ref, {'name': 'ansible_new_user', 'admin_groups': ['admin-group'],
                                                          'comment': 'comment'})
-  
+
     def test_nios_adminuser_create_with_ssh_keys(self):
-        self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible_user', 'admin_groups': ['admin-group'], 
+        self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible_user', 'admin_groups': ['admin-group'],
                               'password': 'Pwd@1234', 'auth_method': 'KEYPAIR_PASSWORD', 'use_ssh_keys': True,
                               'ssh_keys': [{"key_name": "ansiblekey1", "key_type": "RSA", "key_value": "ssh-rsa AAAAB"}],
                               'comment': None, 'extattrs': None, 'disable': False, 'email': 'example@email.com'}
@@ -196,16 +200,30 @@ class TestNiosAdminUserModule(TestNiosModule):
         res = wapi.run('NIOS_ADMINUSER', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('NIOS_ADMINUSER', {'name': 'ansible_user', 'admin_groups': ['admin-group'],
-                                                                    'password': 'Pwd@1234','auth_method': 'KEYPAIR_PASSWORD', 'use_ssh_keys': True,
-                                                                    'ssh_keys': [{"key_name": "ansiblekey1", "key_type": "RSA", "key_value": "ssh-rsa AAAAB"}],
-                                                                    'email': 'example@email.com', 'disable': False})
-        
-        
+        wapi.create_object.assert_called_once_with(
+            'NIOS_ADMINUSER',
+            {
+                'name': 'ansible_user',
+                'admin_groups': ['admin-group'],
+                'password': 'Pwd@1234',
+                'auth_method': 'KEYPAIR_PASSWORD',
+                'use_ssh_keys': True,
+                'ssh_keys': [
+                    {
+                        'key_name': 'ansiblekey1',
+                        'key_type': 'RSA',
+                        'key_value': 'ssh-rsa AAAAB'
+                    }
+                ],
+                'email': 'example@email.com',
+                'disable': False
+            }
+        )
+
     def test_nios_adminuser_create_with_ca_cert(self):
-        self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible_user', 'admin_groups': ['admin-group'], 
+        self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible_user', 'admin_groups': ['admin-group'],
                               'password': 'Pwd@1234', 'enable_certificate_authentication': True, 'ca_certificate_issuer': 'CN="ib-root-ca"',
-                              'client_certificate_serial_number': '123456789', 'use_time_zone': True, 'time_zone': 'UTC', 'comment': None, 
+                              'client_certificate_serial_number': '123456789', 'use_time_zone': True, 'time_zone': 'UTC', 'comment': None,
                               'extattrs': None}
 
         test_object = None
@@ -228,7 +246,16 @@ class TestNiosAdminUserModule(TestNiosModule):
         res = wapi.run('NIOS_ADMINUSER', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('NIOS_ADMINUSER', {'name': 'ansible_user', 'admin_groups': ['admin-group'], 'password': 'Pwd@1234',
-                                                                      'enable_certificate_authentication': True, 'ca_certificate_issuer': 'CN="ib-root-ca"',
-                                                                      'client_certificate_serial_number': '123456789', 'use_time_zone': True, 'time_zone': 'UTC'})
-        
+        wapi.create_object.assert_called_once_with(
+            'NIOS_ADMINUSER',
+            {
+                'name': 'ansible_user',
+                'admin_groups': ['admin-group'],
+                'password': 'Pwd@1234',
+                'enable_certificate_authentication': True,
+                'ca_certificate_issuer': 'CN="ib-root-ca"',
+                'client_certificate_serial_number': '123456789',
+                'use_time_zone': True,
+                'time_zone': 'UTC'
+            }
+        )

@@ -701,7 +701,7 @@ class WapiModule(WapiBase):
                 # If the lists are of a different length, the objects cannot be
                 # equal, and False will be returned before comparing the list items
                 # this code part will work for members' assignment
-                
+
                 if (key in ('members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans')
                         and (len(proposed_item) != len(current_item))):
                     return False
