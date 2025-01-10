@@ -79,14 +79,20 @@ class TestNiosVlanModule(TestNiosModule):
         res = wapi.run('NIOS_VLAN', test_spec)
 
         self.assertTrue(res['changed'])
-        wapi.create_object.assert_called_once_with('NIOS_VLAN', {'name': 'ansible_vlan',
-                                                                  'parent': 'default', 'id': '10'})
+        wapi.create_object.assert_called_once_with(
+            'NIOS_VLAN', 
+            {
+                'name': 'ansible_vlan',
+                'parent': 'default', 
+                'id': '10'
+            }
+        )
 
     def test_nios_vlan_update_comment(self):
         self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible_vlan',
                               'parent': 'default', 'id': '10', 'comment': 'updated comment',
                               'contact': 'contact@email.com', 'department': 'IT', 'description': 'test',
-                              'reserved': True,'extattrs': None}
+                              'reserved': True, 'extattrs': None}
 
         ref = "vlan/ZG5zLm5ldHdvcmtfdmlldyQw:ansible_vlan"
         test_object = [
