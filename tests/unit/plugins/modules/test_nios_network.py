@@ -332,13 +332,13 @@ class TestNiosNetworkModule(TestNiosModule):
 
         self.assertTrue(res['changed'])
         wapi.create_object.assert_called_once_with(
-            'NIOS_IPV4_NETWORK', 
+            'NIOS_IPV4_NETWORK',
             {
                 'network': '192.168.10.0/24',
                 'vlans': [
                     {
                         'name': 'ansible_vlan',
-                        'parent': 'default', 
+                        'parent': 'default',
                         'id': '10'
                     }
                 ]
@@ -374,18 +374,18 @@ class TestNiosNetworkModule(TestNiosModule):
         self.assertTrue(res['changed'])
 
         wapi.update_object.assert_called_once_with(
-            ref, 
+            ref,
             {
                 'network': '192.168.10.0/24',
                 'vlans': [
                     {
                         'name': 'ansible_vlan1',
-                        'parent': 'default', 
+                        'parent': 'default',
                         'id': '10'
                     },
                     {
                         'name': 'ansible_vlan2',
-                        'parent': 'default', 
+                        'parent': 'default',
                         'id': '20'
                     }
                 ]
@@ -419,7 +419,7 @@ class TestNiosNetworkModule(TestNiosModule):
 
         self.assertTrue(res['changed'])
         wapi.update_object.assert_called_once_with(
-            ref, 
+            ref,
             {
                 'network': '192.168.10.0/24',
                 'vlans': []

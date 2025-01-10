@@ -80,10 +80,10 @@ class TestNiosVlanModule(TestNiosModule):
 
         self.assertTrue(res['changed'])
         wapi.create_object.assert_called_once_with(
-            'NIOS_VLAN', 
+            'NIOS_VLAN',
             {
                 'name': 'ansible_vlan',
-                'parent': 'default', 
+                'parent': 'default',
                 'id': '10'
             }
         )
