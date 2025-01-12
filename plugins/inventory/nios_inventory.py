@@ -102,6 +102,7 @@ class InventoryModule(BaseInventoryPlugin):
             self.inventory.add_child(group_name, host_name)
 
             self.inventory.set_variable(host_name, 'view', host['view'])
+            self.inventory.set_variable(host_name, 'ipv4addrs', [item['ipv4addr'] for item in host['ipv4addrs']])
 
             for key, value in iteritems(flatten_extattrs(host['extattrs'])):
                 self.inventory.set_variable(host_name, key, value)
