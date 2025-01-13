@@ -38,7 +38,6 @@ class TestNiosMXRecordModule(TestNiosModule):
         self.mock_wapi = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_mx_record.WapiModule')
         self.exec_command = self.mock_wapi.start()
         self.mock_wapi_run = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_mx_record.WapiModule.run')
-        self.mock_wapi_run.start()
         self.load_config = self.mock_wapi_run.start()
         self.mock_check_type_dict = patch('ansible.module_utils.common.validation.check_type_dict')
         self.mock_check_type_dict_obj = self.mock_check_type_dict.start()

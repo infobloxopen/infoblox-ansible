@@ -36,7 +36,6 @@ class TestNiosFixedAddressModule(TestNiosModule):
         self.mock_wapi = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_fixed_address.WapiModule')
         self.exec_command = self.mock_wapi.start()
         self.mock_wapi_run = patch('ansible_collections.infoblox.nios_modules.plugins.modules.nios_fixed_address.WapiModule.run')
-        self.mock_wapi_run.start()
         self.load_config = self.mock_wapi_run.start()
 
     def tearDown(self):
