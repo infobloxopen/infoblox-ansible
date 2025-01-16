@@ -154,6 +154,23 @@ EXAMPLES = '''
       username: admin
       password: admin
   connection: local
+
+- name: Create a new vlan with next available id
+  infoblox.nios_modules.nios_vlan:
+    name: ansible-vlan
+    id: "{{
+        lookup('infoblox.nios_modules.nios_next_vlan_id',
+          parent='my_vlanrange',
+          exclude=[1,2],
+          provider=nios_provider)[0]
+        }}"
+    parent: my_vlanrange
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
 '''
 
 RETURN = ''' # '''
