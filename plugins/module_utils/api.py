@@ -710,18 +710,29 @@ class WapiModule(WapiBase):
                 if key in ('external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
                     return False
 
-                if key == 'ipv4addrs':
+                if key == 'ipv4addrs' and current_item and isinstance(current_item[0], dict) and proposed_item:
+                    current_config = current_item[0]
+                    dhcp_flag = current_config.get('configure_for_dhcp', False)
+
                     for subitem in proposed_item:
-                        if current_item:
-                            # Host IPv4addrs wont contain use_nextserver and nextserver
-                            # If DHCP is false.
-                            dhcp_flag = current_item[0].get('configure_for_dhcp', False)
-                            use_nextserver = subitem.get('use_nextserver', False)
-                            if key == 'ipv4addrs' and not dhcp_flag:
-                                subitem.pop('use_nextserver', None)
-                                subitem.pop('nextserver', None)
-                            elif key == 'ipv4addrs' and dhcp_flag and not use_nextserver:
-                                subitem.pop('nextserver', None)
+                        if not isinstance(subitem, dict):
+                            continue  # Skip non-dict items
+                        # Host IPv4addrs wont contain use_nextserver and nextserver
+                        # If DHCP is false.
+                        use_nextserver = subitem.get('use_nextserver', False)
+
+                        if not dhcp_flag:
+                            try:
+                                subitem.pop('use_nextserver')
+                                subitem.pop('nextserver')
+                            except KeyError:
+                                pass
+                        elif dhcp_flag and not use_nextserver:
+                            try:
+                                subitem.pop('nextserver')
+                            except KeyError:
+                                pass
+
                         if not self.issubset(subitem, current_item):
                             return False
 
