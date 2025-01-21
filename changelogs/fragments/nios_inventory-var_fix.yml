@@ -1,0 +1,2 @@
+minor_changes:
+  - nios_inventory.py - added 'ipv4addrs' inventory variable
