@@ -314,10 +314,10 @@ class WapiModule(WapiBase):
             self.module.fail_json(msg=to_native(exc))
 
     def run(self, ib_obj_type, ib_spec):
-        ''' Runs the module and performans configuration tasks
+        ''' Runs the module and performance configuration tasks
         :args ib_obj_type: the WAPI object type to operate against
         :args ib_spec: the specification for the WAPI object as a dict
-        :returns: a results dict
+        :returns:  result dict
         '''
 
         update = new_name = None
@@ -991,6 +991,7 @@ class WapiModule(WapiBase):
                 # del key 'members' as nios_network get_object fails with the key present
                 # Don't reinstate the field after as it is not valid for network containers
                 del ib_spec['members']
+                del ib_spec['vlans']
 
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
             # reinstate the 'template' and 'members' key

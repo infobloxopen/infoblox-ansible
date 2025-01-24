@@ -407,7 +407,7 @@ def main():
                 if obj_vlan:
                     vlans_list.append({'vlan': obj_vlan[0]['_ref']})
                 else:
-                    module.fail_json(msg='VLAN  `%s` cannot be found.' % vlan['name'])
+                    module.fail_json(msg='VLAN  `%s` cannot be found.' % vlan)
 
         return vlans_list
 
