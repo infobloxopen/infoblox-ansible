@@ -73,7 +73,7 @@ class LookupModule(LookupBase):
         provider = kwargs.pop('provider', {})
         wapi = WapiLookup(provider)
         num = kwargs.get('num', 1)
-        exclude_ip = kwargs.get('exclude', [])
+        exclude_vlan_id = kwargs.get('exclude', [])
         parent = kwargs.get('parent', 'default')
 
         try:
@@ -84,9 +84,9 @@ class LookupModule(LookupBase):
             elif parent_obj_vlanview:
                 parent_ref = parent_obj_vlanview[0]['_ref']
             else:
-                raise AnsibleError(msg='VLAN View/Range \'%s\' cannot be found.' % parent)
+                raise AnsibleError(message='VLAN View/Range \'%s\' cannot be found.' % parent)
 
-            avail_ids = wapi.call_func('next_available_vlan_id', parent_ref, {'num': num, 'exclude': exclude_ip})
+            avail_ids = wapi.call_func('next_available_vlan_id', parent_ref, {'num': num, 'exclude': exclude_vlan_id})
             return [avail_ids['vlan_ids']]
 
         except Exception as exc:
