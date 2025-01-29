@@ -4,6 +4,37 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
+v1.8.0
+======
+
+Release Summary
+---------------
+This release includes new modules for managing NIOS VLANs and Admin Users, as well as new lookup plugins for nios_next_vlan_id.
+Additionally, it features various enhancements, new features, and bug fixes aimed at improving the system's overall functionality and performance.
+
+New Modules
+-----------
+- infoblox.nios_modules.nios_vlan - Configure Infoblox NIOS VLANs
+- infoblox.nios_modules.nios_adminuser - Configure Infoblox NIOS Admin Users
+
+Lookup
+------
+- infoblox.nios_modules.nios_next_vlan_id - Return the next available VLAN ID for a network container
+
+major Changes
+-------------
+- Drop support for Ansible Core 2.15 and Python 3.9.
+
+minor Changes
+-------------
+- Set `ipv4addr` parameter in the `nios_inventory` module. `#271 <https://github.com/infobloxopen/infoblox-ansible/pull/271>`_
+- Added support for the `vlans` parameter in the `nios_network` module. `#171 <https://github.com/infobloxopen/infoblox-ansible/pull/171>`_
+
+Bugfixes
+--------
+- Fixed the issue where the `nios_host_record` module was failing with `aliases` parameter. `#285 <https://github.com/infobloxopen/infoblox-ansible/pull/285>`_
+
+
 v1.7.1
 ======
 

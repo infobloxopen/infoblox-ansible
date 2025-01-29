@@ -107,3 +107,5 @@ infoblox-ansible.code-workspace
 
 # Dev tools
 .vscode/
+
+.idea/

@@ -56,18 +56,19 @@ The `infoblox.nios_modules` collection has the following content:
 - `nios_next_ip`: Return the next available IP address for a network
 - `nios_next_network`: Return the next available network addresses
     for a given network CIDR
+- `nios_next_vlan_id`: Return the next available VLAN IDs for a given VLAN View/Range.
 
 ## Requirements
 
 - Python version 3.10 or later
-- Ansible Core version 2.15 or later
+- Ansible Core version 2.16 or later
 - NIOS 8.6.x and 9.0.x
 - Infoblox WAPI version 2.12.3 or later
-- Python module infoblox-client version 0.6.0 
+- Python module infoblox-client version 0.6.2
  
  Install the infoblox-client WAPI package. To install, run the following command:
 ```shell
-pip install infoblox-client==0.6.0
+pip install infoblox-client==0.6.2
 ```
 
 ## Installation
@@ -233,9 +234,9 @@ The collection has been tested in the following environments:
     - Mac
 
 - **Ansible Versions:**
-    - Ansible Core 2.15
     - Ansible Core 2.16
     - Ansible Core 2.17
+    - Ansible Core 2.18
 
 - **NIOS Versions:**
     - NIOS 8.6.x
@@ -243,7 +244,8 @@ The collection has been tested in the following environments:
 
 ### Known Exceptions and Workarounds
 
-For detailed information on testing and performance, refer to the `tests` directory in the `infoblox-ansible` repository.
+- For detailed information on testing and performance, refer to the `tests` directory in the `infoblox-ansible` repository.
+- The `use_dns_ea_inheritance` option for Host Records is compatible only with WAPI versions 2.12.3 or 2.13.4 and later. 
 
 ## Contributing
 
@@ -255,7 +257,7 @@ We welcome your contributions to Infoblox Nios Modules. See [CONTRIBUTING.md](ht
 
 Infoblox NIOS Modules for Ansible Collections supports the following versions:
 - **NIOS Versions:** 8.6.x and 9.0.x
-- **Ansible Core Versions:** 2.15 and later
+- **Ansible Core Versions:** 2.16 and later
 - **Python Versions:** 3.10 and later
 
 ### How to Get Support
