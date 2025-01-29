@@ -250,9 +250,9 @@ releases:
   1.7.0:
     changes:
       bugfixes:
-        - Omits DNS view from filter critera when renaming a host object and DNS is
+        - Omits DNS view from filter criteria when renaming a host object and DNS is
           bypassed. (https://github.com/infobloxopen/infoblox-ansible/issues/230)
-        - nios_host_record - rename logic included DNS view in filter critera, even
+        - nios_host_record - rename logic included DNS view in filter criteria, even
           when DNS had been bypassed.
         - Fixed an issue in the `nios_host_record` module where the `mac` parameter was not handled correctly.
         - Fixed the update operation in the `nios_network` module where the `network` parameter was not handled correctly.
@@ -294,3 +294,25 @@ releases:
         - For Host IPv6, the mac parameter has been renamed to duid.
       release_summary: "This update focuses on specific improvements and bug fixes for Host records to enhance system functionality and performance."
     release_date: "2024-11-18"
+  1.8.0:
+    changes:
+      release_summary: "This release includes new modules for managing NIOS VLANs and Admin Users, as well as new lookup plugins for nios_next_vlan_id.
+        Additionally, it features various enhancements, new features, and bug fixes aimed at improving the system's overall functionality and performance."
+    major_changes:
+      - Drop support for Ansible Core 2.15 and Python 3.9.
+    minor_changes:
+      - Added support for the `ipv4addr` parameter in the `nios_inventory` plugin to return the IP address of the specified host.
+      - Added support for the `vlans` parameter in the `nios_network` module.
+    modules:
+      - description: Configure Infoblox NIOS VLANs
+        name: nios_vlan
+        namespace: ""
+      - description: Configure Infoblox NIOS Admin Users
+        name: nios_adminuser
+        namespace: ""
+    plugins:
+      lookup:
+        - description: Return the next available VLAN ID
+          name: nios_next_vlan_id
+          namespace:
+    release_date: "2025-01-29"

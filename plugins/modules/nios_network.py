@@ -300,7 +300,7 @@ EXAMPLES = '''
     vlans:
      - name: ansiblevlan
        parent: ansiblevlanview
-     - id: 10
+       id: 10
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"

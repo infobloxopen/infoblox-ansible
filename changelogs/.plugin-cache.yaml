@@ -24,6 +24,10 @@ plugins:
       description: Return the next available network range for a network-container
       name: nios_next_network
       version_added: 1.0.0
+    nios_next_vlan_id:
+      description: Return the next available VLAN ID for a VLAN View/Range.
+      name: nios_next_vlan_id
+      version_added: 1.8.0
   module:
     nios_a_record:
       description: Configure Infoblox NIOS A records
@@ -35,6 +39,11 @@ plugins:
       name: nios_aaaa_record
       namespace: ""
       version_added: 1.0.0
+    nios_adminuser:
+      description: Configure Infoblox NIOS admin user
+      name: nios_adminuser
+      namespace: ""
+      version_added: 1.8.0
     nios_cname_record:
       description: Configure Infoblox NIOS CNAME records
       name: nios_cname_record
@@ -185,6 +194,11 @@ plugins:
       name: nios_txt_record
       namespace: ""
       version_added: 1.0.0
+    nios_vlan:
+      description: Configure Infoblox NIOS VLAN object
+      name: nios_vlan
+      namespace: ""
+      version_added: 1.8.0
     nios_zone:
       description: Configure Infoblox NIOS DNS zones
       name: nios_zone
@@ -194,4 +208,4 @@ plugins:
   shell: {}
   strategy: {}
   vars: {}
-version: 1.7.1
+version: 1.8.0
