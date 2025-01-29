@@ -489,7 +489,7 @@ class WapiModule(WapiBase):
             # Removes keys from the proposed_object that are empty and do not exist in current_object.
             # Fix the issue to update the optional fields of the object with default empty values
             proposed_object = self.clean_empty_keys(current_object, proposed_object)
-        modified = not self.compare_objects(current_object, proposed_object)
+        modified = not self.compare_objects(current_object, proposed_object, ib_obj_type)
         if 'extattrs' in proposed_object:
             proposed_object['extattrs'] = normalize_extattrs(proposed_object['extattrs'])
 
@@ -710,7 +710,7 @@ class WapiModule(WapiBase):
     def verify_list_order(self, proposed_data, current_data):
         return len(proposed_data) == len(current_data) and all(a == b for a, b in zip(proposed_data, current_data))
 
-    def compare_objects(self, current_object, proposed_object):
+    def compare_objects(self, current_object, proposed_object, ib_obj_type=None):
         for key, proposed_item in iteritems(proposed_object):
             current_item = current_object.get(key)
 
@@ -727,21 +727,21 @@ class WapiModule(WapiBase):
                 # equal, and False will be returned before comparing the list items
                 # this code part will work for members' assignment
 
-                if (key in ('members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans')
-                        and (len(proposed_item) != len(current_item))):
+                if key in ('members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans') \
+                        and len(proposed_item) != len(current_item):
                     return False
 
                 # Validate the Sequence of the List data
                 if key in ('external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
                     return False
 
-                if key == 'ipv4addrs' and current_item and isinstance(current_item[0], dict) and proposed_item:
-                    current_config = current_item[0]
-                    dhcp_flag = current_config.get('configure_for_dhcp', False)
+                for subitem in proposed_item:
+                    if not isinstance(subitem, dict):
+                        continue  # Skip non-dict items
 
-                    for subitem in proposed_item:
-                        if not isinstance(subitem, dict):
-                            continue  # Skip non-dict items
+                    if ib_obj_type == NIOS_HOST_RECORD and key == 'ipv4addrs':
+                        current_config = current_item[0]
+                        dhcp_flag = current_config.get('configure_for_dhcp', False)
                         # Host IPv4addrs wont contain use_nextserver and nextserver
                         # If DHCP is false.
                         use_nextserver = subitem.get('use_nextserver', False)
@@ -758,11 +758,9 @@ class WapiModule(WapiBase):
                             except KeyError:
                                 pass
 
-                        if not self.issubset(subitem, current_item):
-                            return False
+                    if not self.issubset(subitem, current_item):
+                        return False
 
-                # If the lists are of a different length, the objects and order of element mismatch
-                # Ignore DHCP options while comparing due to extra num param is get response
                 if key == 'logic_filter_rules' and proposed_item != current_item:
                     return False
 
@@ -778,7 +776,7 @@ class WapiModule(WapiBase):
                     if not self.compare_extattrs(current_extattrs, proposed_extattrs):
                         return False
 
-                if self.compare_objects(current_item, proposed_item) is False:
+                if self.compare_objects(current_item, proposed_item, ib_obj_type) is False:
                     return False
                 else:
                     continue
@@ -826,7 +824,7 @@ class WapiModule(WapiBase):
                         test_obj_filter = dict([('name', old_name)])
                     else:
                         test_obj_filter = dict([('name', old_name), ('view', obj_filter['view'])])
-                # if there are multiple records with same name and different ip
+                # if there are multiple records with the same name and different ip
                 elif (ib_obj_type == NIOS_A_RECORD):
                     test_obj_filter = dict([('name', old_name), ('ipv4addr', obj_filter['ipv4addr'])])
                     try:
