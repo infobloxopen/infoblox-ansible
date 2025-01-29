@@ -12,6 +12,7 @@
     name: ansible-vlan
     id: 10
     parent: default
+    comment: 'this is an example comment'
     contact: 'example@email.com'
     department: 'IT'
     description: 'This is an example VLAN'
@@ -24,6 +25,7 @@
   infoblox.nios_modules.nios_vlan:
     name: ansible-vlan
     id: 10
+    comment: 'this is an example comment'
     parent: default
     contact: 'example@email.com'
     department: 'IT'
