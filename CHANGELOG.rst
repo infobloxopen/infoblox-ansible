@@ -19,7 +19,7 @@ New Modules
 
 Lookup
 ------
-- infoblox.nios_modules.nios_next_vlan_id - Return the next available VLAN ID for a network container
+- infoblox.nios_modules.nios_next_vlan_id - Return the next available VLAN ID for a VLAN View/Range
 
 major Changes
 -------------
