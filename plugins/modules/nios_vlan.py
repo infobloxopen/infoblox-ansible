@@ -49,19 +49,23 @@ options:
         of this object.  The provided text string will be configured on the
         object instance.
     type: str
+    default: ''
   contact:
     description:
       - Contact information for person/team managing or using VLAN.
     type: str
+    default: ''
   department:
     description:
       - Department where VLAN is used.
     type: str
+    default: ''
   description:
     description:
       - Description for the VLAN object, may be potentially used for
         longer VLAN names.
     type: str
+    default: ''
   reserved:
     description:
       - When set VLAN can only be assigned to IPAM object manually.
@@ -202,10 +206,10 @@ def main():
         name=dict(required=True, ib_req=True),
         id=dict(type='int', required=True, ib_req=True),
         parent=dict(default='default', transform=parent_transform),
-        comment=dict(),
-        contact=dict(),
-        department=dict(),
-        description=dict(),
+        comment=dict(default=''),
+        contact=dict(default=''),
+        department=dict(default=''),
+        description=dict(default=''),
         reserved=dict(type='bool', default=False),
         extattrs=dict(type='dict'),
     )
