@@ -332,15 +332,27 @@ def options(module):
             vendor_class: <value>
         }
     It will remove any options that are set to None since WAPI will error on
-    that condition.  It will also verify that either `name` or `num` is
+    that condition.  The use_option field only applies
+    to special options that are displayed separately from other options and
+    have a use flag. This function removes the use_option flag from all
+    other options. It will also verify that either `name` or `num` is
     set in the structure but does not validate the values are equal.
     The remainder of the value validation is performed by WAPI
     '''
+    special_options = ['routers', 'router-templates', 'domain-name-servers',
+                       'domain-name', 'broadcast-address', 'broadcast-address-offset',
+                       'dhcp-lease-time', 'dhcp6.name-servers']
+    # options-router-templates, broadcast-address-offset, dhcp6.name-servers don't have any associated number
+    special_num = [3, 6, 15, 28, 51]
     options = list()
     for item in module.params['options']:
         opt = dict([(k, v) for k, v in iteritems(item) if v is not None])
         if 'name' not in opt and 'num' not in opt:
             module.fail_json(msg='one of `name` or `num` is required for option value')
+        if 'name' in opt and opt['name'] not in special_options:
+            del opt['use_option']
+        if 'num' in opt and opt['num'] not in special_num:
+            del opt['use_option']
         options.append(opt)
     return options
 
@@ -365,19 +377,6 @@ def check_ip_addr_type(obj_filter, ib_spec):
             return NIOS_IPV4_NETWORK, ib_spec
         elif validate_ip_v6_address(check_ip[0]):
             return NIOS_IPV6_NETWORK, ib_spec
-
-
-def check_vendor_specific_dhcp_option(module, ib_spec):
-    '''This function will check if the argument dhcp option belongs to vendor-specific and if yes then will remove
-     use_options flag which is not supported with vendor-specific dhcp options.
-    '''
-    for key, value in iteritems(ib_spec):
-        if isinstance(module.params[key], list):
-            for temp_dict in module.params[key]:
-                if 'num' in temp_dict:
-                    if temp_dict['num'] in (43, 124, 125, 67, 60):
-                        del temp_dict['use_option']
-    return ib_spec
 
 
 def main():
@@ -458,8 +457,6 @@ def main():
     network_type, ib_spec = check_ip_addr_type(obj_filter, ib_spec)
 
     wapi = WapiModule(module)
-    # to check for vendor specific dhcp option
-    ib_spec = check_vendor_specific_dhcp_option(module, ib_spec)
 
     result = wapi.run(network_type, ib_spec)
 
