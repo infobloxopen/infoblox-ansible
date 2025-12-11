@@ -370,6 +370,11 @@ class WapiModule(WapiBase):
                     proposed_object[key] = value['transform'](self.module)
                 else:
                     proposed_object[key] = self.module.params[key]
+            elif 'transform' in value:
+                # Call transform even if param is None, in case it returns a default value
+                transformed_value = value['transform'](self.module)
+                if transformed_value is not None:
+                    proposed_object[key] = transformed_value
 
         # If configure_by_dns is set to False and view is 'default', then delete the default dns
         if not proposed_object.get('configure_for_dns') and proposed_object.get('view') == 'default' \
@@ -719,6 +724,9 @@ class WapiModule(WapiBase):
             # if proposed has a key that current doesn't, then the objects are
             # not equal and False will be immediately returned
             if current_item is None:
+                # Allow None/empty values to be considered equal
+                if proposed_item in (None, '', [], {}, set()):
+                    continue
                 return False
 
             elif isinstance(proposed_item, list):
@@ -729,12 +737,12 @@ class WapiModule(WapiBase):
                 # equal, and False will be returned before comparing the list items
                 # this code part will work for members' assignment
 
-                if key in ('members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans') \
+                if key in ('monitors', 'members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans') \
                         and len(proposed_item) != len(current_item):
                     return False
 
                 # Validate the Sequence of the List data
-                if key in ('external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
+                if key in ('servers', 'external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
                     return False
 
                 for subitem in proposed_item:
