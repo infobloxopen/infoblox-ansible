@@ -200,7 +200,6 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 from ..module_utils.api import NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS
 from ..module_utils.api import WapiModule
 from ..module_utils.api import normalize_ib_spec
@@ -233,7 +232,7 @@ def options(module):
     special_num = [3, 6, 15, 28, 51]
     options = list()
     for item in module.params['options']:
-        opt = dict([(k, v) for k, v in iteritems(item) if v is not None])
+        opt = dict([(k, v) for k, v in item.items() if v is not None])
         if 'name' not in opt and 'num' not in opt:
             module.fail_json(msg='one of `name` or `num` is required for option value')
         if 'name' in opt and opt['name'] not in special_options:
@@ -309,7 +308,7 @@ def main():
                            supports_check_mode=True)
 
     # to get the argument ipaddr
-    obj_filter = dict([(k, module.params[k]) for k, v in iteritems(ib_spec) if v.get('ib_req')])
+    obj_filter = dict([(k, module.params[k]) for k, v in ib_spec.items() if v.get('ib_req')])
     # to modify argument based on ipaddr type i.e. IPV4/IPV6
     fixed_address_ip_type, ib_spec, module = validate_ip_addr_type(obj_filter['ipaddr'], ib_spec, module)
 

@@ -2,7 +2,9 @@ name: CI
 on:
 # Run CI against all pushes (direct commits) and Pull Requests
   push:
+    branches: [ master, Tests ]
   pull_request:
+    branches: [ master, Tests ]
   schedule:
     - cron: '0 2 * * 1'
 
@@ -185,7 +187,7 @@ jobs:
         with:
           # it is just required to run that once as "ansible-test sanity" in the docker image
           # will run on all python versions it supports.
-          python-version: 3.11
+          python-version: ${{ matrix.ansible-version == 'devel' && '3.12' || '3.11' }}
 
       - name: Install ansible (${{ matrix.ansible-version }}) version
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check

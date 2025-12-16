@@ -70,7 +70,6 @@ username: admin
 from ansible.plugins.inventory import BaseInventoryPlugin
 from ..module_utils.api import WapiInventory
 from ..module_utils.api import normalize_extattrs, flatten_extattrs
-from ansible.module_utils.six import iteritems
 from ansible.errors import AnsibleError
 
 
@@ -104,5 +103,5 @@ class InventoryModule(BaseInventoryPlugin):
             self.inventory.set_variable(host_name, 'view', host['view'])
             self.inventory.set_variable(host_name, 'ipv4addrs', [item['ipv4addr'] for item in host['ipv4addrs']])
 
-            for key, value in iteritems(flatten_extattrs(host['extattrs'])):
+            for key, value in flatten_extattrs(host['extattrs']).items():
                 self.inventory.set_variable(host_name, key, value)
