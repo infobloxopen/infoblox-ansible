@@ -2,9 +2,7 @@ name: CI
 on:
 # Run CI against all pushes (direct commits) and Pull Requests
   push:
-    branches: [ master, Tests ]
   pull_request:
-    branches: [ master, Tests ]
   schedule:
     - cron: '0 2 * * 1'
 
