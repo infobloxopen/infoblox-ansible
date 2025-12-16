@@ -85,6 +85,14 @@ jobs:
           git clone https://github.com/ansible/ansible.git -b ${{ matrix.ansible-version }}
           if [ "${{ matrix.ansible-version }}" == "stable-2.16" ]; then cp -rf ansible/test/units/compat /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/; fi
           cp -rf ansible/test/units/modules/utils.py /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/
+          if [ "${{ matrix.ansible-version }}" == "devel" ]; then
+            echo "devel branch detected → injecting legacy utils.py"
+            wget https://raw.githubusercontent.com/ansible/ansible/stable-2.17/test/units/modules/utils.py -O \
+              /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/utils.py
+          else
+            cp -rf ansible/test/units/modules/utils.py \
+              /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/
+          fi
           sed -i 's/units/ansible_collections.infoblox.nios_modules.tests.unit/' /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/utils.py
           if [ -f /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/requirements.txt ]; then pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/requirements.txt; fi
       - name: Run Unit tests using ansible-test
