@@ -385,7 +385,6 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_HOST_RECORD
 from ..module_utils.api import normalize_ib_spec
@@ -405,7 +404,7 @@ def ipaddr(module, key, filtered_keys=None):
     filtered_keys = filtered_keys or list()
     objects = list()
     for item in module.params[key]:
-        objects.append(dict([(k, v) for k, v in iteritems(item) if v is not None and k not in filtered_keys]))
+        objects.append(dict([(k, v) for k, v in item.items() if v is not None and k not in filtered_keys]))
     return objects
 
 
