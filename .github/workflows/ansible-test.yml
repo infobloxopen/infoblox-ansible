@@ -132,6 +132,7 @@ jobs:
             python-version: '3.10'
           - ansible-version: stable-2.18
             python-version: '3.10'
+
     steps:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -141,8 +142,17 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Install ansible-base (${{ matrix.ansible-version }})
-        run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
+      - name: Install ansible-core
+        run: |
+          case "${{ matrix.ansible-version }}" in
+            stable-2.16) pip install ansible-core==2.16.* ;;
+            stable-2.17) pip install ansible-core==2.17.* ;;
+            stable-2.18) pip install ansible-core==2.18.* ;;
+            devel) pip install ansible-core --pre ;;
+          esac
+
+      # - name: Install ansible-base (${{ matrix.ansible-version }})
+      #   run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
 
       - name: Download migrated collection artifacts
         uses: actions/download-artifact@v4
@@ -156,7 +166,8 @@ jobs:
       - name: Setup Integration test Pre-requisites
         run: |
              sudo apt-get update
-             sudo apt install -y python3-gi libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0
+             sudo apt install -y python3-gi libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 gobject-introspection
+             export PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig"
              pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
 
       # Run the integration tests
