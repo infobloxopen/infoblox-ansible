@@ -401,6 +401,8 @@ def ipaddr(module, key, filtered_keys=None):
     This function does not validate the values are properly formatted or in
     the acceptable range, that is left to WAPI.
     '''
+    if module.params.get(key) is None:
+        return None
     filtered_keys = filtered_keys or list()
     objects = list()
     for item in module.params[key]:
