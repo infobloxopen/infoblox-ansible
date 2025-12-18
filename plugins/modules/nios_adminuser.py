@@ -249,6 +249,10 @@ def main():
 
     def cacert_transform(module):
         cacert_ref = str()
+        # Only validate and transform if certificate authentication is enabled
+        if not all([module.params.get('ca_certificate_issuer'), module.params.get('client_certificate_serial_number')]):
+            return None
+
         if not module.params['client_certificate_serial_number']:
             module.fail_json(
                 msg='Client certificate Serial Number is required.')

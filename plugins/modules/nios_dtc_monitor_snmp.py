@@ -215,6 +215,8 @@ def oids(module):
     that condition.
     The remainder of the value validation is performed by WAPI
     '''
+    if not module.params.get('oids'):
+        return None
 
     oids = list()
     for item in module.params['oids']:
