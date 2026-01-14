@@ -58,7 +58,7 @@ jobs:
           - ansible-version: devel
             python-version: '3.10'
           - ansible-version: devel
-            python-version: '3.11'  
+            python-version: '3.11'
           - ansible-version: stable-2.18
             python-version: '3.10'
 
@@ -99,7 +99,7 @@ jobs:
 
       - name: Generate coverage report
         run: |
-          if [ "${{ matrix.ansible-version }}" == "stable-2.16" ] || [ "${{ matrix.ansible-version }}" == "stable-2.17" ]; then 
+          if [ "${{ matrix.ansible-version }}" == "stable-2.16" ] || [ "${{ matrix.ansible-version }}" == "stable-2.17" ]; then
             pip install coverage==7.3.2;
           fi
           if [ "${{ matrix.ansible-version }}" == "devel" ]; then
@@ -166,9 +166,9 @@ jobs:
       - name: Setup Integration test Pre-requisites
         run: |
              sudo apt-get update
-             sudo apt install -y python3-gi libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 gobject-introspection
+             sudo apt install -y python3-gi libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 gobject-introspection python-gi-dev
              export PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig"
-             pip install -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
+             pip install --no-build-isolation -r /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/requirements.txt
 
       # Run the integration tests
       - name: Run integration test
