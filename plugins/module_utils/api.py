@@ -741,6 +741,16 @@ class WapiModule(WapiBase):
                         and len(proposed_item) != len(current_item):
                     return False
 
+                # Special handling for auth_zones - we need to compare the actual values
+                if key == 'auth_zones' and ib_obj_type == NIOS_DTC_LBDN:
+                    if len(proposed_item) != len(current_item):
+                        return False
+                    # Sort and compare as strings for deterministic comparison
+                    current_zones_str = sorted([str(zone) for zone in current_item])
+                    proposed_zones_str = sorted([str(zone) for zone in proposed_item])
+                    if current_zones_str != proposed_zones_str:
+                        return False
+
                 # Validate the Sequence of the List data
                 if key in ('servers', 'external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
                     return False
