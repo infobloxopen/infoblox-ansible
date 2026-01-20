@@ -246,6 +246,8 @@ The collection has been tested in the following environments:
 
 - For detailed information on testing and performance, refer to the `tests` directory in the `infoblox-ansible` repository.
 - The `use_dns_ea_inheritance` option for Host Records is compatible only with WAPI versions 2.12.3 or 2.13.4 and later. 
+- The `nios_dtc_lbdn` module supports both string and dictionary formats for `auth_zones`. When using dictionary format, both `fqdn` and optional `view` keys can be specified (e.g., `{"fqdn": "example.com", "view": "default"}`). When multiple zones with the same name exist in different views, you must use the dictionary format with view specification.
+- When removing entries from the `auth_zones` list in `nios_dtc_lbdn` module, the module will detect this change and update the LBDN record accordingly.
 
 ## Contributing
 

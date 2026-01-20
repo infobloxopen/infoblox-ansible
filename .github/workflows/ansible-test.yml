@@ -58,7 +58,7 @@ jobs:
           - ansible-version: devel
             python-version: '3.10'
           - ansible-version: devel
-            python-version: '3.11'  
+            python-version: '3.11'
           - ansible-version: stable-2.18
             python-version: '3.10'
 
@@ -99,7 +99,7 @@ jobs:
 
       - name: Generate coverage report
         run: |
-          if [ "${{ matrix.ansible-version }}" == "stable-2.16" ] || [ "${{ matrix.ansible-version }}" == "stable-2.17" ]; then 
+          if [ "${{ matrix.ansible-version }}" == "stable-2.16" ] || [ "${{ matrix.ansible-version }}" == "stable-2.17" ]; then
             pip install coverage==7.3.2;
           fi
           if [ "${{ matrix.ansible-version }}" == "devel" ]; then
