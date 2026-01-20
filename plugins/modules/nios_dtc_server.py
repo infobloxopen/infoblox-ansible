@@ -40,6 +40,17 @@ options:
     required: false
     type: bool
     default: False
+  use_sni_hostname:
+    description:
+      - Indicates whether or not to use an alternative SNI hostname. Setting
+        to True makes the sni_hostname field obligatory.
+    type: bool
+    default: False
+  sni_hostname:
+    description:
+      - The hostname for Server Name Indication (SNI) in FQDN format. Field is
+        ignored unless C(use_sni_hostname) is True
+    type: str
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
@@ -118,6 +129,8 @@ def main():
         host=dict(required=True, ib_req=True),
 
         disable=dict(type='bool', default=False),
+        use_sni_hostname=dict(type='bool', default=False),
+        sni_hostname=dict(type='str'),
         extattrs=dict(type='dict'),
         comment=dict(),
     )
