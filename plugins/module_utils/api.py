@@ -502,6 +502,8 @@ class WapiModule(WapiBase):
 
         # Checks if nios_next_ip param is passed in ipv4addrs/ipv4addr args
         proposed_object = self.check_if_nios_next_ip_exists(proposed_object)
+        # Checks if a wapi function call is the payload of ipv4addrs/ipv4addr args
+        proposed_object = self.check_if_ipv4addr_object_function_exists(proposed_object)
 
         if state == 'present':
             if ref is None:
@@ -635,6 +637,23 @@ class WapiModule(WapiBase):
 
         return proposed_object
 
+    def check_if_ipv4addr_object_function_exists(self, proposed_object):
+        ''' Check if _object_function argument is passed in ipaddr
+            while creating host record, if yes then format proposed object ipv4addrs
+            to create hostrecord with next available ip in one call to avoid any race condition
+            This format support the exclude parameters unlike nextavailableip
+            It also supports DHCP ranges, dynamic selection of ranges and networks '''
+
+        if 'ipv4addrs' in proposed_object:
+            for ipv4addr_payload in proposed_object['ipv4addrs']:
+                if '_object_function' in ipv4addr_payload['ipv4addr']:
+                    ipv4addr_payload['ipv4addr'] = check_type_dict(ipv4addr_payload['ipv4addr'])
+        elif 'ipv4addr' in proposed_object:
+            if '_object_function' in proposed_object['ipv4addr']:
+                proposed_object['ipv4addr'] = check_type_dict(proposed_object['ipv4addr'])
+
+        return proposed_object
+
     def check_for_new_ipv4addr(self, proposed_object):
         ''' Checks if new_ipv4addr parameter is passed in the argument
             while updating the record with new ipv4addr with static allocation'''
@@ -678,6 +697,8 @@ class WapiModule(WapiBase):
             else returns false'''
         if 'ipv4addr' in obj_filter:
             if 'nios_next_ip' in obj_filter['ipv4addr']:
+                return True
+            if '_object_function' in obj_filter['ipv4addr'] and check_type_dict(obj_filter['ipv4addr'])['_object_function'] == 'next_available_ip':
                 return True
         return False
 
