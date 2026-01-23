@@ -1,0 +1,2 @@
+bugfixes:
+  - nios_host_record - "if len(ib_obj_ref) > 1" in module_utils/api.py results in weird behaviour. Changed to "if len(ib_obj_ref) >= 1" and deleted the corresponding else-statement.

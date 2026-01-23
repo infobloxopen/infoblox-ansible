@@ -381,7 +381,7 @@ class WapiModule(WapiBase):
                 and ib_obj_type == NIOS_HOST_RECORD:
             del proposed_object['view']
         if ib_obj_ref:
-            if len(ib_obj_ref) > 1:
+            if len(ib_obj_ref) >= 1:
                 for each in ib_obj_ref:
                     # To check for existing A_record with same name with input A_record by IP
                     if each.get('ipv4addr') and each.get('ipv4addr') == proposed_object.get('ipv4addr'):
@@ -395,8 +395,6 @@ class WapiModule(WapiBase):
                     else:
                         current_object = obj_filter
                         ref = None
-            else:
-                current_object = ib_obj_ref[0]
             if 'extattrs' in current_object:
                 current_object['extattrs'] = flatten_extattrs(current_object['extattrs'])
             if current_object.get('_ref'):
