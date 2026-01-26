@@ -15,6 +15,8 @@ The `infoblox.nios_modules` collection has the following content:
 
 - `nios_a_record` – Configure Infoblox NIOS A records
 - `nios_aaaa_record` – Configure Infoblox NIOS AAAA records
+- `nios_admingroup` – Configure Infoblox NIOS Admin Groups
+- `nios_adminrole` – Configure Infoblox NIOS Admin Roles
 - `nios_adminuser` – Configure Infoblox NIOS Adminuser
 - `nios_cname_record` – Configure Infoblox NIOS CNAME records
 - `nios_dns_view` – Configure Infoblox NIOS DNS views
