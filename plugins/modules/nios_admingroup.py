@@ -47,14 +47,14 @@ options:
         of this object.  The provided text string will be configured on the
         object instance.
     type: str
-  role:
+  roles:
     description:
-      - Allows for the assinment of existing NISO roles on the instcae of the
+      - Allows for the assignment of existing NIOS roles on the instance of the
         object. This argument accepts a list for configuration.
     type: list
   access_method:
     description:
-      - Allows for the configuration of how members of the group are alloed to
+      - Allows for the configuration of how members of the group are allowed to
         access the NIOS appliance.
     type: list
   state:
@@ -121,7 +121,7 @@ def main():
         extattrs=dict(type='dict'),
         enable_restricted_user_access=dict(type='bool', default=False),
         roles=dict(type='list'),
-        access_method=dict(type='list', default='GUI'),
+        access_method=dict(type='list', default=['GUI']),
         superuser=dict(type='bool', default=False), 
         disable_concurrent_login=dict(type='bool', default=False)
     )
