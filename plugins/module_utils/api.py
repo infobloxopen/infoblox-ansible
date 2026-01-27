@@ -86,6 +86,8 @@ NIOS_DTC_TOPOLOGY = 'dtc:topology'
 NIOS_EXTENSIBLE_ATTRIBUTE = 'extensibleattributedef'
 NIOS_VLAN = 'vlan'
 NIOS_ADMINUSER = 'adminuser'
+NIOS_ADMINROLE = 'adminrole'
+NIOS_ADMINGROUP = 'admingroup'
 
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
@@ -542,7 +544,8 @@ class WapiModule(WapiBase):
                     # popping 'zone_format' key as update of 'zone_format' is not supported with respect to zone_auth
                     proposed_object = self.on_update(proposed_object, ib_spec)
                     del proposed_object['zone_format']
-                    self.update_object(ref, proposed_object)
+                    if not self.module.check_mode:
+                        res = self.update_object(ref, proposed_object)
                     result['changed'] = True
                 elif 'network_view' in proposed_object and (ib_obj_type not in (NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS, NIOS_RANGE)):
                     proposed_object.pop('network_view')
