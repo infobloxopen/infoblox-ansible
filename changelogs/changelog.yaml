@@ -316,3 +316,13 @@ releases:
           name: nios_next_vlan_id
           namespace:
     release_date: "2025-01-29"
+  1.9.0:
+    changes:
+      release_summary: "Enhanced DTC LBDN with auth_zones support, fixed parameter handling, and improved CI/CD reliability."
+      bugfixes:
+        - Fixed transform functions to handle ``None`` parameters and apply default values correctly
+        - Fixed sanity and unit test execution in CI pipeline
+      minor_changes:
+        - nios_dtc_lbdn - Added support for auth_zones with enhanced change detection for string and object formats, including proper handling when entries are removed
+        - CI/CD - Added PyGObject support and improved dependency handling
+    release_date: "2025-01-27"
