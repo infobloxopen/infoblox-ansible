@@ -4,6 +4,24 @@ Infoblox.Nios_Modules Release Notes
 
 .. contents:: Topics
 
+v1.9.0
+======
+
+Release Summary
+---------------
+Enhanced DTC LBDN with auth_zones support, fixed parameter handling, and improved CI/CD reliability.
+
+Bugfixes
+--------
+- Fixed transform functions to handle ``None`` parameters and apply default values correctly `#309 <https://github.com/infobloxopen/infoblox-ansible/pull/309>`_
+- Fixed sanity and unit test execution in CI pipeline `#308 <https://github.com/infobloxopen/infoblox-ansible/pull/308>`_
+
+Minor Changes
+-------------
+- nios_dtc_lbdn - Added support for auth_zones with enhanced change detection for string and object formats, including proper handling when entries are removed `#298 <https://github.com/infobloxopen/infoblox-ansible/pull/298>`_
+- CI/CD - Added PyGObject support and improved dependency handling `#308 <https://github.com/infobloxopen/infoblox-ansible/pull/308>`_
+
+
 v1.8.0
 ======
 
