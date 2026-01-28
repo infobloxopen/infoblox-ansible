@@ -86,6 +86,7 @@ NIOS_DTC_TOPOLOGY = 'dtc:topology'
 NIOS_EXTENSIBLE_ATTRIBUTE = 'extensibleattributedef'
 NIOS_VLAN = 'vlan'
 NIOS_ADMINUSER = 'adminuser'
+NIOS_ADMINGROUP = 'admingroup'
 
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
