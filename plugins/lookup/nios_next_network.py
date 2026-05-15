@@ -29,7 +29,7 @@ options:
         - The CIDR of the network to retrieve the next network from next available network within the
           specified container. Also, Requested CIDR must be specified and greater than the parent CIDR.
       required: True
-      type: str
+      type: int
     num:
       description: The number of network addresses to return from network-container.
       required: false
@@ -105,9 +105,10 @@ class LookupModule(LookupBase):
             # maybe using network.prefixlen+1 as default
         except IndexError:
             raise AnsibleError('missing CIDR argument in the form of xx')
-
-        if network.prefixlen >= cidr:
-            raise AnsibleError('cidr %s must be greater than parent network cidr %s' % (cidr, network.prefixlen))
+        try:
+            cidr = int(cidr)
+        except (TypeError, ValueError):
+            raise AnsibleError('cidr must be an integer, got %r' % (cidr,))
 
         container_type = None
         network_objects = None
