@@ -115,11 +115,11 @@ class LookupModule(LookupBase):
         # check for ip version 4 or 6 else die
         if network.version == 4:
             container_type = NIOS_IPV4_NETWORK_CONTAINER
-            if cidr not in range(1, 32):
+            if cidr not in range(1, 33):
                 raise AnsibleError('cidr %s must be in range 1 to 32' % cidr)
         elif network.version == 6:
             container_type = NIOS_IPV6_NETWORK_CONTAINER
-            if cidr not in range(1, 128):
+            if cidr not in range(1, 129):
                 raise AnsibleError('cidr %s must be in range 1 to 128' % cidr)
         else:
             raise AnsibleError('not a valid ipv4 or ipv6 network definition %s' % terms[0])
