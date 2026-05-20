@@ -105,6 +105,8 @@ class LookupModule(LookupBase):
             # maybe using network.prefixlen+1 as default
         except IndexError:
             raise AnsibleError('missing CIDR argument in the form of xx')
+        if isinstance(cidr, bool):
+            raise AnsibleError('cidr must be an integer, got %r' % (cidr,))
         try:
             cidr = int(cidr)
         except (TypeError, ValueError):
