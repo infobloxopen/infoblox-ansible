@@ -87,6 +87,15 @@ NIOS_EXTENSIBLE_ATTRIBUTE = 'extensibleattributedef'
 NIOS_VLAN = 'vlan'
 NIOS_ADMINUSER = 'adminuser'
 
+# Object types that intentionally do NOT participate in the post-write
+# re-fetch performed at the end of WapiModule.run() (issue #305).
+# NIOS_MEMBER's create_token path already returns its payload under
+# result['api_results'] and there is no canonical 'member' object to re-read
+# in that flow.
+NIOS_RETURN_OBJECT_EXCLUDE = frozenset({
+    NIOS_MEMBER,
+})
+
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
     'username': dict(fallback=(env_fallback, ['INFOBLOX_USERNAME'])),
@@ -572,7 +581,7 @@ class WapiModule(WapiBase):
         if state == 'present':
             if ref is None:
                 if not self.module.check_mode:
-                    self.create_object(ib_obj_type, proposed_object)
+                    res = self.create_object(ib_obj_type, proposed_object)
                 result['changed'] = True
             # Check if NIOS_MEMBER and the flag to call function create_token is set
             elif (ib_obj_type == NIOS_MEMBER) and (proposed_object.get("create_token") is True):
@@ -608,7 +617,7 @@ class WapiModule(WapiBase):
                     # popping 'zone_format' key as update of 'zone_format' is not supported with respect to zone_auth
                     proposed_object = self.on_update(proposed_object, ib_spec)
                     del proposed_object['zone_format']
-                    self.update_object(ref, proposed_object)
+                    res = self.update_object(ref, proposed_object)
                     result['changed'] = True
                 elif 'network_view' in proposed_object and (ib_obj_type not in (NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS, NIOS_RANGE)):
                     proposed_object.pop('network_view')
@@ -652,6 +661,42 @@ class WapiModule(WapiBase):
                 elif not self.module.check_mode:
                     self.delete_object(ref)
                     result['changed'] = True
+
+        # ------------------------------------------------------------------
+        # Fix for issue #305 (generalized):
+        # After a successful present-state write, re-fetch the canonical
+        # object so the caller's `register:` variable exposes WAPI-resolved
+        # values (notably IPs produced by func:nextavailableip and networks
+        # produced by func:nextavailablenetwork). The fields requested are
+        # derived from the calling module's ib_spec so this works for every
+        # WAPI object type without a per-type table that would need to be
+        # maintained as the schema evolves.
+        # ------------------------------------------------------------------
+        if (state == 'present'
+                and result.get('changed')
+                and not self.module.check_mode
+                and ib_obj_type not in NIOS_RETURN_OBJECT_EXCLUDE):
+            target_ref = res if res else ref
+            if target_ref:
+                return_fields = sorted({
+                    k for k in ib_spec.keys()
+                    if not k.startswith('_') and k not in ('provider', 'state')
+                })
+                try:
+                    fetched = self.connector.get_object(
+                        obj_type=str(target_ref),
+                        return_fields=return_fields or None,
+                    )
+                    if fetched:
+                        # get_object on a _ref returns a dict; on a search it
+                        # returns a list. Handle both defensively.
+                        result['object'] = (
+                            fetched[0] if isinstance(fetched, list) else fetched
+                        )
+                except Exception:
+                    # Never fail the task because the post-fetch failed; the
+                    # create/update itself already succeeded server-side.
+                    pass
 
         return result
 
