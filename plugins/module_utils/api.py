@@ -379,7 +379,7 @@ class WapiModule(WapiBase):
                 if len(ipam_only) > 1:
                     self.module.fail_json(
                         msg=("multiple IPAM-only host records named '%s' were found; "
-                             "specify 'view' or 'ipv4addrs' to disambiguate"
+                             "specify 'ipv4addrs' to disambiguate"
                              % obj_filter.get('name')))
                 if ipam_only:
                     ib_obj_ref, update, new_name = ipam_only, retry_update, retry_new_name
