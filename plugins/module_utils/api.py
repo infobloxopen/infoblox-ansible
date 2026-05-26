@@ -96,6 +96,19 @@ NIOS_RETURN_OBJECT_EXCLUDE = frozenset({
     NIOS_MEMBER,
 })
 
+# ib_spec keys that are module-side helpers / write-only inputs and are NOT
+# valid WAPI return fields. They are stripped from the return_fields set
+# passed to the post-write re-fetch in WapiModule.run() (issue #305) so the
+# GET succeeds on the first try. Mirrors the per-type sanitization already
+# performed by get_object_ref() before its own GETs.
+NIOS_RETURN_FIELDS_EXCLUDE = frozenset({
+    'restart_if_needed',   # nios_zone
+    'template',            # nios_network, nios_network_container
+    'new_start_addr',      # nios_range
+    'new_end_addr',        # nios_range
+    'create_token',        # nios_member
+})
+
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
     'username': dict(fallback=(env_fallback, ['INFOBLOX_USERNAME'])),
@@ -683,36 +696,25 @@ class WapiModule(WapiBase):
             if target_ref:
                 return_fields = sorted({
                     k for k in ib_spec.keys()
-                    if not k.startswith('_') and k not in ('provider', 'state')
+                    if not k.startswith('_')
+                    and k not in ('provider', 'state')
+                    and k not in NIOS_RETURN_FIELDS_EXCLUDE
                 })
-                fetched = None
                 try:
                     fetched = self.connector.get_object(
                         obj_type=str(target_ref),
                         return_fields=return_fields or None,
                     )
-                except Exception:
-                    # Some modules include helper/read-only ib_spec keys that
-                    # are not valid WAPI return fields (e.g., nios_zone's
-                    # restart_if_needed, nios_network's template,
-                    # nios_range's new_start_addr/new_end_addr). Retry the
-                    # fetch without return_fields so result['object'] is
-                    # still populated with the canonical record.
-                    try:
-                        fetched = self.connector.get_object(
-                            obj_type=str(target_ref),
+                    if fetched:
+                        # get_object on a _ref returns a dict; on a search it
+                        # returns a list. Handle both defensively.
+                        result['object'] = (
+                            fetched[0] if isinstance(fetched, list) else fetched
                         )
-                    except Exception:
-                        # Never fail the task because the post-fetch failed;
-                        # the create/update itself already succeeded
-                        # server-side.
-                        pass
-                if fetched:
-                    # get_object on a _ref returns a dict; on a search it
-                    # returns a list. Handle both defensively.
-                    result['object'] = (
-                        fetched[0] if isinstance(fetched, list) else fetched
-                    )
+                except Exception:
+                    # Never fail the task because the post-fetch failed; the
+                    # create/update itself already succeeded server-side.
+                    pass
 
         return result
 
