@@ -258,3 +258,129 @@ class TestNiosApi(unittest.TestCase):
 
         self.assertTrue(res['changed'])
         wapi.update_object.assert_called_once_with(ref, kwargs)
+
+    # ------------------------------------------------------------------
+    # Issue #300: IPAM-only (non-DNS) host records carry view=' ' in WAPI.
+    # The tests below cover the new view-handling paths in WapiModule.run()
+    # and WapiModule.get_object_ref().
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _host_record_spec():
+        return {
+            "name": {"ib_req": True},
+            "view": {"ib_req": True},
+            "configure_for_dns": {"ib_req": True},
+            "ipv4addrs": {},
+            "comment": {},
+            "extattrs": {},
+        }
+
+    def test_host_record_blank_view_omits_view_from_lookup(self):
+        # User explicitly passes view=' ' (an IPAM-only host record's WAPI
+        # marker). The lookup must be performed without 'view' in the
+        # search filter so WAPI doesn't return 'View not found'.
+        ref = "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0Lmlwc28x:ipso-host/%20"
+        ipam_only = {
+            "_ref": ref, "name": "ipso-host", "view": " ",
+            "configure_for_dns": False, "ipv4addrs": [], "extattrs": {},
+        }
+        self.module.params = {
+            'provider': None, 'state': 'absent', 'name': 'ipso-host',
+            'view': ' ', 'configure_for_dns': False,
+            'ipv4addrs': None, 'comment': None, 'extattrs': None,
+        }
+        wapi = self._get_wapi([ipam_only])
+        res = wapi.run(api.NIOS_HOST_RECORD, self._host_record_spec())
+
+        self.assertTrue(res['changed'])
+        wapi.delete_object.assert_called_once_with(ref)
+        # The lookup filter passed to get_object must not contain 'view'
+        # when the user-supplied view is blank/whitespace.
+        called_filter = wapi.get_object.call_args[0][1]
+        self.assertNotIn('view', called_filter)
+
+    def test_host_record_default_view_retry_finds_ipam_only(self):
+        # User runs state=absent without specifying view, so view defaults
+        # to 'default'. The first lookup (view='default') returns nothing;
+        # the retry without the view filter must find the IPAM-only record
+        # (view=' ') and delete it.
+        ref = "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0Lmlwc28x:ipso-host/%20"
+        ipam_only = {
+            "_ref": ref, "name": "ipso-host", "view": " ",
+            "configure_for_dns": False, "ipv4addrs": [], "extattrs": {},
+        }
+        responses = [[], [ipam_only]]
+        self.module.params = {
+            'provider': None, 'state': 'absent', 'name': 'ipso-host',
+            'view': 'default', 'configure_for_dns': True,
+            'ipv4addrs': None, 'comment': None, 'extattrs': None,
+        }
+        wapi = api.WapiModule(self.module)
+        wapi.get_object = Mock(side_effect=responses)
+        wapi.create_object = Mock()
+        wapi.update_object = Mock()
+        wapi.delete_object = Mock()
+
+        res = wapi.run(api.NIOS_HOST_RECORD, self._host_record_spec())
+
+        self.assertTrue(res['changed'])
+        wapi.delete_object.assert_called_once_with(ref)
+
+    def test_host_record_default_view_retry_ignores_other_dns_views(self):
+        # The retry path must NOT match records that live in a non-default
+        # DNS view (view='external'); those are not IPAM-only records and
+        # acting on them would be wrong. The module should treat the
+        # absent operation as a no-op (changed=False).
+        external_view_record = {
+            "_ref": "record:host/abc:ipso-host/external",
+            "name": "ipso-host", "view": "external",
+            "configure_for_dns": True, "ipv4addrs": [], "extattrs": {},
+        }
+        responses = [[], [external_view_record]]
+        self.module.params = {
+            'provider': None, 'state': 'absent', 'name': 'ipso-host',
+            'view': 'default', 'configure_for_dns': True,
+            'ipv4addrs': None, 'comment': None, 'extattrs': None,
+        }
+        wapi = api.WapiModule(self.module)
+        wapi.get_object = Mock(side_effect=responses)
+        wapi.create_object = Mock()
+        wapi.update_object = Mock()
+        wapi.delete_object = Mock()
+
+        res = wapi.run(api.NIOS_HOST_RECORD, self._host_record_spec())
+
+        self.assertFalse(res['changed'])
+        wapi.delete_object.assert_not_called()
+
+    def test_host_record_blank_view_multiple_matches_fails(self):
+        # If the IPAM-only name-only fallback search returns more than one
+        # eligible (blank-view) record, the module must fail rather than
+        # silently picking one.
+        match_a = {
+            "_ref": "record:host/a:ipso-host/%20",
+            "name": "ipso-host", "view": " ",
+            "configure_for_dns": False, "ipv4addrs": [], "extattrs": {},
+        }
+        match_b = {
+            "_ref": "record:host/b:ipso-host/%20",
+            "name": "ipso-host", "view": " ",
+            "configure_for_dns": False, "ipv4addrs": [], "extattrs": {},
+        }
+        self.module.params = {
+            'provider': None, 'state': 'absent', 'name': 'ipso-host',
+            'view': ' ', 'configure_for_dns': False,
+            'ipv4addrs': None, 'comment': None, 'extattrs': None,
+        }
+        wapi = self._get_wapi([match_a, match_b])
+        self.module.fail_json.reset_mock()
+        self.module.fail_json.side_effect = SystemExit(1)
+
+        with self.assertRaises(SystemExit):
+            wapi.run(api.NIOS_HOST_RECORD, self._host_record_spec())
+
+        self.module.fail_json.assert_called_once()
+        msg_kwargs = self.module.fail_json.call_args[1]
+        self.assertIn('multiple IPAM-only host records', msg_kwargs.get('msg', ''))
+        wapi.delete_object.assert_not_called()
