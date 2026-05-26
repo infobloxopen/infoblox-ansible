@@ -378,8 +378,8 @@ class WapiModule(WapiBase):
                 ]
                 if len(ipam_only) > 1:
                     self.module.fail_json(
-                        msg=("multiple IPAM-only host records named '%s' were found; "
-                             "specify 'ipv4addrs' to disambiguate"
+                        msg=("multiple IPAM-only host records named '%s' were found "
+                             "and could not be disambiguated"
                              % obj_filter.get('name')))
                 if ipam_only:
                     ib_obj_ref, update, new_name = ipam_only, retry_update, retry_new_name
@@ -923,8 +923,8 @@ class WapiModule(WapiBase):
                         ]
                         if len(ipam_only) > 1:
                             self.module.fail_json(
-                                msg=("multiple IPAM-only host records named '%s' were found; "
-                                     "specify 'ipv4addrs' to disambiguate" % old_name))
+                                msg=("multiple IPAM-only host records named '%s' were found "
+                                     "and could not be disambiguated" % old_name))
                         ib_obj = ipam_only or None
                 if ib_obj:
                     obj_filter['name'] = new_name
@@ -1038,8 +1038,8 @@ class WapiModule(WapiBase):
                     ]
                     if len(ipam_only) > 1:
                         self.module.fail_json(
-                            msg=("multiple IPAM-only host records named '%s' were found; "
-                                 "specify 'ipv4addrs' to disambiguate"
+                            msg=("multiple IPAM-only host records named '%s' were found "
+                                 "and could not be disambiguated"
                                  % obj_filter.get('name')))
                     ib_obj = ipam_only or None
 
