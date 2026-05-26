@@ -617,7 +617,10 @@ class WapiModule(WapiBase):
                     # popping 'zone_format' key as update of 'zone_format' is not supported with respect to zone_auth
                     proposed_object = self.on_update(proposed_object, ib_spec)
                     del proposed_object['zone_format']
-                    res = self.update_object(ref, proposed_object)
+                    if not self.module.check_mode:
+                        res = self.update_object(ref, proposed_object)
+                    else:
+                        res = ref
                     result['changed'] = True
                 elif 'network_view' in proposed_object and (ib_obj_type not in (NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS, NIOS_RANGE)):
                     proposed_object.pop('network_view')
@@ -682,21 +685,34 @@ class WapiModule(WapiBase):
                     k for k in ib_spec.keys()
                     if not k.startswith('_') and k not in ('provider', 'state')
                 })
+                fetched = None
                 try:
                     fetched = self.connector.get_object(
                         obj_type=str(target_ref),
                         return_fields=return_fields or None,
                     )
-                    if fetched:
-                        # get_object on a _ref returns a dict; on a search it
-                        # returns a list. Handle both defensively.
-                        result['object'] = (
-                            fetched[0] if isinstance(fetched, list) else fetched
-                        )
                 except Exception:
-                    # Never fail the task because the post-fetch failed; the
-                    # create/update itself already succeeded server-side.
-                    pass
+                    # Some modules include helper/read-only ib_spec keys that
+                    # are not valid WAPI return fields (e.g., nios_zone's
+                    # restart_if_needed, nios_network's template,
+                    # nios_range's new_start_addr/new_end_addr). Retry the
+                    # fetch without return_fields so result['object'] is
+                    # still populated with the canonical record.
+                    try:
+                        fetched = self.connector.get_object(
+                            obj_type=str(target_ref),
+                        )
+                    except Exception:
+                        # Never fail the task because the post-fetch failed;
+                        # the create/update itself already succeeded
+                        # server-side.
+                        pass
+                if fetched:
+                    # get_object on a _ref returns a dict; on a search it
+                    # returns a list. Handle both defensively.
+                    result['object'] = (
+                        fetched[0] if isinstance(fetched, list) else fetched
+                    )
 
         return result
 
