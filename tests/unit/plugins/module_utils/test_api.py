@@ -384,3 +384,31 @@ class TestNiosApi(unittest.TestCase):
         msg_kwargs = self.module.fail_json.call_args[1]
         self.assertIn('multiple IPAM-only host records', msg_kwargs.get('msg', ''))
         wapi.delete_object.assert_not_called()
+
+    def test_host_record_configure_for_dns_false_filters_out_dns_records(self):
+        # Legacy fallback: when configure_for_dns=False, the lookup falls
+        # back to name-only even if view='default'. If a DNS-enabled host
+        # with the same name exists in some view, name-only search returns
+        # both. The module must filter out the DNS-enabled record and act
+        # only on the IPAM-only one (configure_for_dns=False).
+        ipam_only_ref = "record:host/a:ipso-host/%20"
+        dns_record = {
+            "_ref": "record:host/b:ipso-host/default",
+            "name": "ipso-host", "view": "default",
+            "configure_for_dns": True, "ipv4addrs": [], "extattrs": {},
+        }
+        ipam_only = {
+            "_ref": ipam_only_ref, "name": "ipso-host", "view": " ",
+            "configure_for_dns": False, "ipv4addrs": [], "extattrs": {},
+        }
+        self.module.params = {
+            'provider': None, 'state': 'absent', 'name': 'ipso-host',
+            'view': 'default', 'configure_for_dns': False,
+            'ipv4addrs': None, 'comment': None, 'extattrs': None,
+        }
+        wapi = self._get_wapi([dns_record, ipam_only])
+
+        res = wapi.run(api.NIOS_HOST_RECORD, self._host_record_spec())
+
+        self.assertTrue(res['changed'])
+        wapi.delete_object.assert_called_once_with(ipam_only_ref)
