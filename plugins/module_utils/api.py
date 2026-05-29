@@ -736,14 +736,22 @@ class WapiModule(WapiBase):
         return len(proposed_data) == len(current_data) and all(a == b for a, b in zip(proposed_data, current_data))
 
     def verify_list_content_equality(self, proposed_data, current_data):
-        '''Verify two lists have the same content regardless of order.
-        Handles both simple values and complex objects with canonical JSON.'''
+        '''Verify proposed list items are present in current list regardless of order.'''
         if len(proposed_data) != len(current_data):
             return False
-        # Sort canonical representations for order-independent comparison
-        proposed_sorted = sorted([json.dumps(item, sort_keys=True, default=to_text) for item in proposed_data])
-        current_sorted = sorted([json.dumps(item, sort_keys=True, default=to_text) for item in current_data])
-        return proposed_sorted == current_sorted
+        unmatched = list(current_data)
+        for proposed_item in proposed_data:
+            for idx, current_item in enumerate(unmatched):
+                if isinstance(proposed_item, dict):
+                    if isinstance(current_item, dict) and all(entry in current_item.items() for entry in proposed_item.items()):
+                        unmatched.pop(idx)
+                        break
+                elif proposed_item == current_item:
+                    unmatched.pop(idx)
+                    break
+            else:
+                return False
+        return True
 
     def compare_objects(self, current_object, proposed_object, ib_obj_type=None):
         for key, proposed_item in proposed_object.items():
