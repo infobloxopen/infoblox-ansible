@@ -222,6 +222,16 @@ def convert_members_to_struct(member_spec):
     return member_spec
 
 
+def convert_vlans_to_struct(network_spec):
+    ''' Normalizes the vlans list of a network object to only contain the vlan
+    reference key, stripping NIOS-added fields (id, name) so that the proposed
+    and current objects can be compared with verify_list_content_equality.
+    '''
+    if 'vlans' in network_spec and network_spec['vlans']:
+        network_spec['vlans'] = [{'vlan': item['vlan']} for item in network_spec['vlans'] if 'vlan' in item]
+    return network_spec
+
+
 def convert_ea_list_to_struct(member_spec):
     ''' Transforms the list of the values into a valid WAPI struct.
     '''
@@ -415,6 +425,8 @@ class WapiModule(WapiBase):
 
         if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
             proposed_object = convert_members_to_struct(proposed_object)
+            current_object = convert_members_to_struct(current_object)
+            current_object = convert_vlans_to_struct(current_object)
 
         if ib_obj_type in {NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER, NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK, NIOS_RANGE}:
 
@@ -496,7 +508,13 @@ class WapiModule(WapiBase):
             # Removes keys from the proposed_object that are empty and do not exist in current_object.
             # Fix the issue to update the optional fields of the object with default empty values
             proposed_object = self.clean_empty_keys(current_object, proposed_object)
-        modified = not self.compare_objects(current_object, proposed_object, ib_obj_type)
+        # For NIOS_ADMINUSER, exclude write-only 'password' from comparison since NIOS never returns it.
+        # Without this, every task with a password would always trigger a spurious change.
+        if ib_obj_type == NIOS_ADMINUSER:
+            proposed_for_compare = {k: v for k, v in proposed_object.items() if k != 'password'}
+        else:
+            proposed_for_compare = proposed_object
+        modified = not self.compare_objects(current_object, proposed_for_compare, ib_obj_type)
         if 'extattrs' in proposed_object:
             proposed_object['extattrs'] = normalize_extattrs(proposed_object['extattrs'])
 
@@ -717,6 +735,16 @@ class WapiModule(WapiBase):
     def verify_list_order(self, proposed_data, current_data):
         return len(proposed_data) == len(current_data) and all(a == b for a, b in zip(proposed_data, current_data))
 
+    def verify_list_content_equality(self, proposed_data, current_data):
+        '''Verify two lists have the same content regardless of order.
+        Handles both simple values and complex objects with canonical JSON.'''
+        if len(proposed_data) != len(current_data):
+            return False
+        # Sort canonical representations for order-independent comparison
+        proposed_sorted = sorted([json.dumps(item, sort_keys=True, default=to_text) for item in proposed_data])
+        current_sorted = sorted([json.dumps(item, sort_keys=True, default=to_text) for item in current_data])
+        return proposed_sorted == current_sorted
+
     def compare_objects(self, current_object, proposed_object, ib_obj_type=None):
         for key, proposed_item in proposed_object.items():
             current_item = current_object.get(key)
@@ -737,22 +765,12 @@ class WapiModule(WapiBase):
                 # equal, and False will be returned before comparing the list items
                 # this code part will work for members' assignment
 
-                if key in ('monitors', 'members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans') \
-                        and len(proposed_item) != len(current_item):
+                if key in ('monitors', 'members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans', 'auth_zones') \
+                        and not self.verify_list_content_equality(proposed_item, current_item):
                     return False
 
-                # Special handling for auth_zones - we need to compare the actual values
-                if key == 'auth_zones' and ib_obj_type == NIOS_DTC_LBDN:
-                    if len(proposed_item) != len(current_item):
-                        return False
-                    # Sort and compare as strings for deterministic comparison
-                    current_zones_str = sorted([str(zone) for zone in current_item])
-                    proposed_zones_str = sorted([str(zone) for zone in proposed_item])
-                    if current_zones_str != proposed_zones_str:
-                        return False
-
                 # Validate the Sequence of the List data
-                if key in ('servers', 'external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
+                if key in ('pools', 'servers', 'external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
                     return False
 
                 for subitem in proposed_item:
