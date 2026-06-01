@@ -100,11 +100,9 @@ class LookupModule(LookupBase):
             raise AnsibleError('network argument is missing')
         except (ValueError, TypeError) as error:
             raise AnsibleError('network argument is invalid %s' % error)
-        try:
-            cidr = kwargs.get('cidr', 24)
-            # maybe using network.prefixlen+1 as default
-        except IndexError:
-            raise AnsibleError('missing CIDR argument in the form of xx')
+        cidr = kwargs.get('cidr')
+        if cidr is None:
+            raise AnsibleError('missing required argument: cidr')
         if isinstance(cidr, bool):
             raise AnsibleError('cidr must be an integer, got %r' % (cidr,))
         try:
