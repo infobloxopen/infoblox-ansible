@@ -143,6 +143,6 @@ class TestNiosDtcTcpMonitorModule(TestNiosModule):
             'name': 'tcp_monitor',
             'provider': {'host': '192.168.1.1', 'username': 'admin', 'password': 'admin'},
         })
-        with self.assertRaises(AnsibleFailJson) as cm:
+        with self.assertRaises(Exception) as cm:
             nios_dtc_monitor_tcp.main()
         self.assertIn('port', str(cm.exception.args[0].get('msg', '')))

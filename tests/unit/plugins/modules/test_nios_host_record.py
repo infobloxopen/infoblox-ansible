@@ -24,6 +24,7 @@ from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import pat
 from .test_nios_module import TestNiosModule, load_fixture
 
 
+
 class TestNiosHostRecordModule(TestNiosModule):
 
     module = nios_host_record
@@ -157,3 +158,28 @@ class TestNiosHostRecordModule(TestNiosModule):
         wapi.update_object.assert_called_once_with(
             ref, {'comment': 'comment', 'name': 'default'}
         )
+
+    def test_module_excludes_dns_ea_inheritance_for_unsupported_wapi(self):
+        effective_ib_spec = {'name': {'ib_req': True}, 'use_dns_ea_inheritance': {'type': 'bool'}}
+        if not nios_host_record.supports_dns_ea_inheritance('2.12'):
+            effective_ib_spec.pop('use_dns_ea_inheritance', None)
+
+        self.assertNotIn('use_dns_ea_inheritance', effective_ib_spec)
+
+    def test_module_includes_dns_ea_inheritance_for_supported_wapi(self):
+        effective_ib_spec = {'name': {'ib_req': True}, 'use_dns_ea_inheritance': {'type': 'bool'}}
+        if not nios_host_record.supports_dns_ea_inheritance('2.12.3'):
+            effective_ib_spec.pop('use_dns_ea_inheritance', None)
+
+        self.assertIn('use_dns_ea_inheritance', effective_ib_spec)
+
+    def test_supports_dns_ea_inheritance_version_rules(self):
+        self.assertFalse(nios_host_record.supports_dns_ea_inheritance('2.12'))
+        self.assertFalse(nios_host_record.supports_dns_ea_inheritance('2.13.3'))
+        self.assertTrue(nios_host_record.supports_dns_ea_inheritance('2.12.3'))
+        self.assertTrue(nios_host_record.supports_dns_ea_inheritance('2.13.4'))
+
+    def test_warn_ignored_dns_ea_inheritance_on_unsupported_wapi(self):
+        self.assertTrue(nios_host_record.should_warn_ignored_dns_ea_inheritance('2.12', True))
+        self.assertFalse(nios_host_record.should_warn_ignored_dns_ea_inheritance('2.12', False))
+        self.assertFalse(nios_host_record.should_warn_ignored_dns_ea_inheritance('2.12.3', True))

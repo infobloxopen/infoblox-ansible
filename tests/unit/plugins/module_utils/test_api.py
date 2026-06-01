@@ -272,6 +272,7 @@ class TestNiosApi(unittest.TestCase):
         test_spec = {
             'network': {'ib_req': True},
             'network_view': {'ib_req': True},
+            'template': {},
         }
 
         wapi = self._get_wapi(None)
@@ -299,6 +300,7 @@ class TestNiosApi(unittest.TestCase):
         test_spec = {
             'network': {'ib_req': True},
             'network_view': {'ib_req': True},
+            'template': {},
         }
 
         wapi = self._get_wapi(None)
@@ -317,7 +319,7 @@ class TestNiosApi(unittest.TestCase):
         wapi.delete_object.assert_not_called()
 
     def test_wapi_handle_exception_delete_notfound_absent_is_ignored(self):
-        self.module.params = {'provider': None, 'state': 'absent'}
+        self.module.params = {'provider': {}, 'state': 'absent'}
         self.module.fail_json = Mock(name='fail_json')
 
         wapi = api.WapiModule(self.module)
@@ -333,7 +335,7 @@ class TestNiosApi(unittest.TestCase):
         self.module.fail_json.assert_not_called()
 
     def test_wapi_handle_exception_delete_notfound_present_fails(self):
-        self.module.params = {'provider': None, 'state': 'present'}
+        self.module.params = {'provider': {}, 'state': 'present'}
         self.module.fail_json = Mock(name='fail_json')
 
         wapi = api.WapiModule(self.module)

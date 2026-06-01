@@ -22,6 +22,8 @@ requirements:
 extends_documentation_fragment: infoblox.nios_modules.nios
 notes:
     - This module supports C(check_mode).
+    - C(use_dns_ea_inheritance) is only supported with WAPI 2.12.3+ and 2.13.4+.
+      For older WAPI versions, the module ignores this field to preserve compatibility.
 options:
   name:
     description:
@@ -50,6 +52,8 @@ options:
     version_added: "1.7.0"
     description:
       - When use_dns_ea_inheritance is True, the EA is inherited from associated zone. The default value is False.
+      - This field is only supported with WAPI 2.12.3+ and 2.13.4+.
+        For lower WAPI versions, this field is ignored.
     type: bool
     default: false
   ipv4addrs:
@@ -418,6 +422,33 @@ def ipv6addrs(module):
     return ipaddr(module, 'ipv6addrs', filtered_keys=['address', 'dhcp'])
 
 
+def supports_dns_ea_inheritance(wapi_version):
+    try:
+        parts = [int(part) for part in str(wapi_version).split('.')]
+    except ValueError:
+        return True
+
+    while len(parts) < 3:
+        parts.append(0)
+    major, minor, patch = parts[:3]
+
+    if major > 2:
+        return True
+    if major < 2:
+        return False
+    if minor < 12:
+        return False
+    if minor == 12:
+        return patch >= 3
+    if minor == 13:
+        return patch >= 4
+    return True
+
+
+def should_warn_ignored_dns_ea_inheritance(wapi_version, use_dns_ea_inheritance):
+    return bool(use_dns_ea_inheritance) and not supports_dns_ea_inheritance(wapi_version)
+
+
 def main():
     ''' Main entry point for module execution
     '''
@@ -465,8 +496,20 @@ def main():
     module = AnsibleModule(argument_spec=argument_spec,
                            supports_check_mode=True)
 
+    effective_ib_spec = ib_spec.copy()
+    provider_wapi_version = module.params.get('provider', {}).get('wapi_version', '2.12.3')
+    if should_warn_ignored_dns_ea_inheritance(provider_wapi_version, module.params.get('use_dns_ea_inheritance')):
+      module.warn(
+        "Parameter 'use_dns_ea_inheritance' is not supported with WAPI version %s; "
+        "ignoring it. Supported versions are 2.12.3+ and 2.13.4+."
+        % provider_wapi_version
+      )
+
+    if not supports_dns_ea_inheritance(provider_wapi_version):
+        effective_ib_spec.pop('use_dns_ea_inheritance', None)
+
     wapi = WapiModule(module)
-    result = wapi.run(NIOS_HOST_RECORD, ib_spec)
+    result = wapi.run(NIOS_HOST_RECORD, effective_ib_spec)
 
     module.exit_json(**result)
 
