@@ -258,3 +258,60 @@ class TestNiosApi(unittest.TestCase):
 
         self.assertTrue(res['changed'])
         wapi.update_object.assert_called_once_with(ref, kwargs)
+
+    def test_wapi_delete_network_without_network_view_falls_back(self):
+        self.module.params = {
+            'provider': None,
+            'state': 'absent',
+            'network': '192.0.2.0/24',
+            'network_view': 'default',
+        }
+
+        ref = 'network/ZG5zLm5ldHdvcmtfdmlldyQw:issue135_ansible_view/false'
+
+        test_spec = {
+            'network': {'ib_req': True},
+            'network_view': {'ib_req': True},
+        }
+
+        wapi = self._get_wapi(None)
+        # First lookup in default view misses, fallback without network_view finds object.
+        wapi.get_object.side_effect = [[], [{'_ref': ref, 'network': '192.0.2.0/24'}]]
+
+        res = wapi.run(api.NIOS_IPV4_NETWORK, test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.delete_object.assert_called_once_with(ref)
+        self.assertEqual(wapi.get_object.call_count, 2)
+        first_filter = wapi.get_object.call_args_list[0][0][1]
+        second_filter = wapi.get_object.call_args_list[1][0][1]
+        self.assertIn('network_view', first_filter)
+        self.assertNotIn('network_view', second_filter)
+
+    def test_wapi_delete_network_without_network_view_fallback_ambiguous_fails(self):
+        self.module.params = {
+            'provider': None,
+            'state': 'absent',
+            'network': '192.0.2.0/24',
+            'network_view': 'default',
+        }
+
+        test_spec = {
+            'network': {'ib_req': True},
+            'network_view': {'ib_req': True},
+        }
+
+        wapi = self._get_wapi(None)
+        wapi.get_object.side_effect = [
+            [],
+            [
+                {'_ref': 'network/view1/false', 'network': '192.0.2.0/24', 'network_view': 'view1'},
+                {'_ref': 'network/view2/false', 'network': '192.0.2.0/24', 'network_view': 'view2'},
+            ],
+        ]
+
+        with self.assertRaises(Exception) as cm:
+            wapi.run(api.NIOS_IPV4_NETWORK, test_spec)
+
+        self.assertIn('Set network_view explicitly for state=absent', str(cm.exception))
+        wapi.delete_object.assert_not_called()
