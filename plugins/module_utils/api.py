@@ -313,11 +313,21 @@ class WapiModule(WapiBase):
         exception. This method will then gracefully fail the module.
         :args exc: instance of InfobloxException
         '''
-        if ('text' in exc.response):
+        response = getattr(exc, 'response', {})
+
+        # For state=absent deletes, treat NotFound as idempotent success.
+        if method_name == 'delete_object' and self.module.params.get('state') == 'absent':
+            code = to_text(response.get('code', '')).lower()
+            error = to_text(response.get('Error', '')).lower()
+            text = to_text(response.get('text', '')).lower()
+            if 'notfound' in code or 'datanotfound' in code or 'notfound' in error or 'not found' in text:
+                return
+
+        if ('text' in response):
             self.module.fail_json(
-                msg=exc.response['text'],
-                type=exc.response['Error'].split(':')[0],
-                code=exc.response.get('code'),
+                msg=response['text'],
+                type=response['Error'].split(':')[0],
+                code=response.get('code'),
                 operation=method_name
             )
         else:
