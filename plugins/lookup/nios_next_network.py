@@ -103,7 +103,9 @@ class LookupModule(LookupBase):
         cidr = kwargs.get('cidr')
         if cidr is None:
             raise AnsibleError('missing required argument: cidr')
-        if isinstance(cidr, bool):
+        # Reject bool and float explicitly: bool is a subclass of int, and
+        # int(25.7) would silently truncate to 25, masking a user error.
+        if isinstance(cidr, (bool, float)):
             raise AnsibleError('cidr must be an integer, got %r' % (cidr,))
         try:
             cidr = int(cidr)
