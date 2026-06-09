@@ -46,11 +46,14 @@ options:
   auth_zones:
     description:
       - List of linked authoritative zones.
-      - When using I(auth_zones), you must specify at least one
-        I(patterns)
+      - When using I(auth_zones), you must specify at least one I(patterns).
+      - Each zone can be specified as a string (FQDN) or as a dict with 'fqdn' and optional 'view' keys.
+      - When provided as a string, the first matching zone in any view will be used.
+      - When zones with the same name exist in different views, use the dict format to specify which view to use.
+      - "Example ['example.com'] or [{'fqdn': 'example.com', 'view': 'custom'}]"
     required: false
     type: list
-    elements: str
+    elements: raw
   patterns:
     description:
       - Specify LBDN wildcards for pattern match.
@@ -136,6 +139,25 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Configure a DTC LBDN with zones from different views
+  infoblox.nios_modules.nios_dtc_lbdn:
+    name: web.ansible.com
+    lb_method: ROUND_ROBIN
+    auth_zones:
+      - example.com                        # First matching zone in any view
+      - {"fqdn": "test.com", "view": "default"}  # Explicitly from default view
+      - {"fqdn": "demo.com", "view": "custom"}   # From custom view
+    patterns:
+      - "*.example.com"
+      - "*.test.com"
+      - "*.demo.com"
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
 - name: Add a comment to a DTC LBDN
   infoblox.nios_modules.nios_dtc_lbdn:
     name: web.ansible.com
@@ -173,17 +195,63 @@ def main():
     '''
 
     def auth_zones_transform(module):
-        zone_list = list()
-        if module.params['auth_zones']:
-            for zone in module.params['auth_zones']:
-                zone_obj = wapi.get_object('zone_auth',
-                                           {'fqdn': zone})
-                if zone_obj:
-                    zone_list.append(zone_obj[0]['_ref'])
+        """Transform auth_zones parameter to WAPI-compatible zone references."""
+        auth_zones = module.params.get('auth_zones')
+        if not auth_zones:
+            return []
+
+        # Create FQDN counter for duplicate detection
+        fqdn_counter = {}
+        for zone in auth_zones:
+            fqdn = zone.get('fqdn') if isinstance(zone, dict) else zone
+            if not fqdn:
+                module.fail_json(msg=f"Invalid auth_zone format: {zone}. Must contain FQDN.")
+            fqdn_counter[fqdn] = fqdn_counter.get(fqdn, 0) + 1
+
+        # Process zones and build reference list
+        refs = []
+        for zone in auth_zones:
+            # Extract zone information
+            if isinstance(zone, dict):
+                if 'fqdn' not in zone:
+                    module.fail_json(msg=f"Invalid auth_zone: {zone}. Missing 'fqdn' key.")
+
+                fqdn = zone['fqdn']
+                view = zone.get('view')
+
+                # Validate view for duplicate FQDNs
+                # If an FQDN appears more than once, a 'view' must be specified to distinguish between zones.
+                if fqdn_counter[fqdn] > 1 and not view:
+                    module.fail_json(msg=f"Multiple '{fqdn}' zones require view specification.")
+
+                # Build query and display name
+                query = {'fqdn': fqdn}
+                if view:
+                    query['view'] = view
+                    display = f"{fqdn}:{view}"
                 else:
-                    module.fail_json(
-                        msg='auth_zone %s cannot be found.' % zone)
-        return zone_list
+                    display = fqdn
+
+            else:  # String format
+                fqdn = zone
+                display = fqdn
+                query = {'fqdn': fqdn}
+
+                if fqdn_counter[fqdn] > 1:
+                    module.fail_json(msg=f"Multiple '{fqdn}' zones require view specification.")
+
+            try:
+                # Get zone object
+                zone_obj = wapi.get_object('zone_auth', query)
+                if not zone_obj:
+                    module.fail_json(msg=f"Zone '{display}' not found.")
+
+                refs.append(zone_obj[0]['_ref'])
+
+            except Exception as e:
+                module.fail_json(msg=f"Error processing zone '{display}': {e}")
+
+        return refs
 
     def pools_transform(module):
         pool_list = list()
@@ -223,7 +291,7 @@ def main():
                                                'RATIO', 'ROUND_ROBIN', 'TOPOLOGY']),
 
         topology=dict(type='str', transform=topology_transform),
-        auth_zones=dict(type='list', elements='str', options=auth_zones_spec,
+        auth_zones=dict(type='list', elements='raw', options=auth_zones_spec,
                         transform=auth_zones_transform),
         patterns=dict(type='list', elements='str'),
         types=dict(type='list', elements='str', choices=['A', 'AAAA', 'CNAME', 'NAPTR',

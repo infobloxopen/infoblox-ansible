@@ -19,9 +19,12 @@
             ratio: 2
         ttl: 100
         auth_zones:
-          - demo.com
+          # Multiple entries for the same FQDN with different views are included
+          # to support configurations across both the 'default' and 'custom' views.
+          - {'fqdn': 'test.com', 'view': 'default'}
+          - {'fqdn': 'test.com', 'view': 'custom'}
         patterns:
-          - "*.demo.com"
+          - "*.test.com"
         types:
           - A
         comment: Created with Ansible

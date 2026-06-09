@@ -246,6 +246,21 @@ def main():
     module = AnsibleModule(argument_spec=argument_spec,
                            supports_check_mode=True)
 
+    # Validate lb_preferred_topology is only used with TOPOLOGY method
+    lb_method = module.params.get('lb_preferred_method')
+    lb_topology = module.params.get('lb_preferred_topology')
+
+    if lb_topology and lb_method != 'TOPOLOGY':
+        module.fail_json(
+            msg="lb_preferred_topology can only be specified when lb_preferred_method is 'TOPOLOGY', "
+                "but lb_preferred_method is set to '%s'" % lb_method
+        )
+
+    if lb_method == 'TOPOLOGY' and not lb_topology:
+        module.fail_json(
+            msg="lb_preferred_topology is required when lb_preferred_method is set to 'TOPOLOGY'"
+        )
+
     wapi = WapiModule(module)
     result = wapi.run(NIOS_DTC_POOL, ib_spec)
 

@@ -194,7 +194,6 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_DTC_MONITOR_SNMP
 from ..module_utils.api import normalize_ib_spec
@@ -216,10 +215,12 @@ def oids(module):
     that condition.
     The remainder of the value validation is performed by WAPI
     '''
+    if not module.params.get('oids'):
+        return None
 
     oids = list()
     for item in module.params['oids']:
-        oid = dict([(k, v) for k, v in iteritems(item) if v is not None])
+        oid = dict([(k, v) for k, v in item.items() if v is not None])
         if 'oid' not in oid:
             module.fail_json(msg='oid is required for oid value')
         oids.append(oid)

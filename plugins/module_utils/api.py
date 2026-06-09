@@ -33,11 +33,11 @@ import json
 import os
 import copy
 from functools import partial
-from ansible.module_utils._text import to_native
-from ansible.module_utils.six import iteritems
-from ansible.module_utils._text import to_text
+from ansible.module_utils.common.text.converters import to_native
+from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.basic import env_fallback
-from ansible.module_utils.common.validation import check_type_dict, safe_eval
+from ansible.module_utils.common.validation import check_type_dict
+from ast import literal_eval as safe_eval
 
 try:
     from infoblox_client.connector import Connector
@@ -119,7 +119,7 @@ def get_connector(*args, **kwargs):
 
     if not set(kwargs.keys()).issubset(list(NIOS_PROVIDER_SPEC.keys()) + ['ssl_verify']):
         raise Exception('invalid or unsupported keyword argument for connector')
-    for key, value in iteritems(NIOS_PROVIDER_SPEC):
+    for key, value in NIOS_PROVIDER_SPEC.items():
         if key not in kwargs:
             # apply default values from NIOS_PROVIDER_SPEC since we cannot just
             # assume the provider values are coming from AnsibleModule
@@ -155,7 +155,7 @@ def normalize_extattrs(value):
             }
         }
     '''
-    return dict([(k, {'value': v}) for k, v in iteritems(value)])
+    return dict([(k, {'value': v}) for k, v in value.items()])
 
 
 def flatten_extattrs(value):
@@ -171,7 +171,7 @@ def flatten_extattrs(value):
             key: value
         }
     '''
-    return dict([(k, v['value']) for k, v in iteritems(value)])
+    return dict([(k, v['value']) for k, v in value.items()])
 
 
 def member_normalize(member_spec):
@@ -238,7 +238,7 @@ def normalize_ib_spec(ib_spec):
     result = {}
     for arg in ib_spec:
         result[arg] = dict([(k, v)
-                            for k, v in iteritems(ib_spec[arg])
+                            for k, v in ib_spec[arg].items()
                             if k not in ('ib_req', 'transform', 'update')])
     return result
 
@@ -324,7 +324,7 @@ class WapiModule(WapiBase):
         """
         keys_to_remove = []
 
-        for key, proposed_item in iteritems(proposed_object):
+        for key, proposed_item in proposed_object.items():
             # Check if the key is empty (None, empty string, empty list, etc.)
             if proposed_item in [None, '', [], {}, set()]:  # Add more empty checks if needed
                 # If the key doesn't exist in current_object, mark it for removal
@@ -351,7 +351,7 @@ class WapiModule(WapiBase):
 
         result = {'changed': False}
 
-        obj_filter = dict([(k, self.module.params[k]) for k, v in iteritems(ib_spec) if v.get('ib_req')])
+        obj_filter = dict([(k, self.module.params[k]) for k, v in ib_spec.items() if v.get('ib_req')])
         # get object reference
         ib_obj_ref, update, new_name = self.get_object_ref(self.module, ib_obj_type, obj_filter, ib_spec)
 
@@ -366,12 +366,17 @@ class WapiModule(WapiBase):
             ib_obj_ref, update, new_name = self.get_object_ref(self.module, ib_obj_type, obj_filter, ib_spec)
 
         proposed_object = {}
-        for key, value in iteritems(ib_spec):
+        for key, value in ib_spec.items():
             if self.module.params[key] is not None:
                 if 'transform' in value:
                     proposed_object[key] = value['transform'](self.module)
                 else:
                     proposed_object[key] = self.module.params[key]
+            elif 'transform' in value:
+                # Call transform even if param is None, in case it returns a default value
+                transformed_value = value['transform'](self.module)
+                if transformed_value is not None:
+                    proposed_object[key] = transformed_value
 
         # If configure_by_dns is set to False and view is 'default', then delete the default dns
         if not proposed_object.get('configure_for_dns') and proposed_object.get('view') == 'default' \
@@ -453,8 +458,10 @@ class WapiModule(WapiBase):
                     text_obj = json.loads(text_obj)
                     txt = text_obj['new_text']
                 except Exception:
-                    (result, exc) = safe_eval(text_obj, dict(), include_exceptions=True)
-                    if exc is not None:
+                    try:
+                        result = safe_eval(text_obj)
+                        txt = result['new_text']
+                    except Exception:
                         raise TypeError('unable to evaluate string as dictionary')
                     txt = result['new_text']
                 proposed_object['text'] = txt
@@ -704,7 +711,7 @@ class WapiModule(WapiBase):
         if len(current_extattrs) != len(proposed_extattrs):
             return False
         else:
-            for key, proposed_item in iteritems(proposed_extattrs):
+            for key, proposed_item in proposed_extattrs.items():
                 current_item = current_extattrs.get(key)
                 if current_item != proposed_item:
                     return False
@@ -714,12 +721,15 @@ class WapiModule(WapiBase):
         return len(proposed_data) == len(current_data) and all(a == b for a, b in zip(proposed_data, current_data))
 
     def compare_objects(self, current_object, proposed_object, ib_obj_type=None):
-        for key, proposed_item in iteritems(proposed_object):
+        for key, proposed_item in proposed_object.items():
             current_item = current_object.get(key)
 
             # if proposed has a key that current doesn't, then the objects are
             # not equal and False will be immediately returned
             if current_item is None:
+                # Allow None/empty values to be considered equal
+                if proposed_item in (None, '', [], {}, set()):
+                    continue
                 return False
 
             elif isinstance(proposed_item, list):
@@ -730,12 +740,22 @@ class WapiModule(WapiBase):
                 # equal, and False will be returned before comparing the list items
                 # this code part will work for members' assignment
 
-                if key in ('members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans') \
+                if key in ('monitors', 'members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans') \
                         and len(proposed_item) != len(current_item):
                     return False
 
+                # Special handling for auth_zones - we need to compare the actual values
+                if key == 'auth_zones' and ib_obj_type == NIOS_DTC_LBDN:
+                    if len(proposed_item) != len(current_item):
+                        return False
+                    # Sort and compare as strings for deterministic comparison
+                    current_zones_str = sorted([str(zone) for zone in current_item])
+                    proposed_zones_str = sorted([str(zone) for zone in proposed_item])
+                    if current_zones_str != proposed_zones_str:
+                        return False
+
                 # Validate the Sequence of the List data
-                if key in ('external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
+                if key in ('servers', 'external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
                     return False
 
                 for subitem in proposed_item:
@@ -899,8 +919,11 @@ class WapiModule(WapiBase):
                             txt = text_obj['old_text']
                             old_text_exists = True
                         except Exception:
-                            (result, exc) = safe_eval(text_obj, dict(), include_exceptions=True)
-                            if exc is not None:
+                            try:
+                                result = safe_eval(text_obj)
+                                txt = result['old_text']
+                                old_text_exists = True
+                            except Exception:
                                 raise TypeError('unable to evaluate string as dictionary')
                             txt = result['old_text']
                             old_text_exists = True
@@ -962,8 +985,11 @@ class WapiModule(WapiBase):
                         txt = text_obj['old_text']
                         old_text_exists = True
                     except Exception:
-                        (result, exc) = safe_eval(text_obj, dict(), include_exceptions=True)
-                        if exc is not None:
+                        try:
+                            result = safe_eval(text_obj)
+                            txt = result['old_text']
+                            old_text_exists = True
+                        except Exception:
                             raise TypeError('unable to evaluate string as dictionary')
                         txt = result['old_text']
                         old_text_exists = True
@@ -1065,8 +1091,8 @@ class WapiModule(WapiBase):
         :returns: updated object to be sent to API endpoint
         '''
         keys = set()
-        for key, value in iteritems(proposed_object):
+        for key, value in proposed_object.items():
             update = ib_spec[key].get('update', True)
             if not update:
                 keys.add(key)
-        return dict([(k, v) for k, v in iteritems(proposed_object) if k not in keys])
+        return dict([(k, v) for k, v in proposed_object.items() if k not in keys])

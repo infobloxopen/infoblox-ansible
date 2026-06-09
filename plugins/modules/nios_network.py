@@ -312,7 +312,6 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK
 from ..module_utils.api import NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER
@@ -338,7 +337,7 @@ def options(module):
     '''
     options = list()
     for item in module.params['options']:
-        opt = dict([(k, v) for k, v in iteritems(item) if v is not None])
+        opt = dict([(k, v) for k, v in item.items() if v is not None])
         if 'name' not in opt and 'num' not in opt:
             module.fail_json(msg='one of `name` or `num` is required for option value')
         options.append(opt)
@@ -371,7 +370,7 @@ def check_vendor_specific_dhcp_option(module, ib_spec):
     '''This function will check if the argument dhcp option belongs to vendor-specific and if yes then will remove
      use_options flag which is not supported with vendor-specific dhcp options.
     '''
-    for key, value in iteritems(ib_spec):
+    for key, value in ib_spec.items():
         if isinstance(module.params[key], list):
             for temp_dict in module.params[key]:
                 if 'num' in temp_dict:
@@ -388,7 +387,7 @@ def main():
         if module.params['vlans']:
             for vlan in module.params['vlans']:
 
-                vlan_filtered = dict((k, v) for k, v in iteritems(vlan) if v is not None)
+                vlan_filtered = dict((k, v) for k, v in vlan.items() if v is not None)
                 if 'name' not in vlan_filtered and 'id' not in vlan_filtered:
                     module.fail_json(msg='one of `name` or `id` is required for vlans value')
 
@@ -454,7 +453,7 @@ def main():
                            supports_check_mode=True)
 
     # to get the argument ipaddr
-    obj_filter = dict([(k, module.params[k]) for k, v in iteritems(ib_spec) if v.get('ib_req')])
+    obj_filter = dict([(k, module.params[k]) for k, v in ib_spec.items() if v.get('ib_req')])
     network_type, ib_spec = check_ip_addr_type(obj_filter, ib_spec)
 
     wapi = WapiModule(module)

@@ -282,7 +282,6 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import iteritems
 from ..module_utils.api import WapiModule
 from ..module_utils.api import NIOS_RANGE
 from ..module_utils.api import normalize_ib_spec
@@ -306,7 +305,7 @@ def options(module):
     '''
     options = list()
     for item in module.params['options']:
-        opt = dict([(k, v) for k, v in iteritems(item) if v is not None])
+        opt = dict([(k, v) for k, v in item.items() if v is not None])
         if 'name' not in opt and 'num' not in opt:
             module.fail_json(msg='one of `name` or `num` is required for option value')
         options.append(opt)
@@ -317,7 +316,7 @@ def check_vendor_specific_dhcp_option(module, ib_spec):
     '''This function will check if the argument dhcp option belongs to vendor-specific and if yes then will remove
      use_options flag which is not supported with vendor-specific dhcp options.
     '''
-    for key, value in iteritems(ib_spec):
+    for key, value in ib_spec.items():
         if isinstance(module.params[key], list):
             for temp_dict in module.params[key]:
                 if 'num' in temp_dict:

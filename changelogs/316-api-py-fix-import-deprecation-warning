@@ -1,0 +1,2 @@
+bugfixes:
+  - api.py - fixes deprecation warning when import the `to_native` and `to_text` functions by using the new import path
