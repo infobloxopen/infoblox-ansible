@@ -11,7 +11,7 @@ DOCUMENTATION = r'''
 module: nios_adminrole
 author: "Andrew Heath (@aheath1992)"
 short_description: Configure Infoblox NIOS Roles
-version_added: 
+version_added: "1.10.0"
 description:
   - Adds and/or removes instances of adminrole objects from
     Infoblox NIOS servers. This module manages NIOS C(adminrole) objects
@@ -64,6 +64,22 @@ EXAMPLES = r'''
 - name: Create a new admin role
   infoblox.nios_modules.nios_adminrole:
     name: ansible_role
+    comment: "Role created by Ansible"
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Create a disabled admin role with extensible attributes
+  infoblox.nios_modules.nios_adminrole:
+    name: disabled_role
+    disable: true
+    comment: "Temporarily disabled role"
+    extattrs:
+      Site: "Main Office"
+      Department: "IT"
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -92,7 +108,33 @@ EXAMPLES = r'''
   connection: local
 '''
 
-RETURN = ''' # '''
+RETURN = '''
+obj_ref:
+  description: The object reference of the admin role
+  returned: always
+  type: str
+  sample: "adminrole/ZG5zLm5ldHdvcmskMTAuMC4wLjAvMTYvMA:ansible_role/false"
+name:
+  description: The name of the admin role
+  returned: always
+  type: str
+  sample: "ansible_role"
+disable:
+  description: Whether the admin role is disabled
+  returned: always
+  type: bool
+  sample: false
+comment:
+  description: The comment associated with the admin role
+  returned: when comment is set
+  type: str
+  sample: "Role created by Ansible"
+extattrs:
+  description: Extensible attributes associated with the admin role
+  returned: when extattrs are set
+  type: dict
+  sample: {"Site": "Main Office", "Department": "IT"}
+'''
 
 from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule

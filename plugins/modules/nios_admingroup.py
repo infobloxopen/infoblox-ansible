@@ -11,7 +11,7 @@ DOCUMENTATION = r'''
 module: nios_admingroup
 author: "Andrew Heath (@aheath1992)"
 short_description: Configure Infoblox NIOS Group
-version_added: 
+version_added: "1.10.0"
 description:
   - Adds and/or removes instances of admingroup objects from
     Infoblox NIOS servers. This module manages NIOS C(admingroup) objects
@@ -52,11 +52,37 @@ options:
       - Allows for the assignment of existing NIOS roles on the instance of the
         object. This argument accepts a list for configuration.
     type: list
+    elements: str
   access_method:
     description:
       - Allows for the configuration of how members of the group are allowed to
-        access the NIOS appliance.
+        access the NIOS appliance. Valid values are C(API), C(CLI), C(CLOUD_API),
+        C(GUI), and C(TAXII). When not specified, all access methods are enabled by default.
     type: list
+    elements: str
+  email_addresses:
+    description:
+      - List of email addresses for the admin group members.
+    type: list
+    elements: str
+  enable_restricted_user_access:
+    description:
+      - Determines whether restricted user access is enabled for the admin group.
+        When enabled, users in this group have restricted access to specific features.
+    type: bool
+    default: false
+  superuser:
+    description:
+      - Determines whether the admin group has superuser privileges. Superuser groups
+        have unrestricted access to all NIOS features and settings.
+    type: bool
+    default: false
+  disable_concurrent_login:
+    description:
+      - Determines whether concurrent login is disabled for members of this admin group.
+        When set to True, only one session per user is allowed.
+    type: bool
+    default: false
   state:
     description:
       - Configures the intended state of the instance of the object on
@@ -71,9 +97,57 @@ options:
 '''
 
 EXAMPLES = r'''
-- name: Create a new admin group
+- name: Create a new admin group with basic settings
   infoblox.nios_modules.nios_admingroup:
     name: ansible_group
+    comment: "Group created by Ansible"
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Create an admin group with roles and access methods
+  infoblox.nios_modules.nios_admingroup:
+    name: api_admin_group
+    roles:
+      - "DNS Admin"
+      - "DHCP Admin"
+    access_method:
+      - GUI
+      - API
+    email_addresses:
+      - admin@example.com
+      - support@example.com
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Create a superuser admin group
+  infoblox.nios_modules.nios_admingroup:
+    name: superuser_group
+    superuser: true
+    disable_concurrent_login: true
+    comment: "Superuser group with no concurrent logins"
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Create a disabled admin group with extensible attributes
+  infoblox.nios_modules.nios_admingroup:
+    name: disabled_group
+    disable: true
+    enable_restricted_user_access: true
+    extattrs:
+      Site: "Branch Office"
+      Department: "Operations"
     state: present
     provider:
       host: "{{ inventory_hostname_short }}"
@@ -102,7 +176,66 @@ EXAMPLES = r'''
   connection: local
 '''
 
-RETURN = ''' # '''
+RETURN = '''
+obj_ref:
+  description: The object reference of the admin group
+  returned: always
+  type: str
+  sample: "admingroup/ZG5zLm5ldHdvcmskMTAuMC4wLjAvMTYvMA:ansible_group/false"
+name:
+  description: The name of the admin group
+  returned: always
+  type: str
+  sample: "ansible_group"
+disable:
+  description: Whether the admin group is disabled
+  returned: always
+  type: bool
+  sample: false
+comment:
+  description: The comment associated with the admin group
+  returned: when comment is set
+  type: str
+  sample: "Group created by Ansible"
+roles:
+  description: List of roles assigned to the admin group
+  returned: when roles are assigned
+  type: list
+  elements: str
+  sample: ["DNS Admin", "DHCP Admin"]
+access_method:
+  description: List of access methods allowed for the admin group
+  returned: always
+  type: list
+  elements: str
+  sample: ["GUI", "API"]
+email_addresses:
+  description: List of email addresses for the admin group
+  returned: when email addresses are set
+  type: list
+  elements: str
+  sample: ["admin@example.com", "support@example.com"]
+superuser:
+  description: Whether the admin group has superuser privileges
+  returned: always
+  type: bool
+  sample: false
+enable_restricted_user_access:
+  description: Whether restricted user access is enabled
+  returned: always
+  type: bool
+  sample: false
+disable_concurrent_login:
+  description: Whether concurrent login is disabled
+  returned: always
+  type: bool
+  sample: false
+extattrs:
+  description: Extensible attributes associated with the admin group
+  returned: when extattrs are set
+  type: dict
+  sample: {"Site": "Branch Office", "Department": "Operations"}
+'''
 
 from ansible.module_utils.basic import AnsibleModule
 from ..module_utils.api import WapiModule
@@ -121,8 +254,8 @@ def main():
         extattrs=dict(type='dict'),
         enable_restricted_user_access=dict(type='bool', default=False),
         roles=dict(type='list'),
-        access_method=dict(type='list', default=['GUI']),
-        superuser=dict(type='bool', default=False), 
+        access_method=dict(type='list'),
+        superuser=dict(type='bool', default=False),
         disable_concurrent_login=dict(type='bool', default=False)
     )
 
