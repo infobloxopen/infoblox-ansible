@@ -1152,6 +1152,29 @@ class WapiModule(WapiBase):
                 del ib_spec['vlans']
 
             ib_obj = self.get_object(ib_obj_type, obj_filter.copy(), return_fields=list(ib_spec.keys()))
+
+            # Issue #135: For delete operations, fall back to lookup without
+            # network_view when the default view does not resolve an object.
+            # NIOS may not store/return network_view for objects in the default
+            # view, so the filtered query can miss them. Users working solely in
+            # the default view should not need to set network_view explicitly
+            # for deletes. Safety: if the viewless lookup finds the same CIDR in
+            # multiple views, we raise an error requiring the user to be
+            # explicit.
+            if (not ib_obj and self.module.params.get('state') == 'absent' and
+                    obj_filter.get('network_view') == 'default' and
+                    ib_obj_type in (NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK)):
+                fallback_filter = obj_filter.copy()
+                fallback_filter.pop('network_view', None)
+                ib_obj = self.get_object(ib_obj_type, fallback_filter, return_fields=list(ib_spec.keys()))
+                if ib_obj and len(ib_obj) > 1:
+                    views = sorted(set(obj.get('network_view', 'unknown') for obj in ib_obj))
+                    self.module.fail_json(
+                        msg="Multiple networks with CIDR '%s' exist in network views: %s. "
+                            "Set network_view explicitly for state=absent."
+                            % (obj_filter.get('network'), ', '.join(views))
+                    )
+
             # reinstate the 'template' and 'members' key
             if temp:
                 ib_spec['template'] = temp

@@ -414,6 +414,74 @@ class TestNiosApi(unittest.TestCase):
         wapi.delete_object.assert_called_once_with(ipam_only_ref)
 
     # ------------------------------------------------------------------
+    # Issue #135: nios_network state=absent should fall back to a viewless
+    # lookup when the default network_view does not resolve the object.
+    # If the fallback is ambiguous across multiple views, fail loudly.
+    # ------------------------------------------------------------------
+
+    def test_wapi_delete_network_without_network_view_falls_back(self):
+        self.module.params = {
+            'provider': None,
+            'state': 'absent',
+            'network': '192.0.2.0/24',
+            'network_view': 'default',
+        }
+
+        ref = 'network/ZG5zLm5ldHdvcmtfdmlldyQw:issue135_ansible_view/false'
+
+        test_spec = {
+            'network': {'ib_req': True},
+            'network_view': {'ib_req': True},
+            'template': {},
+        }
+
+        wapi = self._get_wapi(None)
+        # First lookup in default view misses, fallback without network_view finds object.
+        wapi.get_object.side_effect = [[], [{'_ref': ref, 'network': '192.0.2.0/24'}]]
+
+        res = wapi.run(api.NIOS_IPV4_NETWORK, test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.delete_object.assert_called_once_with(ref)
+        self.assertEqual(wapi.get_object.call_count, 2)
+        first_filter = wapi.get_object.call_args_list[0][0][1]
+        second_filter = wapi.get_object.call_args_list[1][0][1]
+        self.assertIn('network_view', first_filter)
+        self.assertNotIn('network_view', second_filter)
+
+    def test_wapi_delete_network_without_network_view_fallback_ambiguous_fails(self):
+        self.module.params = {
+            'provider': None,
+            'state': 'absent',
+            'network': '192.0.2.0/24',
+            'network_view': 'default',
+        }
+
+        test_spec = {
+            'network': {'ib_req': True},
+            'network_view': {'ib_req': True},
+            'template': {},
+        }
+
+        wapi = self._get_wapi(None)
+        wapi.get_object.side_effect = [
+            [],
+            [
+                {'_ref': 'network/view1/false', 'network': '192.0.2.0/24', 'network_view': 'view1'},
+                {'_ref': 'network/view2/false', 'network': '192.0.2.0/24', 'network_view': 'view2'},
+            ],
+        ]
+
+        wapi.run(api.NIOS_IPV4_NETWORK, test_spec)
+
+        msgs = [c[1].get('msg', '') for c in wapi.module.fail_json.call_args_list]
+        self.assertTrue(
+            any('Set network_view explicitly for state=absent' in m for m in msgs),
+            "Expected fail_json to be called with the ambiguity message"
+        )
+        wapi.delete_object.assert_not_called()
+
+    # ------------------------------------------------------------------
     # Issue #139: state=absent should be idempotent when the object is
     # already gone (NIOS returns NotFound). handle_exception must swallow
     # the exception for delete_object + state=absent only.
