@@ -542,7 +542,13 @@ class WapiModule(WapiBase):
             # Removes keys from the proposed_object that are empty and do not exist in current_object.
             # Fix the issue to update the optional fields of the object with default empty values
             proposed_object = self.clean_empty_keys(current_object, proposed_object)
-        modified = not self.compare_objects(current_object, proposed_object, ib_obj_type)
+        # For NIOS_ADMINUSER, exclude write-only 'password' from comparison since NIOS never returns it.
+        # Without this, every task with a password would always trigger a spurious change.
+        if ib_obj_type == NIOS_ADMINUSER:
+            proposed_for_compare = {k: v for k, v in proposed_object.items() if k != 'password'}
+        else:
+            proposed_for_compare = proposed_object
+        modified = not self.compare_objects(current_object, proposed_for_compare, ib_obj_type)
         if 'extattrs' in proposed_object:
             proposed_object['extattrs'] = normalize_extattrs(proposed_object['extattrs'])
 
