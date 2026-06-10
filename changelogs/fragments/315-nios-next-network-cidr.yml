@@ -1,0 +1,13 @@
+---
+breaking_changes:
+  - nios_next_network lookup - the C(cidr) argument is now required and must be an
+    integer. Previously, omitting C(cidr) silently defaulted to C(24); playbooks
+    that relied on this default now fail with C(AnsibleError - missing required
+    argument - cidr). Update such playbooks to pass C(cidr) explicitly.
+    (https://github.com/infobloxopen/infoblox-ansible/pull/315)
+bugfixes:
+  - nios_next_network lookup - accept C(cidr) as either an integer or a numeric
+    string and validate it consistently, while rejecting C(bool) and C(float)
+    values that previously passed through or were silently truncated (for
+    example C(25.7) became C(25)).
+    (https://github.com/infobloxopen/infoblox-ansible/pull/315)
