@@ -493,6 +493,10 @@ def main():
                            supports_check_mode=True)
 
     effective_ib_spec = ib_spec.copy()
+    # Default WAPI version matches the lowest version where use_dns_ea_inheritance
+    # is supported (2.12.3). If provider.wapi_version is omitted we assume the
+    # field is available; users running older WAPI must set wapi_version
+    # explicitly to receive the warn-and-strip behavior below.
     provider_wapi_version = (module.params.get('provider') or {}).get('wapi_version', '2.12.3')
     if not supports_dns_ea_inheritance(provider_wapi_version):
         if should_warn_ignored_dns_ea_inheritance(provider_wapi_version,

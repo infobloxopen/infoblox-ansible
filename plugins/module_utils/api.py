@@ -471,6 +471,7 @@ class WapiModule(WapiBase):
 
         if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
             proposed_object = convert_members_to_struct(proposed_object)
+            proposed_object = convert_vlans_to_struct(proposed_object)
             current_object = convert_members_to_struct(current_object)
             current_object = convert_vlans_to_struct(current_object)
 
