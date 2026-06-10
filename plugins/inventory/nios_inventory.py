@@ -21,7 +21,7 @@ DOCUMENTATION = r'''
               - Value can also be specified using C(INFOBLOX_HOST) environment
                 variable.
             type: string
-            required: True
+            required: true
             env:
                 - name: INFOBLOX_HOST
         username:
@@ -31,7 +31,7 @@ DOCUMENTATION = r'''
               - Value can also be specified using C(INFOBLOX_USERNAME) environment
                 variable.
             type: string
-            required: True
+            required: true
             env:
                 - name: INFOBLOX_USERNAME
         password:

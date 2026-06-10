@@ -49,7 +49,7 @@ options:
         type: bool
       grid_replicate:
         description:
-          - Use DNS zone transfers if set to C(True) or ID Grid Replication if set to C(False).
+          - Use DNS zone transfers if set to C(true) or ID Grid Replication if set to C(false).
         type: bool
         default: false
       lead:
@@ -117,7 +117,7 @@ options:
         type: bool
       grid_replicate:
         description:
-          - Use DNS zone transfers if set to C(True) or ID Grid Replication if set to C(False)
+          - Use DNS zone transfers if set to C(true) or ID Grid Replication if set to C(false)
         type: bool
         default: false
       lead:
@@ -168,7 +168,7 @@ options:
             type: str
   is_grid_default:
     description:
-      - If set to C(True) this nsgroup will become the default nameserver group for new zones.
+      - If set to C(true) this nsgroup will become the default nameserver group for new zones.
     type: bool
     default: false
   use_external_primary:

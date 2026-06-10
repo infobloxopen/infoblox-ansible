@@ -69,7 +69,7 @@ options:
   disable:
     description:
       - Determines whether the admin user is disabled or not. When this is set
-        to False, the admin user is enabled.
+        to false, the admin user is enabled.
     default: false
     type: bool
   email:

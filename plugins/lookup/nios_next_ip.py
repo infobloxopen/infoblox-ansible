@@ -21,7 +21,7 @@ requirements:
 options:
     _terms:
       description: The CIDR network to retrieve the next address(es) from.
-      required: True
+      required: true
       type: str
     use_range:
       description: Use DHCP range to retrieve the next available IP address(es). Requested number of IP Addresses must be between 1 and 20.

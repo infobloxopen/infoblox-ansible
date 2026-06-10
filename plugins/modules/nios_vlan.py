@@ -70,7 +70,7 @@ options:
     description:
       - When set VLAN can only be assigned to IPAM object manually.
     type: bool
-    default: False
+    default: false
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
@@ -149,7 +149,7 @@ EXAMPLES = '''
     contact: "itlab@email.com"
     department: "IT"
     description: "test"
-    reserved: True
+    reserved: true
     extattrs:
       Site: "HQ"
     state: present

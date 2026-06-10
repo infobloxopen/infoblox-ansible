@@ -49,7 +49,7 @@ options:
   use_dns_ea_inheritance:
     version_added: "1.7.0"
     description:
-      - When use_dns_ea_inheritance is True, the EA is inherited from associated zone. The default value is False.
+      - When use_dns_ea_inheritance is true, the EA is inherited from associated zone. The default value is false.
     type: bool
     default: false
   ipv4addrs:
@@ -64,7 +64,7 @@ options:
       use_for_ea_inheritance:
         version_added: "1.7.0"
         description:
-            - When use_for_ea_inheritance is True, the EA is inherited from Host address. The default value is False.
+            - When use_for_ea_inheritance is true, the EA is inherited from Host address. The default value is false.
         type: bool
         default: false
         required: false

@@ -57,7 +57,7 @@ options:
           - Value can also be specified using C(INFOBLOX_SSL_VERIFY) environment
             variable.
         type: bool
-        default: no
+        default: false
         aliases: [ ssl_verify ]
       http_request_timeout:
         description:
@@ -105,7 +105,7 @@ options:
         description:
           - Insert description here
         type: bool
-        default: True
+        default: true
 notes:
   - "This module must be run locally, which can be achieved by specifying C(connection: local)."
   - Please read the :ref:`nios_guide` for more detailed information on how to use Infoblox with Ansible.
