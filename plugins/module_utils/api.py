@@ -353,6 +353,37 @@ class WapiModule(WapiBase):
         # get object reference
         ib_obj_ref, update, new_name = self.get_object_ref(self.module, ib_obj_type, obj_filter, ib_spec)
 
+        # Issue #300: IPAM-only host records carry view=' ' in WAPI. If the user
+        # calls state=absent (or update) without specifying a view, our search
+        # uses view='default' and returns 0 results, so we silently no-op and
+        # leave the record on the grid. Retry the search without the view
+        # filter to find IPAM-only hosts before declaring the object absent.
+        #
+        # To avoid acting on host records that live in unrelated DNS views,
+        # restrict the retry results to IPAM-only host records (view is blank
+        # or whitespace). If the retry still returns multiple eligible
+        # matches, fail with a clear error rather than picking one arbitrarily.
+        if (ib_obj_type == NIOS_HOST_RECORD and not ib_obj_ref
+                and obj_filter.get('view') == 'default'):
+            retry_filter = dict(obj_filter)
+            retry_filter.pop('view', None)
+            retry_obj_ref, retry_update, retry_new_name = self.get_object_ref(
+                self.module, ib_obj_type, retry_filter, ib_spec)
+            if retry_obj_ref:
+                ipam_only = [
+                    rec for rec in retry_obj_ref
+                    if isinstance(rec, dict)
+                    and ((isinstance(rec.get('view'), str) and not rec.get('view').strip())
+                         or rec.get('configure_for_dns') is False)
+                ]
+                if len(ipam_only) > 1:
+                    self.module.fail_json(
+                        msg=("multiple IPAM-only host records named '%s' were found "
+                             "and could not be disambiguated"
+                             % obj_filter.get('name')))
+                if ipam_only:
+                    ib_obj_ref, update, new_name = ipam_only, retry_update, retry_new_name
+
         # When a range update is defined, check for a range that matches the target range definition as well
         # to allows for idempotence
         if ib_obj_type == NIOS_RANGE and len(ib_obj_ref) == 0 and \
@@ -376,10 +407,15 @@ class WapiModule(WapiBase):
                 if transformed_value is not None:
                     proposed_object[key] = transformed_value
 
-        # If configure_by_dns is set to False and view is 'default', then delete the default dns
-        if not proposed_object.get('configure_for_dns') and proposed_object.get('view') == 'default' \
-                and ib_obj_type == NIOS_HOST_RECORD:
-            del proposed_object['view']
+        # Issue #300: IPAM-only (non-DNS) host records carry view=' ' in WAPI.
+        # Drop `view` from proposed_object when:
+        #   - DNS is bypassed and view defaults to 'default' (legacy behavior), OR
+        #   - the view value is blank/whitespace (matches the IPAM-only marker).
+        if ib_obj_type == NIOS_HOST_RECORD:
+            view_val = proposed_object.get('view')
+            if (not proposed_object.get('configure_for_dns') and view_val == 'default') \
+                    or (isinstance(view_val, str) and not view_val.strip()):
+                proposed_object.pop('view', None)
         if ib_obj_ref:
             if len(ib_obj_ref) > 1:
                 for each in ib_obj_ref:
@@ -839,11 +875,15 @@ class WapiModule(WapiBase):
 
             if old_name and new_name:
                 if (ib_obj_type == NIOS_HOST_RECORD):
-                    # to check only by old_name if dns bypassing is set
-                    if not obj_filter['configure_for_dns']:
+                    # to check only by old_name if dns bypassing is set, or if the
+                    # provided view is blank/whitespace (issue #300: IPAM-only host
+                    # records have view=' ', sending that to WAPI yields a 404).
+                    _view = obj_filter.get('view')
+                    if not obj_filter['configure_for_dns'] \
+                            or not (isinstance(_view, str) and _view.strip()):
                         test_obj_filter = dict([('name', old_name)])
                     else:
-                        test_obj_filter = dict([('name', old_name), ('view', obj_filter['view'])])
+                        test_obj_filter = dict([('name', old_name), ('view', _view)])
                 # if there are multiple records with the same name and different ip
                 elif (ib_obj_type == NIOS_A_RECORD):
                     test_obj_filter = dict([('name', old_name), ('ipv4addr', obj_filter['ipv4addr'])])
@@ -864,6 +904,28 @@ class WapiModule(WapiBase):
                     test_obj_filter = dict([('name', old_name)])
                 # get the object reference
                 ib_obj = self.get_object(ib_obj_type, test_obj_filter, return_fields=return_fields)
+                # Issue #300: when the host-record lookup above fell back to a
+                # name-only search (because the view was blank/whitespace,
+                # absent on the IPAM-only retry path, or configure_for_dns is
+                # False), restrict matches to IPAM-only records so we never
+                # rename a record that lives in an unrelated DNS view.
+                if ib_obj_type == NIOS_HOST_RECORD and ib_obj:
+                    _view = obj_filter.get('view')
+                    _dns = obj_filter.get('configure_for_dns')
+                    if (_view is None
+                            or (isinstance(_view, str) and not _view.strip())
+                            or _dns is False):
+                        ipam_only = [
+                            rec for rec in ib_obj
+                            if isinstance(rec, dict)
+                            and ((isinstance(rec.get('view'), str) and not rec.get('view').strip())
+                                 or rec.get('configure_for_dns') is False)
+                        ]
+                        if len(ipam_only) > 1:
+                            self.module.fail_json(
+                                msg=("multiple IPAM-only host records named '%s' were found "
+                                     "and could not be disambiguated" % old_name))
+                        ib_obj = ipam_only or None
                 if ib_obj:
                     obj_filter['name'] = new_name
                 elif old_ipv4addr_exists and (len(ib_obj) == 0):
@@ -876,11 +938,15 @@ class WapiModule(WapiBase):
             if (ib_obj_type == NIOS_HOST_RECORD):
                 # to fix the sanity issue
                 name = obj_filter['name']
-                # to check only by name if dns bypassing is set
-                if not obj_filter['configure_for_dns']:
+                # to check only by name if dns bypassing is set, or if the provided
+                # view is blank/whitespace (issue #300: IPAM-only host records have
+                # view=' ', sending that to WAPI yields a 404).
+                _view = obj_filter.get('view')
+                if not obj_filter['configure_for_dns'] \
+                        or not (isinstance(_view, str) and _view.strip()):
                     test_obj_filter = dict([('name', name)])
                 else:
-                    test_obj_filter = dict([('name', name), ('view', obj_filter['view'])])
+                    test_obj_filter = dict([('name', name), ('view', _view)])
             elif (ib_obj_type == NIOS_IPV4_FIXED_ADDRESS and 'mac' in obj_filter):
                 test_obj_filter = dict([['mac', obj_filter['mac']]])
             elif (ib_obj_type == NIOS_IPV6_FIXED_ADDRESS and 'duid' in obj_filter):
@@ -950,6 +1016,32 @@ class WapiModule(WapiBase):
                 return_fields.extend(ipv6addrs_return)
 
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=return_fields)
+
+            # Issue #300: when the host-record lookup falls back to name-only
+            # search (because the view was blank/whitespace, absent on the
+            # IPAM-only retry path, or because configure_for_dns is False),
+            # the result may include records from unrelated DNS views.
+            # Restrict to IPAM-only host records (view is blank/whitespace
+            # and/or configure_for_dns is False) so we never act on the
+            # wrong record. Fail if the disambiguation is impossible.
+            if ib_obj_type == NIOS_HOST_RECORD and ib_obj:
+                _filter_view = obj_filter.get('view')
+                _filter_dns = obj_filter.get('configure_for_dns')
+                if (_filter_view is None
+                        or (isinstance(_filter_view, str) and not _filter_view.strip())
+                        or _filter_dns is False):
+                    ipam_only = [
+                        rec for rec in ib_obj
+                        if isinstance(rec, dict)
+                        and ((isinstance(rec.get('view'), str) and not rec.get('view').strip())
+                             or rec.get('configure_for_dns') is False)
+                    ]
+                    if len(ipam_only) > 1:
+                        self.module.fail_json(
+                            msg=("multiple IPAM-only host records named '%s' were found "
+                                 "and could not be disambiguated"
+                                 % obj_filter.get('name')))
+                    ib_obj = ipam_only or None
 
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
             if old_ipv4addr_exists and (ib_obj is None or len(ib_obj) == 0):

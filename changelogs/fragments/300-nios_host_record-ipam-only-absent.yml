@@ -1,0 +1,5 @@
+bugfixes:
+  - nios_host_record - fix ``state=absent`` silently no-op'ing on IPAM-only
+    host records (``configure_for_dns=false``), which NIOS stores with
+    ``view=" "`` rather than ``view="default"``
+    (https://github.com/infobloxopen/infoblox-ansible/issues/300).
