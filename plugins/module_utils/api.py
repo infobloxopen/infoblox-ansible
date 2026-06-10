@@ -222,6 +222,16 @@ def convert_members_to_struct(member_spec):
     return member_spec
 
 
+def convert_vlans_to_struct(network_spec):
+    ''' Normalizes the vlans list of a network object to only contain the vlan
+    reference key, stripping NIOS-added fields (id, name) so that the proposed
+    and current objects can be compared with verify_list_content_equality.
+    '''
+    if 'vlans' in network_spec and network_spec['vlans']:
+        network_spec['vlans'] = [{'vlan': item['vlan']} for item in network_spec['vlans'] if 'vlan' in item]
+    return network_spec
+
+
 def convert_ea_list_to_struct(member_spec):
     ''' Transforms the list of the values into a valid WAPI struct.
     '''
@@ -461,6 +471,8 @@ class WapiModule(WapiBase):
 
         if (ib_obj_type == NIOS_IPV4_NETWORK or ib_obj_type == NIOS_IPV6_NETWORK):
             proposed_object = convert_members_to_struct(proposed_object)
+            current_object = convert_members_to_struct(current_object)
+            current_object = convert_vlans_to_struct(current_object)
 
         if ib_obj_type in {NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER, NIOS_IPV4_NETWORK, NIOS_IPV6_NETWORK, NIOS_RANGE}:
 
@@ -769,6 +781,24 @@ class WapiModule(WapiBase):
     def verify_list_order(self, proposed_data, current_data):
         return len(proposed_data) == len(current_data) and all(a == b for a, b in zip(proposed_data, current_data))
 
+    def verify_list_content_equality(self, proposed_data, current_data):
+        '''Verify proposed list items are present in current list regardless of order.'''
+        if len(proposed_data) != len(current_data):
+            return False
+        unmatched = list(current_data)
+        for proposed_item in proposed_data:
+            for idx, current_item in enumerate(unmatched):
+                if isinstance(proposed_item, dict):
+                    if isinstance(current_item, dict) and all(entry in current_item.items() for entry in proposed_item.items()):
+                        unmatched.pop(idx)
+                        break
+                elif proposed_item == current_item:
+                    unmatched.pop(idx)
+                    break
+            else:
+                return False
+        return True
+
     def compare_objects(self, current_object, proposed_object, ib_obj_type=None):
         for key, proposed_item in proposed_object.items():
             current_item = current_object.get(key)
@@ -789,22 +819,13 @@ class WapiModule(WapiBase):
                 # equal, and False will be returned before comparing the list items
                 # this code part will work for members' assignment
 
-                if key in ('monitors', 'members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans') \
-                        and len(proposed_item) != len(current_item):
+                if key in ('monitors', 'members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans', 'auth_zones') \
+                        and not self.verify_list_content_equality(proposed_item, current_item):
                     return False
 
-                # Special handling for auth_zones - we need to compare the actual values
-                if key == 'auth_zones' and ib_obj_type == NIOS_DTC_LBDN:
-                    if len(proposed_item) != len(current_item):
-                        return False
-                    # Sort and compare as strings for deterministic comparison
-                    current_zones_str = sorted([str(zone) for zone in current_item])
-                    proposed_zones_str = sorted([str(zone) for zone in proposed_item])
-                    if current_zones_str != proposed_zones_str:
-                        return False
-
                 # Validate the Sequence of the List data
-                if key in ('servers', 'external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
+                # Pool order is semantically significant for DTC LBDNs (determines priority/weight).
+                if key in ('pools', 'servers', 'external_servers', 'list_values') and not self.verify_list_order(proposed_item, current_item):
                     return False
 
                 for subitem in proposed_item:
