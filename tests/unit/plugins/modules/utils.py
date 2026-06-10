@@ -8,7 +8,10 @@ try:
     from ansible_collections.community.general.tests.unit.compat import unittest
 except ImportError:
     import unittest
-from ansible_collections.community.general.tests.unit.compat.mock import patch
+try:
+    from ansible_collections.community.general.tests.unit.compat.mock import patch
+except ImportError:
+    from unittest.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils.common.text.converters import to_bytes
 
@@ -21,6 +24,9 @@ def set_module_args(args):
 
     args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
     basic._ANSIBLE_ARGS = to_bytes(args)
+    # ansible-test (Ansible 2.18+) requires _ANSIBLE_PROFILE alongside _ANSIBLE_ARGS
+    if hasattr(basic, '_ANSIBLE_PROFILE'):
+        basic._ANSIBLE_PROFILE = 'legacy'
 
 
 class AnsibleExitJson(Exception):
