@@ -594,3 +594,100 @@ class TestNiosApi(unittest.TestCase):
     # ------------------------------------------------------------------
     # convert_vlans_to_struct — direct unit tests for the new helper.
     # ------------------------------------------------------------------
+
+    def test_convert_vlans_to_struct_strips_id_and_name(self):
+        spec = {'vlans': [{'vlan': 'vlan/abc:10/default', 'id': 10, 'name': 'v10'}]}
+        result = api.convert_vlans_to_struct(spec)
+        self.assertEqual(result['vlans'], [{'vlan': 'vlan/abc:10/default'}])
+
+    def test_convert_vlans_to_struct_filters_entries_without_vlan_key(self):
+        spec = {'vlans': [{'vlan': 'vlan/abc:10/default'}, {'id': 99, 'name': 'orphan'}]}
+        result = api.convert_vlans_to_struct(spec)
+        self.assertEqual(result['vlans'], [{'vlan': 'vlan/abc:10/default'}])
+
+    def test_convert_vlans_to_struct_no_key_unchanged(self):
+        spec = {'network': '192.0.2.0/24'}
+        result = api.convert_vlans_to_struct(spec)
+        self.assertEqual(result, {'network': '192.0.2.0/24'})
+        self.assertNotIn('vlans', result)
+
+    def test_convert_vlans_to_struct_empty_list_unchanged(self):
+        spec = {'vlans': []}
+        result = api.convert_vlans_to_struct(spec)
+        self.assertEqual(result['vlans'], [])
+
+    # ------------------------------------------------------------------
+    # verify_list_content_equality — direct unit tests for the new method,
+    # plus an end-to-end auth_zones reorder test via compare_objects.
+    # ------------------------------------------------------------------
+
+    def test_verify_list_content_equality_same_order_returns_true(self):
+        wapi = api.WapiModule(self.module)
+        self.assertTrue(wapi.verify_list_content_equality([1, 2, 3], [1, 2, 3]))
+
+    def test_verify_list_content_equality_different_order_returns_true(self):
+        wapi = api.WapiModule(self.module)
+        self.assertTrue(wapi.verify_list_content_equality([3, 1, 2], [1, 2, 3]))
+
+    def test_verify_list_content_equality_dict_subset_match(self):
+        '''Proposed dict items match if all entries are present in current item.'''
+        wapi = api.WapiModule(self.module)
+        proposed = [{'name': 'a'}, {'name': 'b'}]
+        current = [{'name': 'b', '_ref': 'x'}, {'name': 'a', '_ref': 'y'}]
+        self.assertTrue(wapi.verify_list_content_equality(proposed, current))
+
+    def test_verify_list_content_equality_missing_item_returns_false(self):
+        wapi = api.WapiModule(self.module)
+        self.assertFalse(wapi.verify_list_content_equality([1, 2, 4], [1, 2, 3]))
+
+    def test_verify_list_content_equality_different_lengths_returns_false(self):
+        wapi = api.WapiModule(self.module)
+        self.assertFalse(wapi.verify_list_content_equality([1, 2], [1, 2, 3]))
+
+    def test_compare_objects_auth_zones_reorder_returns_true(self):
+        '''auth_zones reorder must NOT register as a change (covered by verify_list_content_equality).'''
+        wapi = api.WapiModule(self.module)
+        proposed = {'auth_zones': ['zone:a/default', 'zone:b/default']}
+        current = {'auth_zones': ['zone:b/default', 'zone:a/default']}
+        self.assertTrue(wapi.compare_objects(current, proposed, ib_obj_type=api.NIOS_DTC_LBDN))
+
+    def test_compare_objects_auth_zones_content_change_returns_false(self):
+        '''auth_zones with different content must register as a change.'''
+        wapi = api.WapiModule(self.module)
+        proposed = {'auth_zones': ['zone:a/default', 'zone:b/default']}
+        current = {'auth_zones': ['zone:a/default', 'zone:c/default']}
+        self.assertFalse(wapi.compare_objects(current, proposed, ib_obj_type=api.NIOS_DTC_LBDN))
+
+    # ------------------------------------------------------------------
+    # IPv6 viewless delete-by-CIDR fallback — mirror of the IPv4 test for
+    # NIOS_IPV6_NETWORK so the fallback path is covered for both stacks.
+    # ------------------------------------------------------------------
+
+    def test_wapi_delete_ipv6_network_without_network_view_falls_back(self):
+        self.module.params = {
+            'provider': None,
+            'state': 'absent',
+            'network': '2001:db8::/64',
+            'network_view': 'default',
+        }
+
+        ref = 'ipv6network/ZG5zLm5ldHdvcmtfdmlldyQw:issue135_v6_view/false'
+
+        test_spec = {
+            'network': {'ib_req': True},
+            'network_view': {'ib_req': True},
+            'template': {},
+        }
+
+        wapi = self._get_wapi(None)
+        wapi.get_object.side_effect = [[], [{'_ref': ref, 'network': '2001:db8::/64'}]]
+
+        res = wapi.run(api.NIOS_IPV6_NETWORK, test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.delete_object.assert_called_once_with(ref)
+        self.assertEqual(wapi.get_object.call_count, 2)
+        first_filter = wapi.get_object.call_args_list[0][0][1]
+        second_filter = wapi.get_object.call_args_list[1][0][1]
+        self.assertIn('network_view', first_filter)
+        self.assertNotIn('network_view', second_filter)
