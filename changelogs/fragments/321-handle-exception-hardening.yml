@@ -1,0 +1,11 @@
+---
+bugfixes:
+  - WapiModule.handle_exception - guard against NIOS WAPI error responses that
+    omit the ``Error`` key. Previously
+    ``response['Error'].split(':')[0]`` raised a ``KeyError`` when the WAPI
+    returned a JSON body containing only ``text``/``code`` (for example on
+    certain TLS/auth failures), masking the real failure reason.
+  - WapiLookup.handle_exception - guard against ``ConnectionError`` instances
+    whose ``response`` attribute is ``None``. Previously
+    ``if 'text' in exc.response:`` raised an ``AttributeError`` when the
+    exception had no associated response payload, masking the original error.

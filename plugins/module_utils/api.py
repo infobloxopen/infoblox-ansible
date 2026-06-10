@@ -280,8 +280,9 @@ class WapiBase(object):
 class WapiLookup(WapiBase):
     ''' Implements WapiBase for lookup plugins '''
     def handle_exception(self, method_name, exc):
-        if ('text' in exc.response):
-            raise Exception(exc.response['text'])
+        response = getattr(exc, 'response', None) or {}
+        if 'text' in response:
+            raise Exception(response['text'])
         else:
             raise Exception(exc)
 
@@ -326,7 +327,7 @@ class WapiModule(WapiBase):
         if ('text' in response):
             self.module.fail_json(
                 msg=response['text'],
-                type=response['Error'].split(':')[0],
+                type=response.get('Error', '').split(':')[0],
                 code=response.get('code'),
                 operation=method_name
             )

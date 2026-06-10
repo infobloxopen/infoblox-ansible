@@ -523,3 +523,74 @@ class TestNiosApi(unittest.TestCase):
             code='Client.Ibap.Data.NotFound',
             operation='delete_object',
         )
+
+    # ------------------------------------------------------------------
+    # handle_exception robustness against malformed exception responses.
+    # Two real-world defects:
+    #   * WapiModule did response['Error'].split(':') without a guard,
+    #     raising KeyError if NIOS returned text without an Error key.
+    #   * WapiLookup did 'text' in exc.response without a guard, raising
+    #     AttributeError if exc.response was None.
+    # ------------------------------------------------------------------
+
+    def test_wapi_handle_exception_text_without_error_key_does_not_raise(self):
+        '''WapiModule must not raise KeyError when response has text but no Error key.'''
+        self.module.params = {'provider': {}, 'state': 'present'}
+        self.module.fail_json = Mock(name='fail_json')
+
+        wapi = api.WapiModule(self.module)
+        exc = Exception('boom')
+        exc.response = {'text': 'something broke', 'code': 'Client.Ibap.Some.Code'}
+
+        # Must not raise — the bug was a KeyError on response['Error'].
+        wapi.handle_exception('create_object', exc)
+
+        self.module.fail_json.assert_called_once_with(
+            msg='something broke',
+            type='',
+            code='Client.Ibap.Some.Code',
+            operation='create_object',
+        )
+
+    def test_wapi_handle_exception_no_response_falls_back_to_native(self):
+        '''WapiModule must fall back to to_native(exc) when exc.response is None.'''
+        self.module.params = {'provider': {}, 'state': 'present'}
+        self.module.fail_json = Mock(name='fail_json')
+
+        wapi = api.WapiModule(self.module)
+        exc = Exception('no response attached')
+        exc.response = None  # explicit None — was the original AttributeError trigger
+
+        wapi.handle_exception('create_object', exc)
+
+        # When response is None we end up in the else-branch with to_native(exc).
+        self.module.fail_json.assert_called_once()
+        call_kwargs = self.module.fail_json.call_args[1]
+        self.assertEqual(call_kwargs.get('msg'), 'no response attached')
+
+    def test_wapi_lookup_handle_exception_none_response_does_not_raise(self):
+        '''WapiLookup must not raise AttributeError when exc.response is None.'''
+        # WapiLookup.__init__ requires a provider dict — pass an empty one.
+        lookup = api.WapiLookup({})
+        exc = Exception('lookup boom')
+        exc.response = None
+
+        # Must raise plain Exception (wrapping exc), NOT AttributeError.
+        with self.assertRaises(Exception) as cm:
+            lookup.handle_exception('get_object', exc)
+        self.assertNotIsInstance(cm.exception, AttributeError)
+        self.assertIn('lookup boom', str(cm.exception))
+
+    def test_wapi_lookup_handle_exception_text_path(self):
+        '''WapiLookup should raise Exception(text) when response has text.'''
+        lookup = api.WapiLookup({})
+        exc = Exception('original')
+        exc.response = {'text': 'wapi said no'}
+
+        with self.assertRaises(Exception) as cm:
+            lookup.handle_exception('get_object', exc)
+        self.assertEqual(str(cm.exception), 'wapi said no')
+
+    # ------------------------------------------------------------------
+    # convert_vlans_to_struct — direct unit tests for the new helper.
+    # ------------------------------------------------------------------
