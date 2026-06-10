@@ -86,6 +86,9 @@ NIOS_DTC_TOPOLOGY = 'dtc:topology'
 NIOS_EXTENSIBLE_ATTRIBUTE = 'extensibleattributedef'
 NIOS_VLAN = 'vlan'
 NIOS_ADMINUSER = 'adminuser'
+NIOS_ADMINROLE = 'adminrole'
+NIOS_ADMINGROUP = 'admingroup'
+NIOS_PERMISSION = 'permission'
 
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
@@ -562,7 +565,8 @@ class WapiModule(WapiBase):
                         if ('add' or 'remove') in proposed_object['ipv4addrs'][0]:
                             run_update, proposed_object = self.check_if_add_remove_ip_arg_exists(proposed_object)
                             if run_update:
-                                res = self.update_object(ref, proposed_object)
+                                if not self.module.check_mode:
+                                    res = self.update_object(ref, proposed_object)
                                 result['changed'] = True
                             else:
                                 res = ref
@@ -578,7 +582,8 @@ class WapiModule(WapiBase):
                     # popping 'zone_format' key as update of 'zone_format' is not supported with respect to zone_auth
                     proposed_object = self.on_update(proposed_object, ib_spec)
                     del proposed_object['zone_format']
-                    self.update_object(ref, proposed_object)
+                    if not self.module.check_mode:
+                        res = self.update_object(ref, proposed_object)
                     result['changed'] = True
                 elif 'network_view' in proposed_object and (ib_obj_type not in (NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS, NIOS_RANGE)):
                     proposed_object.pop('network_view')
@@ -594,30 +599,34 @@ class WapiModule(WapiBase):
                             {k: v for k, v in addr.items() if k != 'use_for_ea_inheritance'}
                             for addr in proposed_object['ipv4addrs']
                         ]
-                        res = self.update_object(ref, update_proposed)
+                        if not self.module.check_mode:
+                            res = self.update_object(ref, update_proposed)
                     else:
-                        res = self.update_object(ref, proposed_object)
+                        if not self.module.check_mode:
+                            res = self.update_object(ref, proposed_object)
                     result['changed'] = True
 
                     if ib_obj_type == NIOS_HOST_RECORD and res:
                         # WAPI always reset the use_for_ea_inheritance for each update operation
                         # Handle use_for_ea_inheritance flag changes for IPv4addr in a host record
                         # Fetch the updated reference of host to avoid drift.
-                        host_ref = self.connector.get_object(obj_type=str(res), return_fields=['ipv4addrs'])
-                        if host_ref and 'ipv4addrs' in host_ref:
-                            # Create a dictionary for quick lookups
-                            ref_dict = {obj['ipv4addr']: obj['_ref'] for obj in host_ref['ipv4addrs']}
-                            sorted_ipv4addrs = sorted(proposed_object['ipv4addrs'], key=lambda x: x.get('use_for_ea_inheritance', False))
-                            for proposed in sorted_ipv4addrs:
-                                ipv4addr = proposed['ipv4addr']
-                                if ipv4addr in ref_dict and 'use_for_ea_inheritance' in proposed:
-                                    self.update_object(ref_dict[ipv4addr], {'use_for_ea_inheritance': proposed['use_for_ea_inheritance']})
+                        if not self.module.check_mode:
+                            host_ref = self.connector.get_object(obj_type=str(res), return_fields=['ipv4addrs'])
+                            if host_ref and 'ipv4addrs' in host_ref:
+                                # Create a dictionary for quick lookups
+                                ref_dict = {obj['ipv4addr']: obj['_ref'] for obj in host_ref['ipv4addrs']}
+                                sorted_ipv4addrs = sorted(proposed_object['ipv4addrs'], key=lambda x: x.get('use_for_ea_inheritance', False))
+                                for proposed in sorted_ipv4addrs:
+                                    ipv4addr = proposed['ipv4addr']
+                                    if ipv4addr in ref_dict and 'use_for_ea_inheritance' in proposed:
+                                        self.update_object(ref_dict[ipv4addr], {'use_for_ea_inheritance': proposed['use_for_ea_inheritance']})
         elif state == 'absent':
             if ref is not None:
                 if 'ipv4addrs' in proposed_object:
                     if 'remove' in proposed_object['ipv4addrs'][0]:
                         self.check_if_add_remove_ip_arg_exists(proposed_object)
-                        self.update_object(ref, proposed_object)
+                        if not self.module.check_mode:
+                            self.update_object(ref, proposed_object)
                         result['changed'] = True
                 elif not self.module.check_mode:
                     self.delete_object(ref)
@@ -640,7 +649,8 @@ class WapiModule(WapiBase):
                 proposed_ip_addr = proposed_object['ipv6addrs'][0]['ipv6addr']
 
             if obj_host_name == ref_host_name and current_ip_addr != proposed_ip_addr:
-                self.create_object(ib_obj_type, proposed_object)
+                if not self.module.check_mode:
+                    self.create_object(ib_obj_type, proposed_object)
 
     def get_network_view(self, proposed_object):
         ''' Check for the associated network view with
