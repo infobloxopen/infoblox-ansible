@@ -412,3 +412,46 @@ class TestNiosApi(unittest.TestCase):
 
         self.assertTrue(res['changed'])
         wapi.delete_object.assert_called_once_with(ipam_only_ref)
+
+    # ------------------------------------------------------------------
+    # Issue #139: state=absent should be idempotent when the object is
+    # already gone (NIOS returns NotFound). handle_exception must swallow
+    # the exception for delete_object + state=absent only.
+    # ------------------------------------------------------------------
+
+    def test_wapi_handle_exception_delete_notfound_absent_is_ignored(self):
+        self.module.params = {'provider': {}, 'state': 'absent'}
+        self.module.fail_json = Mock(name='fail_json')
+
+        wapi = api.WapiModule(self.module)
+        exc = Exception('not found')
+        exc.response = {
+            'text': 'Reference record:a/... not found',
+            'Error': 'AdmConDataNotFoundError: Reference not found',
+            'code': 'Client.Ibap.Data.NotFound',
+        }
+
+        wapi.handle_exception('delete_object', exc)
+
+        self.module.fail_json.assert_not_called()
+
+    def test_wapi_handle_exception_delete_notfound_present_fails(self):
+        self.module.params = {'provider': {}, 'state': 'present'}
+        self.module.fail_json = Mock(name='fail_json')
+
+        wapi = api.WapiModule(self.module)
+        exc = Exception('not found')
+        exc.response = {
+            'text': 'Reference record:a/... not found',
+            'Error': 'AdmConDataNotFoundError: Reference not found',
+            'code': 'Client.Ibap.Data.NotFound',
+        }
+
+        wapi.handle_exception('delete_object', exc)
+
+        self.module.fail_json.assert_called_once_with(
+            msg='Reference record:a/... not found',
+            type='AdmConDataNotFoundError',
+            code='Client.Ibap.Data.NotFound',
+            operation='delete_object',
+        )
