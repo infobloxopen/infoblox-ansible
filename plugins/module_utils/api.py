@@ -107,6 +107,7 @@ NIOS_RETURN_FIELDS_EXCLUDE = frozenset({
     'new_start_addr',      # nios_range
     'new_end_addr',        # nios_range
     'create_token',        # nios_member
+    'password',            # nios_adminuser - WAPI rejects GET return_fields+=password
 })
 
 NIOS_PROVIDER_SPEC = {

@@ -691,3 +691,30 @@ class TestNiosApi(unittest.TestCase):
         second_filter = wapi.get_object.call_args_list[1][0][1]
         self.assertIn('network_view', first_filter)
         self.assertNotIn('network_view', second_filter)
+
+    def test_post_fetch_filters_password_for_adminuser(self):
+        # Post-write re-fetch should never request password in return_fields
+        # because WAPI rejects adminuser GETs with return_fields+=password.
+        self.module.params = {
+            'provider': {}, 'state': 'present',
+            'name': 'api-user', 'password': 'secret',
+        }
+        test_spec = {
+            'name': {'ib_req': True},
+            'password': {},
+        }
+
+        wapi = api.WapiModule(self.module)
+        wapi.get_object = Mock(return_value=None)
+        wapi.create_object = Mock(return_value='adminuser/test-ref')
+        wapi.update_object = Mock()
+        wapi.delete_object = Mock()
+        wapi.connector.get_object = Mock(return_value={'_ref': 'adminuser/test-ref', 'name': 'api-user'})
+
+        res = wapi.run(api.NIOS_ADMINUSER, test_spec)
+
+        self.assertTrue(res['changed'])
+        self.assertIn('object', res)
+        called_kwargs = wapi.connector.get_object.call_args.kwargs
+        self.assertIn('return_fields', called_kwargs)
+        self.assertNotIn('password', called_kwargs['return_fields'])
