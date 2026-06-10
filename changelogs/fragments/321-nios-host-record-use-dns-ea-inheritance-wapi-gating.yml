@@ -1,0 +1,10 @@
+---
+bugfixes:
+  - nios_host_record module - ``use_dns_ea_inheritance`` is now gated on the
+    WAPI version reported by the provider. The field was introduced in NIOS
+    WAPI 2.12.3 and 2.13.4; sending it against an earlier WAPI causes NIOS
+    to silently drop it, which previously misled callers into believing the
+    inheritance flag had been persisted. On unsupported WAPI versions the
+    module now strips the field from the request and, when the user has
+    explicitly enabled the field, emits a warning explaining that it has
+    been ignored (https://github.com/infobloxopen/infoblox-ansible/pull/321).

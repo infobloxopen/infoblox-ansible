@@ -1,0 +1,9 @@
+---
+bugfixes:
+  - nios_network module - when ``state=absent`` is used and ``network_view`` is
+    not specified, the module now falls back to a network-only lookup so that
+    the resource can be deleted by CIDR alone. The previous behavior required
+    ``network_view`` and silently no-op'd otherwise. If the CIDR is present
+    in multiple network views, the module fails with a clear ambiguity error
+    so callers can re-run with ``network_view`` set
+    (https://github.com/infobloxopen/infoblox-ansible/issues/135).

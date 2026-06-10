@@ -1,0 +1,8 @@
+---
+bugfixes:
+  - WapiModule - ``state=absent`` is now idempotent when the underlying NIOS
+    object is missing. Previously a ``NotFound`` returned by the WAPI during
+    the delete call propagated as a task failure even though the desired end
+    state was already true. The delete path now treats ``NotFound`` as
+    ``changed=False`` so re-runs and concurrent deletions do not fail
+    (https://github.com/infobloxopen/infoblox-ansible/issues/139).
