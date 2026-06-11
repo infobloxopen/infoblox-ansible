@@ -1,0 +1,9 @@
+---
+bugfixes:
+  - |
+    nios_network, nios_range - structural DHCP options (router/3,
+    ntp-servers/42, subnet-mask/1) no longer cause "Option X can not have a
+    use_option flag" WAPI errors. The ``check_vendor_specific_dhcp_option``
+    helper now strips ``use_option`` for these option numbers as well as when
+    options are specified by name (e.g. ``name: router``) rather than by
+    number (fixes https://github.com/infobloxopen/infoblox-ansible/issues/221).
