@@ -108,6 +108,8 @@ NIOS_RETURN_FIELDS_EXCLUDE = frozenset({
     'new_end_addr',        # nios_range
     'create_token',        # nios_member
     'password',            # nios_adminuser - WAPI rejects GET return_fields+=password
+    'members',             # nios_network - WAPI rejects GET return_fields+=members
+    'vlans',               # nios_network, nios_vlan - WAPI rejects GET return_fields+=vlans
 })
 
 NIOS_PROVIDER_SPEC = {
@@ -615,7 +617,8 @@ class WapiModule(WapiBase):
                         if ('add' or 'remove') in proposed_object['ipv4addrs'][0]:
                             run_update, proposed_object = self.check_if_add_remove_ip_arg_exists(proposed_object)
                             if run_update:
-                                res = self.update_object(ref, proposed_object)
+                                if not self.module.check_mode:
+                                    res = self.update_object(ref, proposed_object)
                                 result['changed'] = True
                             else:
                                 res = ref
@@ -673,7 +676,8 @@ class WapiModule(WapiBase):
                 if 'ipv4addrs' in proposed_object:
                     if 'remove' in proposed_object['ipv4addrs'][0]:
                         self.check_if_add_remove_ip_arg_exists(proposed_object)
-                        self.update_object(ref, proposed_object)
+                        if not self.module.check_mode:
+                            self.update_object(ref, proposed_object)
                         result['changed'] = True
                 elif not self.module.check_mode:
                     self.delete_object(ref)
@@ -712,10 +716,12 @@ class WapiModule(WapiBase):
                         result['object'] = (
                             fetched[0] if isinstance(fetched, list) else fetched
                         )
-                except Exception:
+                except Exception as exc:
                     # Never fail the task because the post-fetch failed; the
                     # create/update itself already succeeded server-side.
-                    pass
+                    self.module.warn(
+                        'nios post-fetch failed (object was written successfully): %s' % str(exc)
+                    )
 
         return result
 
