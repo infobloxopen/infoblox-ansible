@@ -84,7 +84,7 @@ _list:
 """
 
 from ansible.plugins.lookup import LookupBase
-from ansible.module_utils._text import to_text
+from ansible.module_utils.common.text.converters import to_text
 from ansible.errors import AnsibleError
 from ..module_utils.api import WapiLookup
 from ..module_utils.api import NIOS_IPV4_NETWORK_CONTAINER, NIOS_IPV6_NETWORK_CONTAINER

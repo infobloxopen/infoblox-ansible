@@ -1,0 +1,16 @@
+---
+minor_changes:
+  - WapiModule.compare_objects - list-valued fields whose order is not
+    semantically meaningful (``monitors``, ``members``, ``options``,
+    ``delegate_to``, ``forwarding_servers``, ``stub_members``, ``ssh_keys``,
+    ``vlans``, ``auth_zones``) are now compared with a dict-subset,
+    order-insensitive algorithm. This eliminates spurious ``changed=true``
+    results when NIOS returns the same content in a different order.
+  - WapiModule.compare_objects - ``pools`` is now compared as an
+    order-sensitive list because DTC LBDN pool order determines priority and
+    weight, so a reordering must register as a change.
+bugfixes:
+  - WapiModule - ``vlans`` on network objects are now normalized to keep only
+    the ``vlan`` reference key on the current object before comparison,
+    stripping NIOS-added ``id`` and ``name`` fields that previously caused
+    false diffs on idempotent runs.

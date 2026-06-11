@@ -22,6 +22,8 @@ from ansible_collections.infoblox.nios_modules.plugins.modules import nios_dtc_m
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
 from .test_nios_module import TestNiosModule, load_fixture
+from .utils import set_module_args
+from ansible_collections.infoblox.nios_modules.tests.unit.plugins.modules.utils import AnsibleFailJson
 
 
 class TestNiosDtcTcpMonitorModule(TestNiosModule):
@@ -132,3 +134,16 @@ class TestNiosDtcTcpMonitorModule(TestNiosModule):
 
         self.assertTrue(res['changed'])
         wapi.delete_object.assert_called_once_with(ref)
+
+    def test_nios_dtc_monitor_tcp_absent_without_port_fails(self):
+        """Regression: port is required=True; omitting it must fail at argument
+        validation regardless of state, so a bare state=absent cannot silently
+        bypass the required-port constraint."""
+        set_module_args({
+            'state': 'absent',
+            'name': 'tcp_monitor',
+            'provider': {'host': '192.168.1.1', 'username': 'admin', 'password': 'admin'},
+        })
+        with self.assertRaises(AnsibleFailJson) as cm:
+            nios_dtc_monitor_tcp.main()
+        self.assertIn('port', str(cm.exception.args[0].get('msg', '')))

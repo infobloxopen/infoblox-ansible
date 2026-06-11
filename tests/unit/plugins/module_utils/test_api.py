@@ -412,3 +412,282 @@ class TestNiosApi(unittest.TestCase):
 
         self.assertTrue(res['changed'])
         wapi.delete_object.assert_called_once_with(ipam_only_ref)
+
+    # ------------------------------------------------------------------
+    # Issue #135: nios_network state=absent should fall back to a viewless
+    # lookup when the default network_view does not resolve the object.
+    # If the fallback is ambiguous across multiple views, fail loudly.
+    # ------------------------------------------------------------------
+
+    def test_wapi_delete_network_without_network_view_falls_back(self):
+        self.module.params = {
+            'provider': None,
+            'state': 'absent',
+            'network': '192.0.2.0/24',
+            'network_view': 'default',
+        }
+
+        ref = 'network/ZG5zLm5ldHdvcmtfdmlldyQw:issue135_ansible_view/false'
+
+        test_spec = {
+            'network': {'ib_req': True},
+            'network_view': {'ib_req': True},
+            'template': {},
+        }
+
+        wapi = self._get_wapi(None)
+        # First lookup in default view misses, fallback without network_view finds object.
+        wapi.get_object.side_effect = [[], [{'_ref': ref, 'network': '192.0.2.0/24'}]]
+
+        res = wapi.run(api.NIOS_IPV4_NETWORK, test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.delete_object.assert_called_once_with(ref)
+        self.assertEqual(wapi.get_object.call_count, 2)
+        first_filter = wapi.get_object.call_args_list[0][0][1]
+        second_filter = wapi.get_object.call_args_list[1][0][1]
+        self.assertIn('network_view', first_filter)
+        self.assertNotIn('network_view', second_filter)
+
+    def test_wapi_delete_network_without_network_view_fallback_ambiguous_fails(self):
+        self.module.params = {
+            'provider': None,
+            'state': 'absent',
+            'network': '192.0.2.0/24',
+            'network_view': 'default',
+        }
+
+        test_spec = {
+            'network': {'ib_req': True},
+            'network_view': {'ib_req': True},
+            'template': {},
+        }
+
+        wapi = self._get_wapi(None)
+        wapi.get_object.side_effect = [
+            [],
+            [
+                {'_ref': 'network/view1/false', 'network': '192.0.2.0/24', 'network_view': 'view1'},
+                {'_ref': 'network/view2/false', 'network': '192.0.2.0/24', 'network_view': 'view2'},
+            ],
+        ]
+
+        wapi.run(api.NIOS_IPV4_NETWORK, test_spec)
+
+        msgs = [c[1].get('msg', '') for c in wapi.module.fail_json.call_args_list]
+        self.assertTrue(
+            any('Set network_view explicitly for state=absent' in m for m in msgs),
+            "Expected fail_json to be called with the ambiguity message"
+        )
+        wapi.delete_object.assert_not_called()
+
+    # ------------------------------------------------------------------
+    # Issue #139: state=absent should be idempotent when the object is
+    # already gone (NIOS returns NotFound). handle_exception must swallow
+    # the exception for delete_object + state=absent only.
+    # ------------------------------------------------------------------
+
+    def test_wapi_handle_exception_delete_notfound_absent_is_ignored(self):
+        self.module.params = {'provider': {}, 'state': 'absent'}
+        self.module.fail_json = Mock(name='fail_json')
+
+        wapi = api.WapiModule(self.module)
+        exc = Exception('not found')
+        exc.response = {
+            'text': 'Reference record:a/... not found',
+            'Error': 'AdmConDataNotFoundError: Reference not found',
+            'code': 'Client.Ibap.Data.NotFound',
+        }
+
+        wapi.handle_exception('delete_object', exc)
+
+        self.module.fail_json.assert_not_called()
+
+    def test_wapi_handle_exception_delete_notfound_present_fails(self):
+        self.module.params = {'provider': {}, 'state': 'present'}
+        self.module.fail_json = Mock(name='fail_json')
+
+        wapi = api.WapiModule(self.module)
+        exc = Exception('not found')
+        exc.response = {
+            'text': 'Reference record:a/... not found',
+            'Error': 'AdmConDataNotFoundError: Reference not found',
+            'code': 'Client.Ibap.Data.NotFound',
+        }
+
+        wapi.handle_exception('delete_object', exc)
+
+        self.module.fail_json.assert_called_once_with(
+            msg='Reference record:a/... not found',
+            type='AdmConDataNotFoundError',
+            code='Client.Ibap.Data.NotFound',
+            operation='delete_object',
+        )
+
+    # ------------------------------------------------------------------
+    # handle_exception robustness against malformed exception responses.
+    # Two real-world defects:
+    #   * WapiModule did response['Error'].split(':') without a guard,
+    #     raising KeyError if NIOS returned text without an Error key.
+    #   * WapiLookup did 'text' in exc.response without a guard, raising
+    #     AttributeError if exc.response was None.
+    # ------------------------------------------------------------------
+
+    def test_wapi_handle_exception_text_without_error_key_does_not_raise(self):
+        '''WapiModule must not raise KeyError when response has text but no Error key.'''
+        self.module.params = {'provider': {}, 'state': 'present'}
+        self.module.fail_json = Mock(name='fail_json')
+
+        wapi = api.WapiModule(self.module)
+        exc = Exception('boom')
+        exc.response = {'text': 'something broke', 'code': 'Client.Ibap.Some.Code'}
+
+        # Must not raise — the bug was a KeyError on response['Error'].
+        wapi.handle_exception('create_object', exc)
+
+        self.module.fail_json.assert_called_once_with(
+            msg='something broke',
+            type='',
+            code='Client.Ibap.Some.Code',
+            operation='create_object',
+        )
+
+    def test_wapi_handle_exception_no_response_falls_back_to_native(self):
+        '''WapiModule must fall back to to_native(exc) when exc.response is None.'''
+        self.module.params = {'provider': {}, 'state': 'present'}
+        self.module.fail_json = Mock(name='fail_json')
+
+        wapi = api.WapiModule(self.module)
+        exc = Exception('no response attached')
+        exc.response = None  # explicit None — was the original AttributeError trigger
+
+        wapi.handle_exception('create_object', exc)
+
+        # When response is None we end up in the else-branch with to_native(exc).
+        self.module.fail_json.assert_called_once()
+        call_kwargs = self.module.fail_json.call_args[1]
+        self.assertEqual(call_kwargs.get('msg'), 'no response attached')
+
+    def test_wapi_lookup_handle_exception_none_response_does_not_raise(self):
+        '''WapiLookup must not raise AttributeError when exc.response is None.'''
+        # WapiLookup.__init__ requires a provider dict — pass an empty one.
+        lookup = api.WapiLookup({})
+        exc = Exception('lookup boom')
+        exc.response = None
+
+        # Must raise plain Exception (wrapping exc), NOT AttributeError.
+        with self.assertRaises(Exception) as cm:
+            lookup.handle_exception('get_object', exc)
+        self.assertNotIsInstance(cm.exception, AttributeError)
+        self.assertIn('lookup boom', str(cm.exception))
+
+    def test_wapi_lookup_handle_exception_text_path(self):
+        '''WapiLookup should raise Exception(text) when response has text.'''
+        lookup = api.WapiLookup({})
+        exc = Exception('original')
+        exc.response = {'text': 'wapi said no'}
+
+        with self.assertRaises(Exception) as cm:
+            lookup.handle_exception('get_object', exc)
+        self.assertEqual(str(cm.exception), 'wapi said no')
+
+    # ------------------------------------------------------------------
+    # convert_vlans_to_struct — direct unit tests for the new helper.
+    # ------------------------------------------------------------------
+
+    def test_convert_vlans_to_struct_strips_id_and_name(self):
+        spec = {'vlans': [{'vlan': 'vlan/abc:10/default', 'id': 10, 'name': 'v10'}]}
+        result = api.convert_vlans_to_struct(spec)
+        self.assertEqual(result['vlans'], [{'vlan': 'vlan/abc:10/default'}])
+
+    def test_convert_vlans_to_struct_filters_entries_without_vlan_key(self):
+        spec = {'vlans': [{'vlan': 'vlan/abc:10/default'}, {'id': 99, 'name': 'orphan'}]}
+        result = api.convert_vlans_to_struct(spec)
+        self.assertEqual(result['vlans'], [{'vlan': 'vlan/abc:10/default'}])
+
+    def test_convert_vlans_to_struct_no_key_unchanged(self):
+        spec = {'network': '192.0.2.0/24'}
+        result = api.convert_vlans_to_struct(spec)
+        self.assertEqual(result, {'network': '192.0.2.0/24'})
+        self.assertNotIn('vlans', result)
+
+    def test_convert_vlans_to_struct_empty_list_unchanged(self):
+        spec = {'vlans': []}
+        result = api.convert_vlans_to_struct(spec)
+        self.assertEqual(result['vlans'], [])
+
+    # ------------------------------------------------------------------
+    # verify_list_content_equality — direct unit tests for the new method,
+    # plus an end-to-end auth_zones reorder test via compare_objects.
+    # ------------------------------------------------------------------
+
+    def test_verify_list_content_equality_same_order_returns_true(self):
+        wapi = api.WapiModule(self.module)
+        self.assertTrue(wapi.verify_list_content_equality([1, 2, 3], [1, 2, 3]))
+
+    def test_verify_list_content_equality_different_order_returns_true(self):
+        wapi = api.WapiModule(self.module)
+        self.assertTrue(wapi.verify_list_content_equality([3, 1, 2], [1, 2, 3]))
+
+    def test_verify_list_content_equality_dict_subset_match(self):
+        '''Proposed dict items match if all entries are present in current item.'''
+        wapi = api.WapiModule(self.module)
+        proposed = [{'name': 'a'}, {'name': 'b'}]
+        current = [{'name': 'b', '_ref': 'x'}, {'name': 'a', '_ref': 'y'}]
+        self.assertTrue(wapi.verify_list_content_equality(proposed, current))
+
+    def test_verify_list_content_equality_missing_item_returns_false(self):
+        wapi = api.WapiModule(self.module)
+        self.assertFalse(wapi.verify_list_content_equality([1, 2, 4], [1, 2, 3]))
+
+    def test_verify_list_content_equality_different_lengths_returns_false(self):
+        wapi = api.WapiModule(self.module)
+        self.assertFalse(wapi.verify_list_content_equality([1, 2], [1, 2, 3]))
+
+    def test_compare_objects_auth_zones_reorder_returns_true(self):
+        '''auth_zones reorder must NOT register as a change (covered by verify_list_content_equality).'''
+        wapi = api.WapiModule(self.module)
+        proposed = {'auth_zones': ['zone:a/default', 'zone:b/default']}
+        current = {'auth_zones': ['zone:b/default', 'zone:a/default']}
+        self.assertTrue(wapi.compare_objects(current, proposed, ib_obj_type=api.NIOS_DTC_LBDN))
+
+    def test_compare_objects_auth_zones_content_change_returns_false(self):
+        '''auth_zones with different content must register as a change.'''
+        wapi = api.WapiModule(self.module)
+        proposed = {'auth_zones': ['zone:a/default', 'zone:b/default']}
+        current = {'auth_zones': ['zone:a/default', 'zone:c/default']}
+        self.assertFalse(wapi.compare_objects(current, proposed, ib_obj_type=api.NIOS_DTC_LBDN))
+
+    # ------------------------------------------------------------------
+    # IPv6 viewless delete-by-CIDR fallback — mirror of the IPv4 test for
+    # NIOS_IPV6_NETWORK so the fallback path is covered for both stacks.
+    # ------------------------------------------------------------------
+
+    def test_wapi_delete_ipv6_network_without_network_view_falls_back(self):
+        self.module.params = {
+            'provider': None,
+            'state': 'absent',
+            'network': '2001:db8::/64',
+            'network_view': 'default',
+        }
+
+        ref = 'ipv6network/ZG5zLm5ldHdvcmtfdmlldyQw:issue135_v6_view/false'
+
+        test_spec = {
+            'network': {'ib_req': True},
+            'network_view': {'ib_req': True},
+            'template': {},
+        }
+
+        wapi = self._get_wapi(None)
+        wapi.get_object.side_effect = [[], [{'_ref': ref, 'network': '2001:db8::/64'}]]
+
+        res = wapi.run(api.NIOS_IPV6_NETWORK, test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.delete_object.assert_called_once_with(ref)
+        self.assertEqual(wapi.get_object.call_count, 2)
+        first_filter = wapi.get_object.call_args_list[0][0][1]
+        second_filter = wapi.get_object.call_args_list[1][0][1]
+        self.assertIn('network_view', first_filter)
+        self.assertNotIn('network_view', second_filter)

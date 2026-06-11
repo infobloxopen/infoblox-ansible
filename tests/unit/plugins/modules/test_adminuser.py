@@ -259,3 +259,41 @@ class TestNiosAdminUserModule(TestNiosModule):
                 'time_zone': 'UTC'
             }
         )
+
+    def test_nios_adminuser_password_idempotent_re_run(self):
+        """Regression: re-running with the same password against an existing user
+        must NOT report changed=True. NIOS never returns 'password' on a GET, so
+        compare_objects must exclude it for ib_obj_type == NIOS_ADMINUSER."""
+        self.module.params = {'provider': None, 'state': 'present',
+                              'name': 'ansible_user',
+                              'admin_groups': ['admin-group'],
+                              'password': 'Pwd@1234',
+                              'comment': None, 'extattrs': None}
+
+        ref = "adminuser/ZG5zLm5ldHdvcmtfdmlldyQw:ansible_user"
+        # Simulate NIOS GET response — note absence of 'password' field (write-only).
+        test_object = [
+            {
+                "_ref": ref,
+                "name": "ansible_user",
+                "admin_groups": ["admin-group"],
+                "extattrs": {},
+            }
+        ]
+
+        test_spec = {
+            "name": {"ib_req": True},
+            "admin_groups": {"ib_req": True},
+            "password": {},
+            "comment": {},
+            "extattrs": {},
+        }
+
+        wapi = self._get_wapi(test_object)
+        # Use the real api.NIOS_ADMINUSER constant so the password-exclude branch fires.
+        res = wapi.run(api.NIOS_ADMINUSER, test_spec)
+
+        self.assertFalse(res['changed'],
+                         'Re-running with the same password must be idempotent (changed=False)')
+        wapi.update_object.assert_not_called()
+        wapi.create_object.assert_not_called()

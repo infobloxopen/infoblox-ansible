@@ -22,6 +22,8 @@ from ansible_collections.infoblox.nios_modules.plugins.modules import nios_host_
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
 from .test_nios_module import TestNiosModule, load_fixture
+from .utils import set_module_args
+from ansible_collections.infoblox.nios_modules.tests.unit.plugins.modules.utils import AnsibleExitJson
 
 
 class TestNiosHostRecordModule(TestNiosModule):
@@ -157,3 +159,57 @@ class TestNiosHostRecordModule(TestNiosModule):
         wapi.update_object.assert_called_once_with(
             ref, {'comment': 'comment', 'name': 'default'}
         )
+
+    def test_main_excludes_dns_ea_inheritance_for_unsupported_wapi(self):
+        """main() must strip use_dns_ea_inheritance from the spec passed to
+        wapi.run when the provider WAPI version does not support it."""
+        from ansible_collections.infoblox.nios_modules.plugins.module_utils.api import WapiModule as RealWapiModule
+        self.exec_command.provider_spec = RealWapiModule.provider_spec
+        set_module_args({
+            'name': 'host.ansible.com',
+            'state': 'present',
+            'provider': {'host': '192.168.1.1', 'username': 'admin', 'password': 'admin',
+                         'wapi_version': '2.12'},
+        })
+        with self.assertRaises(AnsibleExitJson):
+            nios_host_record.main()
+        called_spec = self.exec_command.return_value.run.call_args[0][1]
+        self.assertNotIn('use_dns_ea_inheritance', called_spec)
+
+    def test_main_includes_dns_ea_inheritance_for_supported_wapi(self):
+        """main() must keep use_dns_ea_inheritance in the spec passed to
+        wapi.run when the provider WAPI version supports it."""
+        from ansible_collections.infoblox.nios_modules.plugins.module_utils.api import WapiModule as RealWapiModule
+        self.exec_command.provider_spec = RealWapiModule.provider_spec
+        set_module_args({
+            'name': 'host.ansible.com',
+            'state': 'present',
+            'provider': {'host': '192.168.1.1', 'username': 'admin', 'password': 'admin',
+                         'wapi_version': '2.12.3'},
+        })
+        with self.assertRaises(AnsibleExitJson):
+            nios_host_record.main()
+        called_spec = self.exec_command.return_value.run.call_args[0][1]
+        self.assertIn('use_dns_ea_inheritance', called_spec)
+
+    def test_supports_dns_ea_inheritance_version_rules(self):
+        # 3-part versions
+        self.assertFalse(nios_host_record.supports_dns_ea_inheritance('2.12.2'))
+        self.assertFalse(nios_host_record.supports_dns_ea_inheritance('2.13.3'))
+        self.assertTrue(nios_host_record.supports_dns_ea_inheritance('2.12.3'))
+        self.assertTrue(nios_host_record.supports_dns_ea_inheritance('2.13.4'))
+        self.assertTrue(nios_host_record.supports_dns_ea_inheritance('2.14.0'))
+        self.assertTrue(nios_host_record.supports_dns_ea_inheritance('3.0.0'))
+        # 2-part versions — patch defaults to 0 (main fix for this comment)
+        self.assertFalse(nios_host_record.supports_dns_ea_inheritance('2.12'))   # 2.12.0 < 2.12.3
+        self.assertFalse(nios_host_record.supports_dns_ea_inheritance('2.13'))   # 2.13.0 < 2.13.4
+        self.assertTrue(nios_host_record.supports_dns_ea_inheritance('2.14'))    # minor > 13
+        self.assertTrue(nios_host_record.supports_dns_ea_inheritance('3.0'))     # major > 2
+        # edge cases
+        self.assertFalse(nios_host_record.supports_dns_ea_inheritance('2'))      # only 1 part
+        self.assertFalse(nios_host_record.supports_dns_ea_inheritance('bad'))    # non-numeric
+
+    def test_warn_ignored_dns_ea_inheritance_on_unsupported_wapi(self):
+        self.assertTrue(nios_host_record.should_warn_ignored_dns_ea_inheritance('2.12', True))
+        self.assertFalse(nios_host_record.should_warn_ignored_dns_ea_inheritance('2.12', False))
+        self.assertFalse(nios_host_record.should_warn_ignored_dns_ea_inheritance('2.12.3', True))
