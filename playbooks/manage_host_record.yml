@@ -1,0 +1,890 @@
+---
+# Playbook: manage_host_record.yml
+# Module:   infoblox.nios_modules.nios_host_record
+#
+# Demonstrates and validates all host record operations:
+#   Play 1: Same name + different IP update (DNS enabled)
+#   Play 2: Same name + different IP update (DNS disabled / IPAM-only)
+#   Play 3: Multi-IP host record creation + idempotency
+#   Play 4: Add IP to existing record (add: true) + idempotency
+#   Play 5: Remove IP from existing record (remove: true) + idempotency
+#   Play 6: DHCP-enabled host with MAC address + IP update + idempotency
+#   Play 7: Aliases idempotency (Issue #160 — aliases always changed false-positive)
+#
+# Credentials — do NOT hardcode. Supply via one of:
+#
+#   1. Extra vars (quick test):
+#      ansible-playbook manage_host_record.yml \
+#        -e nios_host=192.0.2.1 \
+#        -e nios_username=admin \
+#        -e nios_password=secret
+#
+#   2. Vars file (recommended for shared use):
+#      ansible-playbook manage_host_record.yml -e @nios_vars.yml
+#      (see playbooks/nios_vars.yml.example)
+#
+#   3. Ansible Vault (recommended for production):
+#      ansible-vault encrypt nios_vars.yml
+#      ansible-playbook manage_host_record.yml -e @nios_vars.yml --ask-vault-pass
+#
+# Required variables:
+#   nios_host          NIOS grid master IP or FQDN
+#   nios_username      NIOS admin username
+#   nios_password      NIOS admin password
+#
+# Optional variables (defaults shown):
+#   nios_wapi_version  2.11
+#   nios_ssl_verify    false
+
+- name: "Play 1 | Bug 1 | Same name + different IP - DNS ENABLED"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nios_provider: &nios_provider
+      host: "{{ nios_host }}"
+      username: "{{ nios_username }}"
+      password: "{{ nios_password }}"
+      wapi_version: "{{ nios_wapi_version | default('2.11') }}"
+      ssl_verify: "{{ nios_ssl_verify | default(false) }}"
+    host1: "issue108-dns-on.ansibletestzone.com"
+  tasks:
+    - name: "P1 | Cleanup .10"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host1 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.10" }]
+        view: default
+        state: absent
+        provider: *nios_provider
+      ignore_errors: true
+    - name: "P1 | Cleanup .11"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host1 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.11" }]
+        view: default
+        state: absent
+        provider: *nios_provider
+      ignore_errors: true
+
+    - name: "P1 | Step 1 | CREATE {{ host1 }} -> .10  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host1 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.10" }]
+        view: default
+        comment: "issue108 play1 test"
+        state: present
+        provider: *nios_provider
+      register: r
+    - ansible.builtin.debug:
+        msg: "Create -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P1 | Step 2 | IDEMPOTENT same IP .10  [expect changed=False]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host1 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.10" }]
+        view: default
+        comment: "issue108 play1 test"
+        state: present
+        provider: *nios_provider
+      register: r
+    - ansible.builtin.debug:
+        msg: "Idempotent same IP -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P1 | Step 3 | UPDATE IP: same name -> .11  [expect changed=True, was CONFLICT on master]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host1 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.11" }]
+        view: default
+        comment: "issue108 play1 test"
+        state: present
+        provider: *nios_provider
+      register: r
+    - ansible.builtin.debug:
+        msg: "Update IP -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P1 | Step 4 | IDEMPOTENT after update .11  [expect changed=False]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host1 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.11" }]
+        view: default
+        comment: "issue108 play1 test"
+        state: present
+        provider: *nios_provider
+      register: r
+    - ansible.builtin.debug:
+        msg: "Idempotent after update -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P1 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host1 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.11" }]
+        view: default
+        state: absent
+        provider: *nios_provider
+      ignore_errors: true
+
+
+- name: "Play 2 | Bug 1 | Same name + different IP - DNS DISABLED (IPAM-only)"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nios_provider: &nios_provider2
+      host: "{{ nios_host }}"
+      username: "{{ nios_username }}"
+      password: "{{ nios_password }}"
+      wapi_version: "{{ nios_wapi_version | default('2.11') }}"
+      ssl_verify: "{{ nios_ssl_verify | default(false) }}"
+    host2: "issue108-dns-off.ansibletestzone.com"
+  tasks:
+    - name: "P2 | Cleanup .12"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host2 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.112" }]
+        configure_for_dns: false
+        state: absent
+        provider: *nios_provider2
+      ignore_errors: true
+    - name: "P2 | Cleanup .13"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host2 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.113" }]
+        configure_for_dns: false
+        state: absent
+        provider: *nios_provider2
+      ignore_errors: true
+
+    - name: "P2 | Step 1 | CREATE DNS-off {{ host2 }} -> .12  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host2 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.112" }]
+        configure_for_dns: false
+        comment: "issue108 play2 dns-off test"
+        state: present
+        provider: *nios_provider2
+      register: r
+    - ansible.builtin.debug:
+        msg: "Create DNS-off -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P2 | Step 2 | IDEMPOTENT DNS-off same IP .12  [expect changed=False]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host2 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.112" }]
+        configure_for_dns: false
+        comment: "issue108 play2 dns-off test"
+        state: present
+        provider: *nios_provider2
+      register: r
+    - ansible.builtin.debug:
+        msg: "Idempotent DNS-off -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P2 | Step 3 | UPDATE IP DNS-off: same name -> .13  [expect changed=True, was CONFLICT on master]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host2 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.113" }]
+        configure_for_dns: false
+        comment: "issue108 play2 dns-off test"
+        state: present
+        provider: *nios_provider2
+      register: r
+    - ansible.builtin.debug:
+        msg: "Update IP DNS-off -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P2 | Step 4 | IDEMPOTENT DNS-off after update .13  [expect changed=False]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host2 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.113" }]
+        configure_for_dns: false
+        comment: "issue108 play2 dns-off test"
+        state: present
+        provider: *nios_provider2
+      register: r
+    - ansible.builtin.debug:
+        msg: "Idempotent DNS-off after update -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P2 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host2 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.113" }]
+        configure_for_dns: false
+        state: absent
+        provider: *nios_provider2
+      ignore_errors: true
+
+
+- name: "Play 3 | Multi-IP | Create host with 2 IPs at once + idempotency"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nios_provider: &nios_provider3
+      host: "{{ nios_host }}"
+      username: "{{ nios_username }}"
+      password: "{{ nios_password }}"
+      wapi_version: "{{ nios_wapi_version | default('2.11') }}"
+      ssl_verify: "{{ nios_ssl_verify | default(false) }}"
+    host3: "issue108-multi-ip.ansibletestzone.com"
+  tasks:
+    - name: "P3 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host3 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.20" }]
+        view: default
+        state: absent
+        provider: *nios_provider3
+      ignore_errors: true
+
+    - name: "P3 | Step 1 | CREATE with 2 IPs (.20 and .21)  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host3 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.108.20"
+          - ipv4addr: "192.168.108.21"
+        view: default
+        comment: "issue108 play3 multi-ip test"
+        state: present
+        provider: *nios_provider3
+      register: r
+    - ansible.builtin.debug:
+        msg: "Create multi-IP -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P3 | Step 2 | IDEMPOTENT multi-IP re-run  [expect changed=False]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host3 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.108.20"
+          - ipv4addr: "192.168.108.21"
+        view: default
+        comment: "issue108 play3 multi-ip test"
+        state: present
+        provider: *nios_provider3
+      register: r
+    - ansible.builtin.debug:
+        msg: "Idempotent multi-IP -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P3 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host3 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.20" }]
+        view: default
+        state: absent
+        provider: *nios_provider3
+      ignore_errors: true
+
+
+- name: "Play 4 | Bug 2 | add: true - Add IP to existing host + idempotency"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nios_provider: &nios_provider4
+      host: "{{ nios_host }}"
+      username: "{{ nios_username }}"
+      password: "{{ nios_password }}"
+      wapi_version: "{{ nios_wapi_version | default('2.11') }}"
+      ssl_verify: "{{ nios_ssl_verify | default(false) }}"
+    host4: "issue108-add-ip.ansibletestzone.com"
+  tasks:
+    - name: "P4 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host4 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.30" }]
+        view: default
+        state: absent
+        provider: *nios_provider4
+      ignore_errors: true
+
+    - name: "P4 | Step 1 | CREATE with .30  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host4 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.30" }]
+        view: default
+        state: present
+        provider: *nios_provider4
+      register: r
+    - ansible.builtin.debug:
+        msg: "Create -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P4 | Step 2 | ADD .31 using add: true  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host4 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.108.31"
+            add: true
+        view: default
+        state: present
+        provider: *nios_provider4
+      register: r
+    - ansible.builtin.debug:
+        msg: "Add .31 -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P4 | Step 3 | IDEMPOTENT add .31 again (already exists)  [expect changed=False, was WAPI error on master]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host4 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.108.31"
+            add: true
+        view: default
+        state: present
+        provider: *nios_provider4
+      register: r
+    - ansible.builtin.debug:
+        msg: "Idempotent add .31 -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P4 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host4 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.30" }]
+        view: default
+        state: absent
+        provider: *nios_provider4
+      ignore_errors: true
+
+
+- name: "Play 5 | Bug 2 | remove: true - Remove IP from host + idempotency"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nios_provider: &nios_provider5
+      host: "{{ nios_host }}"
+      username: "{{ nios_username }}"
+      password: "{{ nios_password }}"
+      wapi_version: "{{ nios_wapi_version | default('2.11') }}"
+      ssl_verify: "{{ nios_ssl_verify | default(false) }}"
+    host5: "issue108-remove-ip.ansibletestzone.com"
+  tasks:
+    - name: "P5 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host5 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.32" }]
+        view: default
+        state: absent
+        provider: *nios_provider5
+      ignore_errors: true
+
+    - name: "P5 | Step 1 | CREATE with .32 and .33  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host5 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.108.32"
+          - ipv4addr: "192.168.108.33"
+        view: default
+        state: present
+        provider: *nios_provider5
+      register: r
+    - ansible.builtin.debug:
+        msg: "Create -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P5 | Step 2 | REMOVE .32 using remove: true  [expect changed=True, was WAPI error on master]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host5 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.108.32"
+            remove: true
+        view: default
+        state: present
+        provider: *nios_provider5
+      register: r
+    - ansible.builtin.debug:
+        msg: "Remove .32 -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P5 | Step 3 | IDEMPOTENT remove .32 again (already gone)  [expect changed=False, was WAPI error on master]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host5 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.108.32"
+            remove: true
+        view: default
+        state: present
+        provider: *nios_provider5
+      register: r
+    - ansible.builtin.debug:
+        msg: "Idempotent remove .32 -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P5 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host5 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.108.33" }]
+        view: default
+        state: absent
+        provider: *nios_provider5
+      ignore_errors: true
+
+
+- name: "Play 6 | DHCP enabled with MAC + idempotency + IP update"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nios_provider: &nios_provider6
+      host: "{{ nios_host }}"
+      username: "{{ nios_username }}"
+      password: "{{ nios_password }}"
+      wapi_version: "{{ nios_wapi_version | default('2.11') }}"
+      ssl_verify: "{{ nios_ssl_verify | default(false) }}"
+    host6: "issue108-dhcp.ansibletestzone.com"
+  tasks:
+    - name: "P6 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host6 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.150", configure_for_dhcp: true, mac: "00:11:22:33:44:50" }]
+        view: default
+        state: absent
+        provider: *nios_provider6
+      ignore_errors: true
+    - name: "P6 | Cleanup .41"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host6 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.151", configure_for_dhcp: true, mac: "00:11:22:33:44:51" }]
+        view: default
+        state: absent
+        provider: *nios_provider6
+      ignore_errors: true
+
+    - name: "P6 | Step 1 | CREATE DHCP=true + MAC -> .40  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host6 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.1.150"
+            configure_for_dhcp: true
+            mac: "00:11:22:33:44:50"
+        view: default
+        comment: "issue108 play6 dhcp test"
+        state: present
+        provider: *nios_provider6
+      register: r
+    - ansible.builtin.debug:
+        msg: "Create DHCP -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P6 | Step 2 | IDEMPOTENT DHCP re-run  [expect changed=False]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host6 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.1.150"
+            configure_for_dhcp: true
+            mac: "00:11:22:33:44:50"
+        view: default
+        comment: "issue108 play6 dhcp test"
+        state: present
+        provider: *nios_provider6
+      register: r
+    - ansible.builtin.debug:
+        msg: "Idempotent DHCP -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P6 | Step 3 | UPDATE IP DHCP: same name -> .41  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host6 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.1.151"
+            configure_for_dhcp: true
+            mac: "00:11:22:33:44:51"
+        view: default
+        comment: "issue108 play6 dhcp test"
+        state: present
+        provider: *nios_provider6
+      register: r
+    - ansible.builtin.debug:
+        msg: "Update IP DHCP -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P6 | Step 4 | IDEMPOTENT DHCP after update  [expect changed=False]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host6 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.1.151"
+            configure_for_dhcp: true
+            mac: "00:11:22:33:44:51"
+        view: default
+        comment: "issue108 play6 dhcp test"
+        state: present
+        provider: *nios_provider6
+      register: r
+    - ansible.builtin.debug:
+        msg: "Idempotent DHCP after update -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P6 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host6 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.151", configure_for_dhcp: true, mac: "00:11:22:33:44:51" }]
+        view: default
+        state: absent
+        provider: *nios_provider6
+      ignore_errors: true
+
+# =============================================================================
+# Play 7 — Aliases (Issue #160): aliases always changed (false-positive)
+#
+# Bug: After creating a host with aliases, a second identical run reports
+#      changed=True instead of changed=False (idempotency failure).
+# Fix: Add `continue` after the aliases set-comparison block in
+#      compare_objects() so the loop does not fall through to subitem checks
+#      that can incorrectly trigger a diff for string-list fields.
+# =============================================================================
+- name: "Play 7 — Aliases idempotency (Issue #160)"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    nios_provider: &nios_provider7
+      host: "{{ nios_host }}"
+      username: "{{ nios_username }}"
+      password: "{{ nios_password }}"
+      wapi_version: "{{ nios_wapi_version | default('2.11') }}"
+      ssl_verify: "{{ nios_ssl_verify | default(false) }}"
+    host7: "aliases-test.ansibletestzone.com"
+
+  tasks:
+    - name: "P7 | Cleanup before test"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs: [{ ipv4addr: "10.10.10.60" }]
+        aliases:
+          - "alias1.ansibletestzone.com"
+          - "alias2.ansibletestzone.com"
+        view: default
+        state: absent
+        provider: *nios_provider7
+      ignore_errors: true
+
+    - name: "P7 | Create host with aliases"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.60"
+        aliases:
+          - "alias1.ansibletestzone.com"
+          - "alias2.ansibletestzone.com"
+        view: default
+        comment: "issue160 aliases test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: r.changed
+        msg: "FAIL: Create should report changed=True"
+    - ansible.builtin.debug:
+        msg: "Create with aliases -> changed={{ r.changed }}  (expected True) ✓"
+
+    - name: "P7 | Idempotent re-run (same aliases — must NOT change)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.60"
+        aliases:
+          - "alias1.ansibletestzone.com"
+          - "alias2.ansibletestzone.com"
+        view: default
+        comment: "issue160 aliases test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: not r.changed
+        msg: "BUG #160: Idempotent aliases run reported changed=True (false-positive)"
+    - ansible.builtin.debug:
+        msg: "Idempotent aliases re-run -> changed={{ r.changed }}  (expected False) ✓"
+
+    - name: "P7 | Add a third alias"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.60"
+        aliases:
+          - "alias1.ansibletestzone.com"
+          - "alias2.ansibletestzone.com"
+          - "alias3.ansibletestzone.com"
+        view: default
+        comment: "issue160 aliases test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: r.changed
+        msg: "FAIL: Adding new alias should report changed=True"
+    - ansible.builtin.debug:
+        msg: "Add alias3 -> changed={{ r.changed }}  (expected True) ✓"
+
+    - name: "P7 | Idempotent re-run with 3 aliases (order reversed — must NOT change)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.60"
+        aliases:
+          - "alias3.ansibletestzone.com"
+          - "alias1.ansibletestzone.com"
+          - "alias2.ansibletestzone.com"
+        view: default
+        comment: "issue160 aliases test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: not r.changed
+        msg: "BUG: Order-insensitive aliases idempotency failed (changed=True)"
+    - ansible.builtin.debug:
+        msg: "Idempotent re-run (reversed order) -> changed={{ r.changed }}  (expected False) ✓"
+
+    - name: "P7 | Remove one alias (remove alias3)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.60"
+        aliases:
+          - "alias1.ansibletestzone.com"
+          - "alias2.ansibletestzone.com"
+        view: default
+        comment: "issue160 aliases test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: r.changed
+        msg: "FAIL: Removing an alias should report changed=True"
+    - ansible.builtin.debug:
+        msg: "Remove alias3 -> changed={{ r.changed }}  (expected True) ✓"
+
+    - name: "P7 | Cleanup"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs: [{ ipv4addr: "10.10.10.60" }]
+        aliases:
+          - "alias1.ansibletestzone.com"
+          - "alias2.ansibletestzone.com"
+        view: default
+        state: absent
+        provider: *nios_provider7
+      ignore_errors: true
+
+    # --- Issue #160 core reproducer: SHORT (relative) alias names ---
+    # WAPI stores aliases as FQDNs. User-supplied short names (no dots) are
+    # expanded by WAPI to <alias>.<zone>. Without fix, idempotent re-run
+    # compares "shortalias" vs "shortalias.ansibletestzone.com" → always changed.
+
+    - name: "P7 | Cleanup short-alias host"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs: [{ ipv4addr: "10.10.10.62" }]
+        aliases:
+          - "shortalias1"
+          - "shortalias2"
+        view: default
+        state: absent
+        provider: *nios_provider7
+      ignore_errors: true
+
+    - name: "P7 | Create host with SHORT alias names (issue #160 reproducer)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.62"
+        aliases:
+          - "shortalias1"
+          - "shortalias2"
+        view: default
+        comment: "issue160 short alias test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: r.changed
+        msg: "FAIL: Create with short aliases should report changed=True"
+    - ansible.builtin.debug:
+        msg: "Create with short aliases -> changed={{ r.changed }}  (expected True) ✓"
+
+    - name: "P7 | Idempotent re-run with SHORT aliases (BUG #160: must NOT change)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.62"
+        aliases:
+          - "shortalias1"
+          - "shortalias2"
+        view: default
+        comment: "issue160 short alias test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: not r.changed
+        msg: "BUG #160: Short alias idempotent re-run reported changed=True (false-positive)"
+    - ansible.builtin.debug:
+        msg: "Idempotent re-run short aliases -> changed={{ r.changed }}  (expected False) ✓"
+
+    - name: "P7 | Cleanup short-alias host (post)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs: [{ ipv4addr: "10.10.10.62" }]
+        aliases:
+          - "shortalias1"
+          - "shortalias2"
+        view: default
+        state: absent
+        provider: *nios_provider7
+      ignore_errors: true
+
+    # --- Matrix: Mixed short + FQDN aliases ---
+    - name: "P7 | Cleanup mixed-alias host"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs: [{ ipv4addr: "10.10.10.63" }]
+        view: default
+        state: absent
+        provider: *nios_provider7
+      ignore_errors: true
+
+    - name: "P7 | Create host with MIXED (short + FQDN) aliases"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.63"
+        aliases:
+          - "shortalias3"
+          - "fqdn-alias.ansibletestzone.com"
+        view: default
+        comment: "issue160 mixed alias test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: r.changed
+        msg: "FAIL: Create with mixed aliases should report changed=True"
+    - ansible.builtin.debug:
+        msg: "Create mixed aliases -> changed={{ r.changed }}  (expected True) ✓"
+
+    - name: "P7 | Idempotent re-run with MIXED aliases (must NOT change)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.63"
+        aliases:
+          - "shortalias3"
+          - "fqdn-alias.ansibletestzone.com"
+        view: default
+        comment: "issue160 mixed alias test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: not r.changed
+        msg: "BUG: Mixed alias idempotent re-run reported changed=True"
+    - ansible.builtin.debug:
+        msg: "Idempotent mixed aliases -> changed={{ r.changed }}  (expected False) ✓"
+
+    - name: "P7 | Cleanup mixed-alias host (post)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs: [{ ipv4addr: "10.10.10.63" }]
+        view: default
+        state: absent
+        provider: *nios_provider7
+      ignore_errors: true
+
+    # --- Matrix: Remove ALL aliases (host still present, aliases dropped) ---
+    - name: "P7 | Cleanup remove-all-aliases host"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs: [{ ipv4addr: "10.10.10.64" }]
+        view: default
+        state: absent
+        provider: *nios_provider7
+      ignore_errors: true
+
+    - name: "P7 | Create host with aliases (for remove-all test)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.64"
+        aliases:
+          - "rmalias1.ansibletestzone.com"
+        view: default
+        comment: "issue160 remove-all aliases test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: r.changed
+        msg: "FAIL: Create should report changed=True"
+
+    - name: "P7 | Remove ALL aliases by omitting aliases key"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "10.10.10.64"
+        view: default
+        comment: "issue160 remove-all aliases test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.debug:
+        msg: "Remove all aliases (omit key) -> changed={{ r.changed }}  (note: WAPI preserves aliases when field is omitted)"
+
+    - name: "P7 | Cleanup remove-all-aliases host (post)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs: [{ ipv4addr: "10.10.10.64" }]
+        view: default
+        state: absent
+        provider: *nios_provider7
+      ignore_errors: true
+
+    # --- Matrix: DNS-DISABLED host + short aliases (no FQDN expansion) ---
+    - name: "P7 | Cleanup DNS-disabled alias host"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.90" }]
+        configure_for_dns: false
+        view: default
+        state: absent
+        provider: *nios_provider7
+      ignore_errors: true
+
+    - name: "P7 | Create DNS-disabled host with short aliases"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.1.90"
+        configure_for_dns: false
+        aliases:
+          - "nodns-alias1"
+          - "nodns-alias2"
+        view: default
+        comment: "issue160 dns-disabled alias test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: r.changed
+        msg: "FAIL: Create DNS-disabled with aliases should report changed=True"
+    - ansible.builtin.debug:
+        msg: "Create DNS-disabled + short aliases -> changed={{ r.changed }}  (expected True) ✓"
+
+    - name: "P7 | Idempotent re-run DNS-disabled + short aliases (must NOT change)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs:
+          - ipv4addr: "192.168.1.90"
+        configure_for_dns: false
+        aliases:
+          - "nodns-alias1"
+          - "nodns-alias2"
+        view: default
+        comment: "issue160 dns-disabled alias test"
+        state: present
+        provider: *nios_provider7
+      register: r
+    - ansible.builtin.assert:
+        that: not r.changed
+        msg: "BUG: DNS-disabled short alias idempotent re-run reported changed=True"
+    - ansible.builtin.debug:
+        msg: "Idempotent DNS-disabled short aliases -> changed={{ r.changed }}  (expected False) ✓"
+
+    - name: "P7 | Cleanup DNS-disabled alias host (post)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host7 }}"
+        ipv4addrs: [{ ipv4addr: "192.168.1.90" }]
+        configure_for_dns: false
+        view: default
+        state: absent
+        provider: *nios_provider7
+      ignore_errors: true

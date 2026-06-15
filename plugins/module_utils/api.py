@@ -473,7 +473,8 @@ class WapiModule(WapiBase):
                     elif each.get('ipv4addrs') and each.get('ipv4addrs')[0].get('ipv4addr') \
                             == proposed_object.get('ipv4addrs')[0].get('ipv4addr'):
                         current_object = each
-                    # Else set the current_object with input value
+                        break
+                    # No IP match found: treat as a new record, do not overwrite existing
                     else:
                         current_object = obj_filter
                         ref = None
@@ -614,14 +615,24 @@ class WapiModule(WapiBase):
                     run_update = True
                     proposed_object = self.on_update(proposed_object, ib_spec)
                     if 'ipv4addrs' in proposed_object:
-                        if ('add' or 'remove') in proposed_object['ipv4addrs'][0]:
-                            run_update, proposed_object = self.check_if_add_remove_ip_arg_exists(proposed_object)
-                            if run_update:
-                                if not self.module.check_mode:
-                                    res = self.update_object(ref, proposed_object)
-                                result['changed'] = True
-                            else:
+                        if ('add' in proposed_object['ipv4addrs'][0]) or ('remove' in proposed_object['ipv4addrs'][0]):
+                            # Idempotency: skip WAPI call if the desired state is already met.
+                            # add: true on an IP already in the record → no-op (changed=False)
+                            # remove: true on an IP not in the record  → no-op (changed=False)
+                            proposed_ip = proposed_object['ipv4addrs'][0].get('ipv4addr')
+                            current_ips = [a.get('ipv4addr') for a in current_object.get('ipv4addrs', [])]
+                            is_add = proposed_object['ipv4addrs'][0].get('add') is True
+                            is_remove = proposed_object['ipv4addrs'][0].get('remove') is True
+                            if (is_add and proposed_ip in current_ips) or (is_remove and proposed_ip not in current_ips):
                                 res = ref
+                            else:
+                                run_update, proposed_object = self.check_if_add_remove_ip_arg_exists(proposed_object)
+                                if run_update:
+                                    if not self.module.check_mode:
+                                        res = self.update_object(ref, proposed_object)
+                                    result['changed'] = True
+                                else:
+                                    res = ref
 
                 if (ib_obj_type in (NIOS_A_RECORD, NIOS_AAAA_RECORD, NIOS_PTR_RECORD, NIOS_SRV_RECORD, NIOS_NAPTR_RECORD)):
                     # popping 'view' key as update of 'view' is not supported with respect to a:record/aaaa:record/srv:record/ptr:record/naptr:record
@@ -726,21 +737,13 @@ class WapiModule(WapiBase):
         return result
 
     def check_if_recordname_exists(self, obj_filter, ib_obj_ref, ib_obj_type, current_object, proposed_object):
-        ''' Send POST request if host record input name and retrieved ref name is same,
-            but input IP and retrieved IP is different'''
-
-        if 'name' in (obj_filter and ib_obj_ref[0]) and ib_obj_type == NIOS_HOST_RECORD:
-            obj_host_name = obj_filter['name']
-            ref_host_name = ib_obj_ref[0]['name']
-            if 'ipv4addrs' in (current_object and proposed_object):
-                current_ip_addr = current_object['ipv4addrs'][0]['ipv4addr']
-                proposed_ip_addr = proposed_object['ipv4addrs'][0]['ipv4addr']
-            elif 'ipv6addrs' in (current_object and proposed_object):
-                current_ip_addr = current_object['ipv6addrs'][0]['ipv6addr']
-                proposed_ip_addr = proposed_object['ipv6addrs'][0]['ipv6addr']
-
-            if obj_host_name == ref_host_name and current_ip_addr != proposed_ip_addr:
-                self.create_object(ib_obj_type, proposed_object)
+        ''' Validate that a host record update with a different IP is not silently
+            routed through create_object (which causes a NIOS conflict error).
+            When the same hostname exists with a different IP and no add/remove flag
+            is set, the caller's normal update_object path is the correct route —
+            this function now simply returns and lets that path proceed.
+            See: https://github.com/infobloxopen/infoblox-ansible/issues/108 '''
+        pass
 
     def get_network_view(self, proposed_object):
         ''' Check for the associated network view with
@@ -910,6 +913,12 @@ class WapiModule(WapiBase):
                         # Host IPv4addrs wont contain use_nextserver and nextserver
                         # If DHCP is false.
                         use_nextserver = subitem.get('use_nextserver', False)
+
+                        # WAPI omits use_for_ea_inheritance when it is False (the default).
+                        # Strip it from the proposed subitem before comparison to avoid
+                        # a false modified=True on every idempotent run.
+                        if not subitem.get('use_for_ea_inheritance', False):
+                            subitem.pop('use_for_ea_inheritance', None)
 
                         if not dhcp_flag:
                             try:
