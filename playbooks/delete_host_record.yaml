@@ -1,0 +1,39 @@
+---
+- name: Delete Nios Host Record Examples
+  hosts: localhost
+  vars:
+    nios_provider:
+      host: 10.36.118.2
+      username: admin
+      password: admin
+
+  connection: local
+  tasks:
+    - name: Delete a host record (DNS enabled)
+      # To delete a host record, omit ipv4addrs and use state=absent.
+      # Passing ipv4addrs with state=absent will NOT delete the record —
+      # it is reserved for removing a single IP from a multi-IP host record.
+      infoblox.nios_modules.nios_host_record:
+        name: host.ansible.com
+        state: absent
+        provider: "{{ nios_provider }}"
+
+    - name: Delete a host record that was created with DNS disabled
+      # If the record was created with configure_for_dns: false, you must
+      # include configure_for_dns: false in the delete task as well.
+      infoblox.nios_modules.nios_host_record:
+        name: host-nodns.ansible.com
+        configure_for_dns: false
+        state: absent
+        provider: "{{ nios_provider }}"
+
+    - name: Remove a single IP from a multi-IP host record (keep the record)
+      # Use remove: true inside ipv4addrs to remove one IP while keeping
+      # the host record intact. state must also be absent.
+      infoblox.nios_modules.nios_host_record:
+        name: host.ansible.com
+        ipv4addrs:
+          - address: 192.168.10.2
+            remove: true
+        state: absent
+        provider: "{{ nios_provider }}"
