@@ -281,7 +281,7 @@ class WapiBase(object):
     provider_spec = {'provider': dict(type='dict', options=NIOS_PROVIDER_SPEC)}
 
     def __init__(self, provider):
-        self.connector = get_connector(**provider)
+        self.connector = get_connector(**(provider or {}))
 
     def __getattr__(self, name):
         try:
