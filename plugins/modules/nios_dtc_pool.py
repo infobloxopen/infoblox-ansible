@@ -223,6 +223,7 @@ def main():
                                                          'GLOBAL_AVAILABILITY',
                                                          'RATIO',
                                                          'ROUND_ROBIN',
+                                                         'SOURCE_IP_HASH',
                                                          'TOPOLOGY']),
         lb_preferred_topology=dict(type='str', transform=topology_transform),
 
