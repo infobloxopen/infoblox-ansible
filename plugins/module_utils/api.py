@@ -908,6 +908,20 @@ class WapiModule(WapiBase):
                         continue  # Skip non-dict items
 
                     if ib_obj_type == NIOS_HOST_RECORD and key == 'ipv4addrs':
+                        # Issue #63: a nios_next_ip request means dynamic allocation.
+                        # On re-runs the proposed value is still the lookup token while
+                        # the current record holds the already-resolved IP, so they can
+                        # never compare equal. The token may arrive as a dict
+                        # {'nios_next_ip': '...'}, a string repr of that dict, or a
+                        # resolved 'func:nextavailableip:...' string. Skip this subitem
+                        # in all three forms so the record is treated as up-to-date.
+                        ipv4addr_val = subitem.get('ipv4addr', '')
+                        if isinstance(ipv4addr_val, str) and (
+                                'nextavailableip' in ipv4addr_val or 'nios_next_ip' in ipv4addr_val):
+                            continue
+                        if isinstance(ipv4addr_val, dict) and 'nios_next_ip' in ipv4addr_val:
+                            continue
+
                         current_config = current_item[0]
                         dhcp_flag = current_config.get('configure_for_dhcp', False)
                         # Host IPv4addrs wont contain use_nextserver and nextserver
