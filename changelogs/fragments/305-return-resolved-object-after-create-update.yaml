@@ -1,0 +1,14 @@
+---
+minor_changes:
+  - |
+    nios_* modules - After a successful create or update (``state: present``,
+    ``changed: true``), modules now return the canonical NIOS object under
+    ``result.object``. This makes lookup-allocated values (for example, the IP
+    chosen by ``func: nios_next_ip`` or the network chosen by
+    ``func: nios_next_network``) accessible to downstream tasks
+    (https://github.com/infobloxopen/infoblox-ansible/issues/305,
+    https://github.com/infobloxopen/infoblox-ansible/issues/304).
+bugfixes:
+  - |
+    nios_* modules - Update path no longer calls ``update_object`` in check
+    mode; the existing ref is preserved instead.

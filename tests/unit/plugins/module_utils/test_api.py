@@ -691,3 +691,199 @@ class TestNiosApi(unittest.TestCase):
         second_filter = wapi.get_object.call_args_list[1][0][1]
         self.assertIn('network_view', first_filter)
         self.assertNotIn('network_view', second_filter)
+
+    def test_post_fetch_filters_password_for_adminuser(self):
+        # Post-write re-fetch should never request password in return_fields
+        # because WAPI rejects adminuser GETs with return_fields+=password.
+        self.module.params = {
+            'provider': {}, 'state': 'present',
+            'name': 'api-user', 'password': 'secret',
+        }
+        test_spec = {
+            'name': {'ib_req': True},
+            'password': {},
+        }
+
+        wapi = api.WapiModule(self.module)
+        wapi.get_object = Mock(return_value=None)
+        wapi.create_object = Mock(return_value='adminuser/test-ref')
+        wapi.update_object = Mock()
+        wapi.delete_object = Mock()
+        wapi.connector.get_object = Mock(return_value={'_ref': 'adminuser/test-ref', 'name': 'api-user'})
+
+        res = wapi.run(api.NIOS_ADMINUSER, test_spec)
+
+        self.assertTrue(res['changed'])
+        self.assertIn('object', res)
+        called_kwargs = wapi.connector.get_object.call_args.kwargs
+        self.assertIn('return_fields', called_kwargs)
+        self.assertNotIn('password', called_kwargs['return_fields'])
+
+    def test_post_fetch_filters_members_and_vlans(self):
+        # Post-write re-fetch must never include 'members' or 'vlans' in
+        # return_fields because WAPI rejects network GETs with those fields.
+        # Using a generic object type to avoid get_object_ref's network-specific
+        # key manipulation; the exclusion is applied unconditionally by run().
+        self.module.params = {
+            'provider': {}, 'state': 'present',
+            'network': '10.0.0.0/24', 'network_view': 'default',
+            'members': [], 'vlans': [],
+        }
+        test_spec = {
+            'network': {'ib_req': True},
+            'network_view': {},
+            'members': {},
+            'vlans': {},
+        }
+
+        wapi = api.WapiModule(self.module)
+        wapi.get_object = Mock(return_value=None)
+        wapi.create_object = Mock(return_value='testnetwork/ZG5z:10.0.0.0/24/default')
+        wapi.update_object = Mock()
+        wapi.delete_object = Mock()
+        wapi.connector.get_object = Mock(return_value={
+            '_ref': 'testnetwork/ZG5z:10.0.0.0/24/default',
+            'network': '10.0.0.0/24',
+        })
+
+        res = wapi.run('testnetwork', test_spec)
+
+        self.assertTrue(res['changed'])
+        self.assertIn('object', res)
+        called_kwargs = wapi.connector.get_object.call_args.kwargs
+        self.assertIn('return_fields', called_kwargs)
+        self.assertNotIn('members', called_kwargs['return_fields'])
+        self.assertNotIn('vlans', called_kwargs['return_fields'])
+
+    def test_post_fetch_skipped_in_check_mode(self):
+        # In check_mode the post-write re-fetch must never be attempted.
+        self.module.check_mode = True
+        self.module.params = {
+            'provider': {}, 'state': 'present',
+            'name': 'check-obj', 'comment': None, 'extattrs': None,
+        }
+        test_spec = {
+            'name': {'ib_req': True},
+            'comment': {},
+            'extattrs': {},
+        }
+
+        wapi = api.WapiModule(self.module)
+        wapi.get_object = Mock(return_value=None)
+        wapi.create_object = Mock(return_value='testobject/check-ref')
+        wapi.update_object = Mock()
+        wapi.delete_object = Mock()
+        wapi.connector.get_object = Mock()
+
+        res = wapi.run('testobject', test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.connector.get_object.assert_not_called()
+        self.assertNotIn('object', res)
+
+    def test_post_fetch_failure_emits_warning_not_exception(self):
+        # When the post-fetch connector call raises, the module must emit a
+        # warning instead of failing the task (the write already succeeded).
+        self.module.params = {
+            'provider': {}, 'state': 'present',
+            'name': 'new-obj', 'comment': None, 'extattrs': None,
+        }
+        test_spec = {
+            'name': {'ib_req': True},
+            'comment': {},
+            'extattrs': {},
+        }
+
+        wapi = api.WapiModule(self.module)
+        wapi.get_object = Mock(return_value=None)
+        wapi.create_object = Mock(return_value='testobject/new-ref')
+        wapi.update_object = Mock()
+        wapi.delete_object = Mock()
+        wapi.connector.get_object = Mock(side_effect=Exception('connector error'))
+
+        res = wapi.run('testobject', test_spec)
+
+        self.assertTrue(res['changed'])
+        self.assertNotIn('object', res)
+        self.module.warn.assert_called_once()
+        warn_msg = self.module.warn.call_args[0][0]
+        self.assertIn('post-fetch failed', warn_msg)
+        self.assertIn('connector error', warn_msg)
+
+    def test_check_mode_skips_update_in_add_ip_path(self):
+        # In check_mode, the HOST_RECORD add-ip update_object call must be
+        # suppressed, but result['changed'] must still be True.
+        self.module.check_mode = True
+        ref = 'record:host/ZG5z:myhost/default'
+        self.module.params = {
+            'provider': {}, 'state': 'present',
+            'name': 'myhost', 'view': 'default',
+            'configure_for_dns': True,
+            'ipv4addrs': [{'ipv4addr': '10.0.0.2', 'add': True}],
+            'comment': None, 'extattrs': None,
+        }
+        existing = [{
+            '_ref': ref,
+            'name': 'myhost', 'view': 'default',
+            'configure_for_dns': True,
+            'ipv4addrs': [{'ipv4addr': '10.0.0.1'}],
+            'comment': None, 'extattrs': {},
+        }]
+        test_spec = {
+            'name': {'ib_req': True},
+            'view': {'ib_req': True},
+            'configure_for_dns': {'ib_req': True},
+            'ipv4addrs': {},
+            'comment': {},
+            'extattrs': {},
+        }
+
+        wapi = api.WapiModule(self.module)
+        wapi.get_object = Mock(return_value=existing)
+        wapi.create_object = Mock()
+        wapi.update_object = Mock()
+        wapi.delete_object = Mock()
+
+        res = wapi.run(api.NIOS_HOST_RECORD, test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.update_object.assert_not_called()
+
+    def test_check_mode_skips_update_in_remove_ip_absent_path(self):
+        # In check_mode, the HOST_RECORD remove-ip update_object call on
+        # state=absent must be suppressed, but result['changed'] must be True.
+        self.module.check_mode = True
+        ref = 'record:host/ZG5z:myhost/default'
+        self.module.params = {
+            'provider': {}, 'state': 'absent',
+            'name': 'myhost', 'view': 'default',
+            'configure_for_dns': True,
+            'ipv4addrs': [{'ipv4addr': '10.0.0.1', 'remove': True}],
+            'comment': None, 'extattrs': None,
+        }
+        existing = [{
+            '_ref': ref,
+            'name': 'myhost', 'view': 'default',
+            'configure_for_dns': True,
+            'ipv4addrs': [{'ipv4addr': '10.0.0.1'}, {'ipv4addr': '10.0.0.2'}],
+            'comment': None, 'extattrs': {},
+        }]
+        test_spec = {
+            'name': {'ib_req': True},
+            'view': {'ib_req': True},
+            'configure_for_dns': {'ib_req': True},
+            'ipv4addrs': {},
+            'comment': {},
+            'extattrs': {},
+        }
+
+        wapi = api.WapiModule(self.module)
+        wapi.get_object = Mock(return_value=existing)
+        wapi.create_object = Mock()
+        wapi.update_object = Mock()
+        wapi.delete_object = Mock()
+
+        res = wapi.run(api.NIOS_HOST_RECORD, test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.update_object.assert_not_called()

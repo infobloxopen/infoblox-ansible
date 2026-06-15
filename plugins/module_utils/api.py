@@ -87,6 +87,31 @@ NIOS_EXTENSIBLE_ATTRIBUTE = 'extensibleattributedef'
 NIOS_VLAN = 'vlan'
 NIOS_ADMINUSER = 'adminuser'
 
+# Object types that intentionally do NOT participate in the post-write
+# re-fetch performed at the end of WapiModule.run() (issue #305).
+# NIOS_MEMBER's create_token path already returns its payload under
+# result['api_results'] and there is no canonical 'member' object to re-read
+# in that flow.
+NIOS_RETURN_OBJECT_EXCLUDE = frozenset({
+    NIOS_MEMBER,
+})
+
+# ib_spec keys that are module-side helpers / write-only inputs and are NOT
+# valid WAPI return fields. They are stripped from the return_fields set
+# passed to the post-write re-fetch in WapiModule.run() (issue #305) so the
+# GET succeeds on the first try. Mirrors the per-type sanitization already
+# performed by get_object_ref() before its own GETs.
+NIOS_RETURN_FIELDS_EXCLUDE = frozenset({
+    'restart_if_needed',   # nios_zone
+    'template',            # nios_network, nios_network_container
+    'new_start_addr',      # nios_range
+    'new_end_addr',        # nios_range
+    'create_token',        # nios_member
+    'password',            # nios_adminuser - WAPI rejects GET return_fields+=password
+    'members',             # nios_network - WAPI rejects GET return_fields+=members
+    'vlans',               # nios_network, nios_vlan - WAPI rejects GET return_fields+=vlans
+})
+
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
     'username': dict(fallback=(env_fallback, ['INFOBLOX_USERNAME'])),
@@ -572,7 +597,7 @@ class WapiModule(WapiBase):
         if state == 'present':
             if ref is None:
                 if not self.module.check_mode:
-                    self.create_object(ib_obj_type, proposed_object)
+                    res = self.create_object(ib_obj_type, proposed_object)
                 result['changed'] = True
             # Check if NIOS_MEMBER and the flag to call function create_token is set
             elif (ib_obj_type == NIOS_MEMBER) and (proposed_object.get("create_token") is True):
@@ -592,7 +617,8 @@ class WapiModule(WapiBase):
                         if ('add' or 'remove') in proposed_object['ipv4addrs'][0]:
                             run_update, proposed_object = self.check_if_add_remove_ip_arg_exists(proposed_object)
                             if run_update:
-                                res = self.update_object(ref, proposed_object)
+                                if not self.module.check_mode:
+                                    res = self.update_object(ref, proposed_object)
                                 result['changed'] = True
                             else:
                                 res = ref
@@ -608,7 +634,10 @@ class WapiModule(WapiBase):
                     # popping 'zone_format' key as update of 'zone_format' is not supported with respect to zone_auth
                     proposed_object = self.on_update(proposed_object, ib_spec)
                     del proposed_object['zone_format']
-                    self.update_object(ref, proposed_object)
+                    if not self.module.check_mode:
+                        res = self.update_object(ref, proposed_object)
+                    else:
+                        res = ref
                     result['changed'] = True
                 elif 'network_view' in proposed_object and (ib_obj_type not in (NIOS_IPV4_FIXED_ADDRESS, NIOS_IPV6_FIXED_ADDRESS, NIOS_RANGE)):
                     proposed_object.pop('network_view')
@@ -647,11 +676,52 @@ class WapiModule(WapiBase):
                 if 'ipv4addrs' in proposed_object:
                     if 'remove' in proposed_object['ipv4addrs'][0]:
                         self.check_if_add_remove_ip_arg_exists(proposed_object)
-                        self.update_object(ref, proposed_object)
+                        if not self.module.check_mode:
+                            self.update_object(ref, proposed_object)
                         result['changed'] = True
                 elif not self.module.check_mode:
                     self.delete_object(ref)
                     result['changed'] = True
+
+        # ------------------------------------------------------------------
+        # Fix for issue #305 (generalized):
+        # After a successful present-state write, re-fetch the canonical
+        # object so the caller's `register:` variable exposes WAPI-resolved
+        # values (notably IPs produced by func:nextavailableip and networks
+        # produced by func:nextavailablenetwork). The fields requested are
+        # derived from the calling module's ib_spec so this works for every
+        # WAPI object type without a per-type table that would need to be
+        # maintained as the schema evolves.
+        # ------------------------------------------------------------------
+        if (state == 'present'
+                and result.get('changed')
+                and not self.module.check_mode
+                and ib_obj_type not in NIOS_RETURN_OBJECT_EXCLUDE):
+            target_ref = res if res else ref
+            if target_ref:
+                return_fields = sorted({
+                    k for k in ib_spec.keys()
+                    if not k.startswith('_')
+                    and k not in ('provider', 'state')
+                    and k not in NIOS_RETURN_FIELDS_EXCLUDE
+                })
+                try:
+                    fetched = self.connector.get_object(
+                        obj_type=str(target_ref),
+                        return_fields=return_fields or None,
+                    )
+                    if fetched:
+                        # get_object on a _ref returns a dict; on a search it
+                        # returns a list. Handle both defensively.
+                        result['object'] = (
+                            fetched[0] if isinstance(fetched, list) else fetched
+                        )
+                except Exception as exc:
+                    # Never fail the task because the post-fetch failed; the
+                    # create/update itself already succeeded server-side.
+                    self.module.warn(
+                        'nios post-fetch failed (object was written successfully): %s' % str(exc)
+                    )
 
         return result
 
