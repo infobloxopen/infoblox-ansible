@@ -367,15 +367,24 @@ def check_ip_addr_type(obj_filter, ib_spec):
 
 
 def check_vendor_specific_dhcp_option(module, ib_spec):
-    '''This function will check if the argument dhcp option belongs to vendor-specific and if yes then will remove
-     use_options flag which is not supported with vendor-specific dhcp options.
+    '''Remove unsupported `use_option` from DHCP options (vendor-specific and structural).
+     WAPI rejects `use_option` for some option numbers/names.
     '''
+    # DHCP option numbers and names that WAPI rejects when use_option is present.
+    # Includes classic vendor-specific options (43, 60, 67, 124, 125) and
+    # structural options that cannot carry a use_option flag (1, 3, 42).
+    # Reference: https://ipam.illinois.edu/wapidoc/additional/structs.html#struct-dhcpoption
+    NO_USE_OPTION_NUMS = frozenset({1, 3, 42, 43, 60, 67, 124, 125})
+    NO_USE_OPTION_NAMES = frozenset({'subnet-mask', 'router', 'ntp-servers'})
     for key, value in ib_spec.items():
         if isinstance(module.params[key], list):
             for temp_dict in module.params[key]:
-                if 'num' in temp_dict:
-                    if temp_dict['num'] in (43, 124, 125, 67, 60):
-                        del temp_dict['use_option']
+                if 'use_option' not in temp_dict:
+                    continue
+                if 'num' in temp_dict and temp_dict['num'] in NO_USE_OPTION_NUMS:
+                    del temp_dict['use_option']
+                elif 'name' in temp_dict and temp_dict['name'] in NO_USE_OPTION_NAMES:
+                    del temp_dict['use_option']
     return ib_spec
 
 

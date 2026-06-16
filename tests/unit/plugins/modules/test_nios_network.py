@@ -425,3 +425,82 @@ class TestNiosNetworkModule(TestNiosModule):
                 'vlans': []
             }
         )
+
+    # ------------------------------------------------------------------
+    # Issue #221: structural DHCP options (router/3, ntp-servers/42,
+    # subnet-mask/1) must have use_option stripped before WAPI call.
+    # ------------------------------------------------------------------
+
+    def _make_module_for_options(self, options):
+        """Return a MagicMock module whose params contains the given options list."""
+        m = MagicMock()
+        m.params = {'options': options}
+        return m
+
+    def test_check_vendor_specific_strips_router_by_num(self):
+        # option num=3 (router) must have use_option removed
+        opts = [{'num': 3, 'value': '192.168.10.1', 'use_option': True}]
+        module = self._make_module_for_options(opts)
+        ib_spec = {'options': {}}
+        nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
+        self.assertNotIn('use_option', module.params['options'][0])
+
+    def test_check_vendor_specific_strips_ntp_servers_by_num(self):
+        # option num=42 (ntp-servers) must have use_option removed
+        opts = [{'num': 42, 'value': '10.0.0.1', 'use_option': True}]
+        module = self._make_module_for_options(opts)
+        ib_spec = {'options': {}}
+        nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
+        self.assertNotIn('use_option', module.params['options'][0])
+
+    def test_check_vendor_specific_strips_subnet_mask_by_num(self):
+        # option num=1 (subnet-mask) must have use_option removed
+        opts = [{'num': 1, 'value': '255.255.255.0', 'use_option': True}]
+        module = self._make_module_for_options(opts)
+        ib_spec = {'options': {}}
+        nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
+        self.assertNotIn('use_option', module.params['options'][0])
+
+    def test_check_vendor_specific_strips_router_by_name(self):
+        # option name='router' must have use_option removed (no num supplied)
+        opts = [{'name': 'router', 'value': '192.168.10.1', 'use_option': True}]
+        module = self._make_module_for_options(opts)
+        ib_spec = {'options': {}}
+        nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
+        self.assertNotIn('use_option', module.params['options'][0])
+
+    def test_check_vendor_specific_strips_ntp_servers_by_name(self):
+        # option name='ntp-servers' must have use_option removed
+        opts = [{'name': 'ntp-servers', 'value': '10.0.0.1', 'use_option': True}]
+        module = self._make_module_for_options(opts)
+        ib_spec = {'options': {}}
+        nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
+        self.assertNotIn('use_option', module.params['options'][0])
+
+    def test_check_vendor_specific_strips_subnet_mask_by_name(self):
+        # option name='subnet-mask' must have use_option removed
+        opts = [{'name': 'subnet-mask', 'value': '255.255.255.0', 'use_option': True}]
+        module = self._make_module_for_options(opts)
+        ib_spec = {'options': {}}
+        nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
+        self.assertNotIn('use_option', module.params['options'][0])
+
+    def test_check_vendor_specific_preserves_use_option_for_domain_name_servers(self):
+        # domain-name-servers (option 6) supports use_option; it must NOT be removed
+        opts = [{'name': 'domain-name-servers', 'value': '8.8.8.8', 'use_option': True}]
+        module = self._make_module_for_options(opts)
+        ib_spec = {'options': {}}
+        nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
+        self.assertIn('use_option', module.params['options'][0])
+
+    def test_check_vendor_specific_mixed_options(self):
+        # router (stripped) and domain-name-servers (kept) in the same call
+        opts = [
+            {'name': 'router', 'value': '192.168.10.1', 'use_option': True},
+            {'name': 'domain-name-servers', 'value': '8.8.8.8', 'use_option': True},
+        ]
+        module = self._make_module_for_options(opts)
+        ib_spec = {'options': {}}
+        nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
+        self.assertNotIn('use_option', module.params['options'][0])
+        self.assertIn('use_option', module.params['options'][1])
