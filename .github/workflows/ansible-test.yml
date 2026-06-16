@@ -59,6 +59,8 @@ jobs:
             python-version: '3.10'
           - ansible-version: devel
             python-version: '3.11'
+          - ansible-version: devel
+            python-version: '3.12'
           - ansible-version: stable-2.18
             python-version: '3.10'
 
@@ -209,7 +211,7 @@ jobs:
         with:
           # it is just required to run that once as "ansible-test sanity" in the docker image
           # will run on all python versions it supports.
-          python-version: ${{ matrix.ansible-version == 'devel' && '3.12' || '3.11' }}
+          python-version: ${{ matrix.ansible-version == 'devel' && '3.13' || '3.11' }}
 
       - name: Install ansible (${{ matrix.ansible-version }}) version
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
