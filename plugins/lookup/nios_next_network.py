@@ -22,13 +22,13 @@ options:
     _terms:
       description: The CIDR network to retrieve the next network from next available network within the specified
                    container.
-      required: True
+      required: true
       type: str
     cidr:
       description:
         - The CIDR of the network to retrieve the next network from next available network within the
           specified container. Also, Requested CIDR must be specified and greater than the parent CIDR.
-      required: True
+      required: true
       type: int
     num:
       description: The number of network addresses to return from network-container.

@@ -98,7 +98,7 @@ class TestNiosNextNetworkLookup(unittest.TestCase):
 
         self.assertEqual(result, [['192.168.10.0/25']])
         # cidr passed to WAPI must be a real int, not the original string.
-        _, called_kwargs = wapi.call_func.call_args
+        called_kwargs = wapi.call_func.call_args[1]
         self.assertEqual(called_kwargs, {})
         called_args = wapi.call_func.call_args[0]
         self.assertEqual(called_args[2]['cidr'], 25)

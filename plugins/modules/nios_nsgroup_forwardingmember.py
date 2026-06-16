@@ -47,7 +47,7 @@ options:
         default: false
       use_override_forwarders:
         description:
-          - When using c(forward_to) option, and this is set to C(True), only the defined custom forwarders will be used (no recurse to root nameservers).
+          - When using c(forward_to) option, and this is set to C(true), only the defined custom forwarders will be used (no recurse to root nameservers).
         required: false
         type: bool
         default: false

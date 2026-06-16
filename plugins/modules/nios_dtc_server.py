@@ -36,10 +36,10 @@ options:
   disable:
     description:
       - Determines whether the DTC Server is disabled or not.
-        When this is set to False, the fixed address is enabled.
+        When this is set to false, the fixed address is enabled.
     required: false
     type: bool
-    default: False
+    default: false
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the

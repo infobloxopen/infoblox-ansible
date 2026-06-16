@@ -174,7 +174,7 @@ options:
   disable:
     description:
       - Determines whether a range is disabled or not. When this is set
-        to False, the range is enabled.
+        to false, the range is enabled.
     type: bool
     default: false
   name:

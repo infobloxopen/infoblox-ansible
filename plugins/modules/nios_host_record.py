@@ -49,7 +49,7 @@ options:
   use_dns_ea_inheritance:
     version_added: "1.7.0"
     description:
-      - When use_dns_ea_inheritance is True, the EA is inherited from associated zone. The default value is False.
+      - When use_dns_ea_inheritance is true, the EA is inherited from associated zone. The default value is false.
     type: bool
     default: false
   ipv4addrs:
@@ -64,7 +64,7 @@ options:
       use_for_ea_inheritance:
         version_added: "1.7.0"
         description:
-            - When use_for_ea_inheritance is True, the EA is inherited from Host address. The default value is False.
+            - When use_for_ea_inheritance is true, the EA is inherited from Host address. The default value is false.
         type: bool
         default: false
         required: false
@@ -539,7 +539,7 @@ def main():
     provider_wapi_version = (module.params.get('provider') or {}).get('wapi_version', '2.12.3')
     if not supports_dns_ea_inheritance(provider_wapi_version):
         if should_warn_ignored_dns_ea_inheritance(provider_wapi_version,
-                                                   module.params.get('use_dns_ea_inheritance')):
+                                                  module.params.get('use_dns_ea_inheritance')):
             module.warn(
                 'use_dns_ea_inheritance is not supported for WAPI version %s. '
                 'Minimum supported versions are 2.12.3 and 2.13.4. '

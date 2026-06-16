@@ -23,7 +23,7 @@ options:
     _terms:
       description:
         - The name of the network object to be returned from the Infoblox appliance.
-      required: True
+      required: true
       type: str
     return_fields:
       description: The list of field names to return for the specified object.

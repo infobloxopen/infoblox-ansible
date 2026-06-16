@@ -82,8 +82,8 @@ options:
     type: dict
   enable_ha:
     description:
-      - If set to True, the member has two physical nodes (HA pair).
-    default: False
+      - If set to true, the member has two physical nodes (HA pair).
+    default: false
     type: bool
   router_id:
     description:
@@ -92,7 +92,7 @@ options:
   lan2_enabled:
     description:
       - When set to "true", the LAN2 port is enabled as an independent port or as a port for failover purposes.
-    default: False
+    default: false
     type: bool
   lan2_port_setting:
     description:
@@ -102,11 +102,11 @@ options:
     suboptions:
       enabled:
         description:
-          - If set to True, then it has its own IP settings.
+          - If set to true, then it has its own IP settings.
         type: bool
       network_setting:
         description:
-          - If the 'enable' field is set to True, this defines IPv4 network settings for LAN2.
+          - If the 'enable' field is set to true, this defines IPv4 network settings for LAN2.
         suboptions:
           address:
             description:
@@ -124,7 +124,7 @@ options:
         elements: dict
       v6_network_setting:
         description:
-          - If the 'enable' field is set to True, this defines IPv6 network settings for LAN2.
+          - If the 'enable' field is set to true, this defines IPv6 network settings for LAN2.
         type: list
         elements: dict
         suboptions:
@@ -368,12 +368,12 @@ options:
     description:
       - Flag for initiating a create token request for pre-provisioned members.
     type: bool
-    default: False
+    default: false
   master_candidate:
     description:
       - Configures the instance of this object to be enabled as a Grid Master
         Candidate or a regular member node.
-      - True enables the member as a Master Candidate
+      - true enables the member as a Master Candidate
     type: bool
     default: false
   state:
