@@ -49,8 +49,14 @@ class TestNiosRangeModule(TestNiosModule):
         nios_range.check_vendor_specific_dhcp_option(module, {'options': {}})
         self.assertNotIn('use_option', module.params['options'][0])
 
-    def test_check_vendor_specific_strips_router_by_name(self):
+    def test_check_vendor_specific_preserves_router_by_name(self):
         opts = [{'name': 'router', 'value': '192.168.10.1', 'use_option': True}]
+        module = self._make_module_for_options(opts)
+        nios_range.check_vendor_specific_dhcp_option(module, {'options': {}})
+        self.assertIn('use_option', module.params['options'][0])
+
+    def test_check_vendor_specific_strips_routers_by_name(self):
+        opts = [{'name': 'routers', 'value': '192.168.10.1', 'use_option': True}]
         module = self._make_module_for_options(opts)
         nios_range.check_vendor_specific_dhcp_option(module, {'options': {}})
         self.assertNotIn('use_option', module.params['options'][0])
@@ -69,7 +75,7 @@ class TestNiosRangeModule(TestNiosModule):
 
     def test_check_vendor_specific_mixed_options(self):
         opts = [
-            {'name': 'router', 'value': '192.168.10.1', 'use_option': True},
+            {'name': 'routers', 'value': '192.168.10.1', 'use_option': True},
             {'name': 'domain-name-servers', 'value': '8.8.8.8', 'use_option': True},
         ]
         module = self._make_module_for_options(opts)
