@@ -1,0 +1,24 @@
+---
+bugfixes:
+  - |
+    nios_network, nios_range - fixed multiple issues with structural DHCP options
+    (``routers``/num=3, ``ntp-servers``/num=42, ``subnet-mask``/num=1):
+
+    1. ``use_option`` is now stripped for all structural option nums
+    ``{1,3,42,43,60,67,124,125}`` and structural option names
+    ``{routers,ntp-servers,subnet-mask}`` — previously only nums
+    ``{43,60,67,124,125}`` were handled, causing WAPI to reject options
+    with ``use_option: true``.
+
+    2. ``vendor_class`` is now stripped for name-based structural options
+    so WAPI resolves them in the global DHCP space instead of
+    ``DHCP.<name>`` (vendor space). The module arg spec defaults
+    ``vendor_class`` to ``DHCP``, which caused "Option DHCP.routers is
+    undefined" errors.
+
+    3. When both ``num`` and ``name`` are provided for a structural option,
+    ``name`` is dropped to avoid WAPI cross-validation errors
+    ("Code 3 and name routers do not match in vendor_class DHCP").
+
+    4. Documentation corrected: the router gateway option name is
+    ``routers`` (plural, per RFC 2132 §3.3), not ``router``.
