@@ -383,5 +383,3 @@
         state: absent
         provider: *nios_provider7
       ignore_errors: true
-
-

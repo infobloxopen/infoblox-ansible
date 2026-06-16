@@ -59,6 +59,8 @@ jobs:
             python-version: '3.10'
           - ansible-version: devel
             python-version: '3.11'
+          - ansible-version: devel
+            python-version: '3.12'
           - ansible-version: stable-2.18
             python-version: '3.10'
 
@@ -86,6 +88,9 @@ jobs:
           if [ "${{ matrix.ansible-version }}" == "devel" ]; then
             echo "devel branch detected → injecting legacy utils.py"
             wget https://raw.githubusercontent.com/ansible/ansible/stable-2.17/test/units/modules/utils.py -O \
+              /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/utils.py
+            # ansible-core devel requires _ANSIBLE_PROFILE alongside _ANSIBLE_ARGS; patch the stable-2.17 utils
+            sed -i "s/basic._ANSIBLE_ARGS = to_bytes(args)/basic._ANSIBLE_ARGS = to_bytes(args)\n    if hasattr(basic, '_ANSIBLE_PROFILE'):\n        basic._ANSIBLE_PROFILE = 'legacy'/" \
               /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/utils.py
           else
             cp -rf ansible/test/units/modules/utils.py \
@@ -209,7 +214,7 @@ jobs:
         with:
           # it is just required to run that once as "ansible-test sanity" in the docker image
           # will run on all python versions it supports.
-          python-version: ${{ matrix.ansible-version == 'devel' && '3.12' || '3.11' }}
+          python-version: ${{ matrix.ansible-version == 'devel' && '3.13' || '3.11' }}
 
       - name: Install ansible (${{ matrix.ansible-version }}) version
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible-version }}.tar.gz --disable-pip-version-check
