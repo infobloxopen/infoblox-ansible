@@ -461,9 +461,17 @@ class TestNiosNetworkModule(TestNiosModule):
         nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
         self.assertNotIn('use_option', module.params['options'][0])
 
-    def test_check_vendor_specific_strips_router_by_name(self):
-        # option name='router' must have use_option removed (no num supplied)
+    def test_check_vendor_specific_preserves_router_by_name(self):
+        # option name='router' must preserve use_option (WAPI parity)
         opts = [{'name': 'router', 'value': '192.168.10.1', 'use_option': True}]
+        module = self._make_module_for_options(opts)
+        ib_spec = {'options': {}}
+        nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
+        self.assertIn('use_option', module.params['options'][0])
+
+    def test_check_vendor_specific_strips_routers_by_name(self):
+        # option name='routers' must have use_option removed
+        opts = [{'name': 'routers', 'value': '192.168.10.1', 'use_option': True}]
         module = self._make_module_for_options(opts)
         ib_spec = {'options': {}}
         nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
@@ -494,9 +502,9 @@ class TestNiosNetworkModule(TestNiosModule):
         self.assertIn('use_option', module.params['options'][0])
 
     def test_check_vendor_specific_mixed_options(self):
-        # router (stripped) and domain-name-servers (kept) in the same call
+        # routers (stripped) and domain-name-servers (kept) in the same call
         opts = [
-            {'name': 'router', 'value': '192.168.10.1', 'use_option': True},
+            {'name': 'routers', 'value': '192.168.10.1', 'use_option': True},
             {'name': 'domain-name-servers', 'value': '8.8.8.8', 'use_option': True},
         ]
         module = self._make_module_for_options(opts)
