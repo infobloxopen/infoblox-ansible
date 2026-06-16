@@ -22,18 +22,22 @@ requirements:
 extends_documentation_fragment: infoblox.nios_modules.nios
 notes:
     - This module supports C(check_mode).
-    - In collection versions that include PR #329 (fixes issue #108), re-running
+    - >
+      In collection versions that include PR #329 (fixes issue #108), re-running
       a task with the same hostname and a different IP updates the matching host
       record without creating, displacing, or modifying unrelated records.
-    - In collection versions that include PR #329 (fixes issue #160), aliases
+    - >
+      In collection versions that include PR #329 (fixes issue #160), aliases
       supplied as short (relative) names are normalized to FQDNs before
       comparison on DNS-enabled hosts, preventing false C(changed=True) on
       re-runs.
-    - In collection versions that include PR #329 (fixes issue #63), host
+    - >
+      In collection versions that include PR #329 (fixes issue #63), host
       records using C(nios_next_ip) for dynamic IP allocation are idempotent on
       re-runs; when the desired IP is already allocated, no additional
       allocation call is made.
-    - In collection versions that include PR #329 (fixes issue #108),
+    - >
+      In collection versions that include PR #329 (fixes issue #108),
       C(use_for_ea_inheritance) defaults are excluded from idempotency
       comparison to prevent spurious C(changed=True) on re-runs.
 options:
@@ -183,10 +187,11 @@ options:
       - Configures an optional list of additional aliases to add to the host
         record. These are equivalent to CNAMEs but held within a host
         record. Must be in list format.
-      - In collection versions that include PR #329 (fixes issue #160), short
+      - >
+        In collection versions that include PR #329 (fixes issue #160), short
         (relative) alias names are normalized to FQDNs on DNS-enabled hosts
-        before idempotency comparison, so short and FQDN forms produce the same
-        result on re-runs.
+        before idempotency comparison, so short and FQDN forms produce the
+        same result on re-runs.
     type: list
     elements: str
   ttl:
