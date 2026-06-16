@@ -539,7 +539,7 @@ def main():
     provider_wapi_version = (module.params.get('provider') or {}).get('wapi_version', '2.12.3')
     if not supports_dns_ea_inheritance(provider_wapi_version):
         if should_warn_ignored_dns_ea_inheritance(provider_wapi_version,
-                                                   module.params.get('use_dns_ea_inheritance')):
+                                                  module.params.get('use_dns_ea_inheritance')):
             module.warn(
                 'use_dns_ea_inheritance is not supported for WAPI version %s. '
                 'Minimum supported versions are 2.12.3 and 2.13.4. '
