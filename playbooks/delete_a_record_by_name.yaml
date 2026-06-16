@@ -1,0 +1,52 @@
+---
+# Playbook: delete_a_record_by_name.yaml
+#
+# Demonstrates the correct way to delete all A records for a given hostname
+# without knowing the IP address(es) in advance.
+#
+# Background (issue #138):
+#   nios_a_record requires both `name` and `ipv4addr` to uniquely identify a
+#   record because DNS allows multiple A records per name (round-robin). To
+#   delete by name only, first look up the existing records, then loop.
+#
+# Note on DNS views:
+#   Both the lookup and the nios_a_record module operate on the default DNS
+#   view (`default`) unless overridden. If your records live in a non-default
+#   view, set `view` on both the lookup filter and the nios_a_record task so
+#   they target the same view.
+#
+# Usage:
+#   ansible-playbook playbooks/delete_a_record_by_name.yaml \
+#     -e "nios_host=<grid-master> nios_user=admin nios_pass=<password>" \
+#     -e "record_name=anexample.com"
+
+- name: Delete all A records for a hostname (no IP required)
+  hosts: localhost
+  connection: local
+
+  vars:
+    nios_provider:
+      host: "{{ nios_host }}"
+      username: "{{ nios_user }}"
+      password: "{{ nios_pass }}"
+    record_name: "anexample.com"
+
+  tasks:
+    - name: Look up all A records for the hostname
+      set_fact:
+        a_records: "{{ lookup('infoblox.nios_modules.nios_lookup', 'record:a',
+                       filter={'name': record_name},
+                       provider=nios_provider) }}"
+
+    - name: Show records found
+      debug:
+        msg: "Found {{ a_records | length }} A record(s) for {{ record_name }}: {{ a_records | map(attribute='ipv4addr') | list }}"
+
+    - name: Remove each A record by name + IP
+      infoblox.nios_modules.nios_a_record:
+        name: "{{ record_name }}"
+        ipv4: "{{ item.ipv4addr }}"
+        state: absent
+        provider: "{{ nios_provider }}"
+      loop: "{{ a_records }}"
+      when: a_records | length > 0
