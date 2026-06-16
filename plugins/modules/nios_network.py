@@ -368,7 +368,7 @@ def options(module):
     '''
     # Structural DHCP options that must not carry use_option or vendor_class
     NO_USE_OPTION_NUMS = frozenset({1, 3, 42, 43, 60, 67, 124, 125})
-    NO_USE_OPTION_NAMES = frozenset({'subnet-mask', 'routers', 'ntp-servers'})
+    NO_USE_OPTION_NAMES = frozenset({'subnet-mask', 'router', 'routers', 'ntp-servers'})
 
     options = list()
     for item in module.params['options']:
@@ -427,7 +427,7 @@ def check_vendor_specific_dhcp_option(module, ib_spec):
     '''
     # Options that WAPI rejects when use_option is present.
     NO_USE_OPTION_NUMS = frozenset({1, 3, 42, 43, 60, 67, 124, 125})
-    NO_USE_OPTION_NAMES = frozenset({'subnet-mask', 'routers', 'ntp-servers'})
+    NO_USE_OPTION_NAMES = frozenset({'subnet-mask', 'router', 'routers', 'ntp-servers'})
 
     for key, value in ib_spec.items():
         if isinstance(module.params[key], list):
