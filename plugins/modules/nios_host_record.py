@@ -22,6 +22,17 @@ requirements:
 extends_documentation_fragment: infoblox.nios_modules.nios
 notes:
     - This module supports C(check_mode).
+    - Re-running a task with the same hostname but a different IP address will
+      not displace or modify existing host records (fixes issue #108).
+    - Alias idempotency - aliases supplied as short (relative) names are
+      automatically expanded to FQDNs before comparison on DNS-enabled host
+      records, preventing false C(changed=True) on re-runs (fixes issue #160).
+    - Host records using C(nios_next_ip) for dynamic IP allocation are
+      idempotent on re-runs; the module detects that the IP has already been
+      allocated and skips the WAPI call (fixes issue #63).
+    - The C(use_for_ea_inheritance) field is stripped from the idempotency
+      comparison to prevent spurious C(changed=True) on every run (fixes
+      issue #108).
 options:
   name:
     description:
@@ -169,6 +180,10 @@ options:
       - Configures an optional list of additional aliases to add to the host
         record. These are equivalent to CNAMEs but held within a host
         record. Must be in list format.
+      - Short (relative) alias names are automatically expanded to FQDNs
+        before the idempotency comparison on DNS-enabled host records, so
+        supplying either the short name or the FQDN produces the same result
+        on re-runs.
     type: list
     elements: str
   ttl:
