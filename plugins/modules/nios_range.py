@@ -263,6 +263,36 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Set gateway (routers) option by name for a range
+  infoblox.nios_modules.nios_range:
+    network: 192.168.10.0/24
+    start_addr: 192.168.10.10
+    end_addr: 192.168.10.50
+    options:
+      - name: routers
+        value: 192.168.10.1
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Set gateway option by num for a range
+  infoblox.nios_modules.nios_range:
+    network: 192.168.10.0/24
+    start_addr: 192.168.10.10
+    end_addr: 192.168.10.50
+    options:
+      - num: 3
+        value: 192.168.10.1
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
 - name: Configure a ipv4 range served by a MS Server
   infoblox.nios_modules.nios_range:
     network: 192.168.10.0/24

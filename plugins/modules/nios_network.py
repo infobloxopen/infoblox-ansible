@@ -232,6 +232,32 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Set gateway (routers) option by name for a network ipv4
+  infoblox.nios_modules.nios_network:
+    network: 192.168.10.0/24
+    options:
+      - name: routers
+        value: 192.168.10.1
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
+- name: Set gateway option by num for a network ipv4
+  infoblox.nios_modules.nios_network:
+    network: 192.168.10.0/24
+    options:
+      - num: 3
+        value: 192.168.10.1
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
 - name: Set filters for a network ipv4
   infoblox.nios_modules.nios_network:
     network: 192.168.10.0/24
