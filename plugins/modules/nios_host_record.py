@@ -418,6 +418,45 @@ def ipv6addrs(module):
     return ipaddr(module, 'ipv6addrs', filtered_keys=['address', 'dhcp'])
 
 
+def normalize_aliases(module):
+    '''Normalize host record aliases to FQDNs.
+
+    NIOS/WAPI expands short (relative) aliases to FQDNs **only on DNS-enabled
+    hosts** (``configure_for_dns=True``). For example, ``myalias`` becomes
+    ``myalias.example.com`` on a DNS host, but is stored as-is on a DNS-disabled
+    (IPAM-only) host.
+
+    Without this normalization, the idempotency check in ``compare_objects()``
+    compares the user-supplied short name against the FQDN returned by WAPI
+    and always reports ``changed=True`` (issue #160).
+
+    Short names (those containing no dots) on DNS-enabled hosts are expanded by
+    appending the zone extracted from the host ``name`` parameter. Aliases that
+    already contain at least one dot, or those on DNS-disabled hosts, are
+    returned unchanged.
+    '''
+    aliases = module.params.get('aliases')
+    if not aliases:
+        return None
+
+    # WAPI only expands aliases on DNS-enabled hosts.
+    configure_for_dns = module.params.get('configure_for_dns', True)
+    if not configure_for_dns:
+        return aliases
+
+    host_name = module.params.get('name', '')
+    dot_idx = host_name.find('.')
+    zone = host_name[dot_idx + 1:] if dot_idx != -1 else ''
+
+    normalized = []
+    for alias in aliases:
+        if zone and '.' not in alias:
+            normalized.append('{}.{}'.format(alias, zone))
+        else:
+            normalized.append(alias)
+    return normalized
+
+
 def supports_dns_ea_inheritance(wapi_version):
     '''Return True if the given WAPI version supports the use_dns_ea_inheritance field.
 
@@ -473,7 +512,7 @@ def main():
         ipv6addrs=dict(type='list', aliases=['ipv6'], elements='dict', options=ipv6addr_spec, transform=ipv6addrs),
         configure_for_dns=dict(type='bool', default=True, required=False, aliases=['dns'], ib_req=True),
         use_dns_ea_inheritance=dict(type='bool', default=False, required=False),
-        aliases=dict(type='list', elements='str'),
+        aliases=dict(type='list', elements='str', transform=normalize_aliases),
 
         ttl=dict(type='int'),
 

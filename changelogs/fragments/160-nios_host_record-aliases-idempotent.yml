@@ -1,0 +1,8 @@
+---
+bugfixes:
+  - nios_host_record - fix ``aliases`` always being reported as ``changed`` on
+    idempotent re-runs. NIOS returns alias names as fully qualified domain
+    names, so a short alias supplied by the user never matched the stored value
+    and triggered a needless update. Aliases are now normalized before
+    comparison so unchanged hosts report ``changed=False``
+    (https://github.com/infobloxopen/infoblox-ansible/issues/160).

@@ -1,0 +1,173 @@
+---
+# Playbook: host_record_nextip_issue63.yml
+# Module:   infoblox.nios_modules.nios_host_record
+#
+# Issue # nios_next_ip dynamic allocation idempotency.63 
+#   Play 8: single nios_next_ip, dual dynamic (multi-IP), static + dynamic mix
+#
+# NOTE: nios_next_ip subnets MUST already exist on the grid as networks/ranges.
+#
+#  do NOT hardcode. Supply via one of:Credentials 
+#   1. Extra vars:  -e nios_host=192.0.2.1 -e nios_username=admin -e nios_password=secret
+#   2. Vars file:   -e @nios_vars.yml   (see playbooks/nios_vars.yml.example)
+#   3. Vault:       ansible-vault encrypt nios_vars.yml ; ... --ask-vault-pass
+#
+# Required: nios_host, nios_username, nios_password
+# Optional: nios_wapi_version (2.11), nios_ssl_verify (false)
+
+- name: "Play 8 | nios_next_ip dynamic allocation + idempotency (Issue #63)"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nios_provider: &nios_provider8
+      host: "{{ nios_host }}"
+      username: "{{ nios_username }}"
+      password: "{{ nios_password }}"
+      wapi_version: "{{ nios_wapi_version | default('2.11') }}"
+      ssl_verify: "{{ nios_ssl_verify | default(false) }}"
+    host8a: "issue63-single.ansibletestzone.com"
+    host8b: "issue63-dualdyn.ansibletestzone.com"
+    host8c: "issue63-mixed.ansibletestzone.com"
+    # nios_next_ip subnets MUST exist on the grid as networks/ranges.
+    net1: "20.0.0.0/16"
+    net2: "85.85.0.0/16"
+  tasks:
+    # ---------- Case A: single dynamic nios_next_ip ----------
+    - name: "P8A | Cleanup (pre)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8a }}"
+        state: absent
+        provider: *nios_provider8
+      ignore_errors: true
+
+    - name: "P8A | Step 1 | CREATE with single nios_next_ip  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8a }}"
+        ipv4addrs:
+          - ipv4addr: "func:nextavailableip:{{ net1 }}"
+        comment: "issue63 single nios_next_ip"
+        state: present
+        provider: *nios_provider8
+      register: r
+    - ansible.builtin.assert:
+        that: r.changed
+        msg: "BUG #63: single nios_next_ip create did not report changed=True"
+    - ansible.builtin.debug:
+        msg: "Create single nios_next_ip -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P8A | Step 2 | IDEMPOTENT re-run  [expect changed=False]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8a }}"
+        ipv4addrs:
+          - ipv4addr: "func:nextavailableip:{{ net1 }}"
+        comment: "issue63 single nios_next_ip"
+        state: present
+        provider: *nios_provider8
+      register: r
+    - ansible.builtin.assert:
+        that: not r.changed
+        msg: "BUG #63: single nios_next_ip idempotent re-run reported changed=True"
+    - ansible.builtin.debug:
+        msg: "Idempotent single nios_next_ip -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P8A | Cleanup (post)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8a }}"
+        state: absent
+        provider: *nios_provider8
+      ignore_errors: true
+
+    # ---------- Case B: single host with TWO dynamic nios_next_ip (different subnets) ----------
+    - name: "P8B | Cleanup (pre)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8b }}"
+        state: absent
+        provider: *nios_provider8
+      ignore_errors: true
+
+    - name: "P8B | Step 1 | CREATE one host with TWO nios_next_ip  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8b }}"
+        ipv4addrs:
+          - ipv4addr: "func:nextavailableip:{{ net1 }}"
+          - ipv4addr: "func:nextavailableip:{{ net2 }}"
+        comment: "issue63 dual nios_next_ip"
+        state: present
+        provider: *nios_provider8
+      register: r
+    - ansible.builtin.assert:
+        that: r.changed
+        msg: "BUG #63: dual nios_next_ip create did not report changed=True"
+    - ansible.builtin.debug:
+        msg: "Create dual nios_next_ip -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P8B | Step 2 | IDEMPOTENT re-run (two dynamic IPs)  [expect changed=False]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8b }}"
+        ipv4addrs:
+          - ipv4addr: "func:nextavailableip:{{ net1 }}"
+          - ipv4addr: "func:nextavailableip:{{ net2 }}"
+        comment: "issue63 dual nios_next_ip"
+        state: present
+        provider: *nios_provider8
+      register: r
+    - ansible.builtin.assert:
+        that: not r.changed
+        msg: "BUG #63: multi-IP dual nios_next_ip idempotent re-run reported changed=True"
+    - ansible.builtin.debug:
+        msg: "Idempotent dual nios_next_ip -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P8B | Cleanup (post)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8b }}"
+        state: absent
+        provider: *nios_provider8
+      ignore_errors: true
+
+    # ---------- Case C: single host with STATIC + dynamic nios_next_ip ----------
+    - name: "P8C | Cleanup (pre)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8c }}"
+        state: absent
+        provider: *nios_provider8
+      ignore_errors: true
+
+    - name: "P8C | Step 1 | CREATE static + nios_next_ip  [expect changed=True]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8c }}"
+        ipv4addrs:
+          - ipv4addr: "10.0.0.40"
+          - ipv4addr: "func:nextavailableip:{{ net1 }}"
+        comment: "issue63 static + nios_next_ip"
+        state: present
+        provider: *nios_provider8
+      register: r
+    - ansible.builtin.assert:
+        that: r.changed
+        msg: "BUG #63: static+dynamic create did not report changed=True"
+    - ansible.builtin.debug:
+        msg: "Create static+dynamic -> changed={{ r.changed }}  (expected True)"
+
+    - name: "P8C | Step 2 | IDEMPOTENT re-run (static + nios_next_ip)  [expect changed=False]"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8c }}"
+        ipv4addrs:
+          - ipv4addr: "10.0.0.40"
+          - ipv4addr: "func:nextavailableip:{{ net1 }}"
+        comment: "issue63 static + nios_next_ip"
+        state: present
+        provider: *nios_provider8
+      register: r
+    - ansible.builtin.assert:
+        that: not r.changed
+        msg: "BUG #63: static+dynamic idempotent re-run reported changed=True"
+    - ansible.builtin.debug:
+        msg: "Idempotent static+dynamic -> changed={{ r.changed }}  (expected False)"
+
+    - name: "P8C | Cleanup (post)"
+      infoblox.nios_modules.nios_host_record:
+        name: "{{ host8c }}"
+        state: absent
+        provider: *nios_provider8
+      ignore_errors: true

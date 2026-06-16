@@ -1,0 +1,10 @@
+---
+bugfixes:
+  - |
+    nios_host_record - fix ``ipv4addr`` configured with ``func: nios_next_ip``
+    always being reported as ``changed`` on idempotent re-runs. The
+    next-available-IP lookup directive is now skipped during object comparison
+    whether it arrives as a dict, a string representation of a dict, or a
+    ``func:nextavailableip`` string, so a host that already holds a dynamically
+    allocated address reports ``changed=False``
+    (https://github.com/infobloxopen/infoblox-ansible/issues/63).

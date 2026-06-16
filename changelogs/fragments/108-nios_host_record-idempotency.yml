@@ -1,0 +1,9 @@
+---
+bugfixes:
+  - nios_host_record - fix several idempotency and update bugs. When multiple
+    host records share the same name, the matching record is now selected by IP
+    instead of overwriting an unrelated record. Adding or removing an IP address
+    on an existing host record is now idempotent, and the
+    ``use_for_ea_inheritance`` flag no longer produces spurious ``changed=True``
+    results on re-runs
+    (https://github.com/infobloxopen/infoblox-ansible/issues/108).
