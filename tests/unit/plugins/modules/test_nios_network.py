@@ -477,6 +477,13 @@ class TestNiosNetworkModule(TestNiosModule):
         nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
         self.assertNotIn('use_option', module.params['options'][0])
 
+    def test_check_vendor_specific_strips_subnet_mask_by_name(self):
+        # option name='subnet-mask' must have use_option removed
+        opts = [{'name': 'subnet-mask', 'value': '255.255.255.0', 'use_option': True}]
+        module = self._make_module_for_options(opts)
+        ib_spec = {'options': {}}
+        nios_network.check_vendor_specific_dhcp_option(module, ib_spec)
+        self.assertNotIn('use_option', module.params['options'][0])
     def test_check_vendor_specific_preserves_use_option_for_domain_name_servers(self):
         # domain-name-servers (option 6) supports use_option; it must NOT be removed
         opts = [{'name': 'domain-name-servers', 'value': '8.8.8.8', 'use_option': True}]

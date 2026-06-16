@@ -367,8 +367,8 @@ def check_ip_addr_type(obj_filter, ib_spec):
 
 
 def check_vendor_specific_dhcp_option(module, ib_spec):
-    '''This function will check if the argument dhcp option belongs to vendor-specific and if yes then will remove
-     use_options flag which is not supported with vendor-specific dhcp options.
+    '''Remove unsupported `use_option` from DHCP options (vendor-specific and structural).
+     WAPI rejects `use_option` for some option numbers/names.
     '''
     # DHCP option numbers and names that WAPI rejects when use_option is present.
     # Includes classic vendor-specific options (43, 60, 67, 124, 125) and
