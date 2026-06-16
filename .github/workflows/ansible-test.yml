@@ -89,6 +89,9 @@ jobs:
             echo "devel branch detected → injecting legacy utils.py"
             wget https://raw.githubusercontent.com/ansible/ansible/stable-2.17/test/units/modules/utils.py -O \
               /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/utils.py
+            # ansible-core devel requires _ANSIBLE_PROFILE alongside _ANSIBLE_ARGS; patch the stable-2.17 utils
+            sed -i "s/basic._ANSIBLE_ARGS = to_bytes(args)/basic._ANSIBLE_ARGS = to_bytes(args)\n    if hasattr(basic, '_ANSIBLE_PROFILE'):\n        basic._ANSIBLE_PROFILE = 'legacy'/" \
+              /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/utils.py
           else
             cp -rf ansible/test/units/modules/utils.py \
               /home/runner/.ansible/collections/ansible_collections/infoblox/nios_modules/tests/unit/plugins/modules/
