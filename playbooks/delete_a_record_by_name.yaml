@@ -9,6 +9,12 @@
 #   record because DNS allows multiple A records per name (round-robin). To
 #   delete by name only, first look up the existing records, then loop.
 #
+# Note on DNS views:
+#   Both the lookup and the nios_a_record module operate on the default DNS
+#   view (`default`) unless overridden. If your records live in a non-default
+#   view, set `view` on both the lookup filter and the nios_a_record task so
+#   they target the same view.
+#
 # Usage:
 #   ansible-playbook playbooks/delete_a_record_by_name.yaml \
 #     -e "nios_host=<grid-master> nios_user=admin nios_pass=<password>" \
