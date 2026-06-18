@@ -362,6 +362,21 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Dynamically add host record to next available ip excluding specific IPs
+  infoblox.nios_modules.nios_host_record:
+    name: host.ansible.com
+    ipv4:
+      - address:
+          nios_next_ip: 192.168.10.0/24
+          exclude: ['192.168.10.1', '192.168.10.2', '192.168.10.3', '192.168.10.4', '192.168.10.5']
+    comment: Skip first 5 IPs (typically reserved for gateway, DNS, etc.)
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
 - name: Add ip to host record
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
