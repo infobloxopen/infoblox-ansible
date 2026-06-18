@@ -231,15 +231,16 @@ def options(module):
     # options-router-templates, broadcast-address-offset, dhcp6.name-servers don't have any associated number
     special_num = [3, 6, 15, 28, 51]
     options = list()
-    for item in module.params['options']:
-        opt = dict([(k, v) for k, v in item.items() if v is not None])
-        if 'name' not in opt and 'num' not in opt:
-            module.fail_json(msg='one of `name` or `num` is required for option value')
-        if 'name' in opt and opt['name'] not in special_options:
-            del opt['use_option']
-        if 'num' in opt and opt['num'] not in special_num:
-            del opt['use_option']
-        options.append(opt)
+    if module.params.get('options'):
+      for item in module.params['options']:
+          opt = dict([(k, v) for k, v in item.items() if v is not None])
+          if 'name' not in opt and 'num' not in opt:
+              module.fail_json(msg='one of `name` or `num` is required for option value')
+          if 'name' in opt and opt['name'] not in special_options:
+              del opt['use_option']
+          if 'num' in opt and opt['num'] not in special_num:
+              del opt['use_option']
+          options.append(opt)
     return options
 
 
