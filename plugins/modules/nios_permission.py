@@ -353,7 +353,14 @@ def main():
             except Exception as e:
                 module.fail_json(msg=f"Failed to create permission: {str(e)}")
         else:
-            result['changed'] = True
+            try:
+                existing = wapi.get_object(NIOS_PERMISSION, payload)
+                if existing:
+                    result['changed'] = False
+                else:
+                    result['changed'] = True
+            except Exception as e:
+                module.fail_json(msg=f"Error evaluating check_mode state: {str(e)}")
 
     elif state == 'absent':
         # For deletion, search for matching permission and delete if found

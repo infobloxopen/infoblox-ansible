@@ -89,6 +89,7 @@ NIOS_ADMINUSER = 'adminuser'
 NIOS_ADMINROLE = 'adminrole'
 NIOS_ADMINGROUP = 'admingroup'
 NIOS_PERMISSION = 'permission'
+NIOS_AUTHPOLICY = 'authpolicy'
 
 NIOS_PROVIDER_SPEC = {
     'host': dict(fallback=(env_fallback, ['INFOBLOX_HOST'])),
