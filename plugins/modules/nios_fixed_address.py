@@ -231,6 +231,8 @@ def options(module):
     # options-router-templates, broadcast-address-offset, dhcp6.name-servers don't have any associated number
     special_num = [3, 6, 15, 28, 51]
     options = list()
+    if not module.params['options']:
+        return options
     for item in module.params['options']:
         opt = dict([(k, v) for k, v in item.items() if v is not None])
         if 'name' not in opt and 'num' not in opt:

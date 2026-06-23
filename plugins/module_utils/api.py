@@ -1080,9 +1080,14 @@ class WapiModule(WapiBase):
                 else:
                     test_obj_filter = dict([('name', name), ('view', _view)])
             elif (ib_obj_type == NIOS_IPV4_FIXED_ADDRESS and 'mac' in obj_filter):
-                test_obj_filter = dict([['mac', obj_filter['mac']]])
+                # Include both mac and ipv4addr to uniquely identify the fixed address.
+                # Searching by mac alone returns all fixed addresses with that mac across
+                # all networks, which can cause the wrong record to be deleted or no match
+                # to be found (silent no-op on state=absent).
+                test_obj_filter = dict([['mac', obj_filter['mac']], ['ipv4addr', obj_filter['ipv4addr']]])
             elif (ib_obj_type == NIOS_IPV6_FIXED_ADDRESS and 'duid' in obj_filter):
-                test_obj_filter = dict([['duid', obj_filter['duid']]])
+                # Include both duid and ipv6addr to uniquely identify the fixed address.
+                test_obj_filter = dict([['duid', obj_filter['duid']], ['ipv6addr', obj_filter['ipv6addr']]])
             elif (ib_obj_type == NIOS_CNAME_RECORD):
                 test_obj_filter = dict([('name', obj_filter['name']), ('view', obj_filter['view'])])
             elif (ib_obj_type == NIOS_A_RECORD):
