@@ -659,6 +659,109 @@ class TestNiosApi(unittest.TestCase):
         self.assertFalse(wapi.compare_objects(current, proposed, ib_obj_type=api.NIOS_DTC_LBDN))
 
     # ------------------------------------------------------------------
+    # Issue #59: nsgroup list fields (external_secondaries, external_primaries,
+    # grid_primary, grid_secondaries) must detect removal of entries.
+    # ------------------------------------------------------------------
+
+    def test_compare_objects_external_secondaries_removal_returns_false(self):
+        '''Removing an entry from external_secondaries must register as a change (issue #59).'''
+        wapi = api.WapiModule(self.module)
+        # current has 2 servers; proposed only has 1 – removal must be detected
+        current = {
+            'external_secondaries': [
+                {'address': '1.1.1.1', 'name': 'server1.example.com'},
+                {'address': '9.9.9.9', 'name': 'server2.example.com'},
+            ]
+        }
+        proposed = {
+            'external_secondaries': [
+                {'address': '1.1.1.1', 'name': 'server1.example.com'},
+            ]
+        }
+        self.assertFalse(wapi.compare_objects(current, proposed))
+
+    def test_compare_objects_external_secondaries_no_change_returns_true(self):
+        '''Same external_secondaries list (same content, different order) must NOT trigger update.'''
+        wapi = api.WapiModule(self.module)
+        current = {
+            'external_secondaries': [
+                {'address': '1.1.1.1', 'name': 'server1.example.com'},
+                {'address': '9.9.9.9', 'name': 'server2.example.com'},
+            ]
+        }
+        proposed = {
+            'external_secondaries': [
+                {'address': '9.9.9.9', 'name': 'server2.example.com'},
+                {'address': '1.1.1.1', 'name': 'server1.example.com'},
+            ]
+        }
+        self.assertTrue(wapi.compare_objects(current, proposed))
+
+    def test_compare_objects_external_primaries_removal_returns_false(self):
+        '''Removing an entry from external_primaries must register as a change (issue #59).'''
+        wapi = api.WapiModule(self.module)
+        current = {
+            'external_primaries': [
+                {'address': '2.2.2.2', 'name': 'primary1.example.com'},
+                {'address': '3.3.3.3', 'name': 'primary2.example.com'},
+            ]
+        }
+        proposed = {
+            'external_primaries': [
+                {'address': '2.2.2.2', 'name': 'primary1.example.com'},
+            ]
+        }
+        self.assertFalse(wapi.compare_objects(current, proposed))
+
+    def test_compare_objects_grid_primary_removal_returns_false(self):
+        '''Removing an entry from grid_primary must register as a change (issue #59).'''
+        wapi = api.WapiModule(self.module)
+        current = {
+            'grid_primary': [
+                {'name': 'member1.example.com'},
+                {'name': 'member2.example.com'},
+            ]
+        }
+        proposed = {
+            'grid_primary': [
+                {'name': 'member1.example.com'},
+            ]
+        }
+        self.assertFalse(wapi.compare_objects(current, proposed))
+
+    def test_compare_objects_grid_secondaries_removal_returns_false(self):
+        '''Removing an entry from grid_secondaries must register as a change (issue #59).'''
+        wapi = api.WapiModule(self.module)
+        current = {
+            'grid_secondaries': [
+                {'name': 'member1.example.com'},
+                {'name': 'member2.example.com'},
+            ]
+        }
+        proposed = {
+            'grid_secondaries': [
+                {'name': 'member1.example.com'},
+            ]
+        }
+        self.assertFalse(wapi.compare_objects(current, proposed))
+
+    def test_compare_objects_external_servers_removal_returns_false(self):
+        '''Removing an entry from external_servers must register as a change (issue #59).'''
+        wapi = api.WapiModule(self.module)
+        current = {
+            'external_servers': [
+                {'address': '4.4.4.4', 'name': 'ext1.example.com'},
+                {'address': '5.5.5.5', 'name': 'ext2.example.com'},
+            ]
+        }
+        proposed = {
+            'external_servers': [
+                {'address': '4.4.4.4', 'name': 'ext1.example.com'},
+            ]
+        }
+        self.assertFalse(wapi.compare_objects(current, proposed))
+
+    # ------------------------------------------------------------------
     # IPv6 viewless delete-by-CIDR fallback — mirror of the IPv4 test for
     # NIOS_IPV6_NETWORK so the fallback path is covered for both stacks.
     # ------------------------------------------------------------------

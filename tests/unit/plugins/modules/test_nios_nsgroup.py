@@ -129,3 +129,90 @@ class TestNiosNSGroupModule(TestNiosModule):
         wapi.update_object.assert_called_once_with(
             ref, {'comment': 'updated comment', 'name': 'default'}
         )
+
+    # ------------------------------------------------------------------
+    # Issue #59: removal from external_secondaries / external_primaries /
+    # grid_primary / grid_secondaries must be detected as a change.
+    # Also verifies that grid_primary/grid_secondaries transforms handle None.
+    # ------------------------------------------------------------------
+
+    def test_nios_nsgroup_external_secondaries_removal_detected(self):
+        '''Removing one server from external_secondaries must trigger an update (issue #59).'''
+        ref = "nsgroup/ZG5zLm5ldHdvcmtfdmlldyQw:test-group/false"
+        self.module.params = {
+            'provider': None, 'state': 'present', 'name': 'test-group',
+            'comment': None, 'grid_primary': None, 'grid_secondaries': None,
+            'external_primaries': None,
+            'external_secondaries': [
+                {'address': '1.1.1.1', 'name': 'server1.example.com', 'stealth': False},
+            ],
+            'is_grid_default': False, 'use_external_primary': False,
+            'extattrs': None,
+        }
+        test_object = [{
+            '_ref': ref,
+            'name': 'test-group',
+            'external_secondaries': [
+                {'address': '1.1.1.1', 'name': 'server1.example.com', 'stealth': False},
+                {'address': '9.9.9.9', 'name': 'server2.example.com', 'stealth': False},
+            ],
+        }]
+        test_spec = {
+            'name': {'ib_req': True},
+            'comment': {},
+            'external_secondaries': {'type': 'list'},
+        }
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+        self.assertTrue(res['changed'])
+
+    def test_nios_nsgroup_external_secondaries_no_change_not_updated(self):
+        '''Identical external_secondaries (different order) must NOT trigger an update (issue #59).'''
+        ref = "nsgroup/ZG5zLm5ldHdvcmtfdmlldyQw:test-group/false"
+        self.module.params = {
+            'provider': None, 'state': 'present', 'name': 'test-group',
+            'comment': None, 'grid_primary': None, 'grid_secondaries': None,
+            'external_primaries': None,
+            'external_secondaries': [
+                {'address': '9.9.9.9', 'name': 'server2.example.com', 'stealth': False},
+                {'address': '1.1.1.1', 'name': 'server1.example.com', 'stealth': False},
+            ],
+            'is_grid_default': False, 'use_external_primary': False,
+            'extattrs': None,
+        }
+        test_object = [{
+            '_ref': ref,
+            'name': 'test-group',
+            'external_secondaries': [
+                {'address': '1.1.1.1', 'name': 'server1.example.com', 'stealth': False},
+                {'address': '9.9.9.9', 'name': 'server2.example.com', 'stealth': False},
+            ],
+        }]
+        test_spec = {
+            'name': {'ib_req': True},
+            'comment': {},
+            'external_secondaries': {'type': 'list'},
+        }
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+        self.assertFalse(res['changed'])
+        wapi.update_object.assert_not_called()
+
+    def test_nios_nsgroup_grid_primary_transform_with_none_does_not_crash(self):
+        '''grid_primary_preferred_transform must not crash when grid_primary is None (issue #59).'''
+        self.module.params = {
+            'provider': None, 'state': 'present', 'name': 'test-group',
+            'comment': None, 'grid_primary': None, 'grid_secondaries': None,
+            'external_primaries': None, 'external_secondaries': None,
+            'is_grid_default': False, 'use_external_primary': False,
+            'extattrs': None,
+        }
+        test_object = None
+        test_spec = {
+            'name': {'ib_req': True},
+            'comment': {},
+        }
+        wapi = self._get_wapi(test_object)
+        # Must not raise TypeError: 'NoneType' object is not iterable
+        res = wapi.run('testobject', test_spec)
+        self.assertTrue(res['changed'])

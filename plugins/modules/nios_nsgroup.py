@@ -382,11 +382,15 @@ def main():
         return module.params['external_secondaries']
 
     def grid_primary_preferred_transform(module):
+        if not module.params['grid_primary']:
+            return module.params['grid_primary']
         for member in module.params['grid_primary']:
             clean_grid_member(member)
         return module.params['grid_primary']
 
     def grid_secondaries_preferred_primaries_transform(module):
+        if not module.params['grid_secondaries']:
+            return module.params['grid_secondaries']
         for member in module.params['grid_secondaries']:
             clean_grid_member(member)
         return module.params['grid_secondaries']
