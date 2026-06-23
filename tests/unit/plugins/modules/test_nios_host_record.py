@@ -213,3 +213,125 @@ class TestNiosHostRecordModule(TestNiosModule):
         self.assertTrue(nios_host_record.should_warn_ignored_dns_ea_inheritance('2.12', True))
         self.assertFalse(nios_host_record.should_warn_ignored_dns_ea_inheritance('2.12', False))
         self.assertFalse(nios_host_record.should_warn_ignored_dns_ea_inheritance('2.12.3', True))
+
+    # ------------------------------------------------------------------
+    # Tests for issue #115: exclude parameter in inline nios_next_ip
+    # ------------------------------------------------------------------
+
+    def _get_wapi_with_connector(self):
+        wapi = api.WapiModule(self.module)
+        wapi.get_object = Mock(name='get_object', return_value=None)
+        wapi.create_object = Mock(name='create_object')
+        wapi.update_object = Mock(name='update_object')
+        wapi.delete_object = Mock(name='delete_object')
+        wapi.connector = MagicMock()
+        # Make fail_json raise so execution stops after the first error, matching
+        # real Ansible module behaviour.
+        self.module.fail_json.side_effect = SystemExit(1)
+        return wapi
+
+    def test_allocate_next_ip_with_exclude_list(self):
+        """_allocate_next_ip_with_exclude returns first IP from WAPI result."""
+        network_ref = 'network/ZG5z:192.168.1.0/24/default'
+        wapi = self._get_wapi_with_connector()
+        wapi.connector.get_object.return_value = [{'_ref': network_ref}]
+        wapi.connector.call_func.return_value = {'ips': ['192.168.1.5']}
+
+        result = wapi._allocate_next_ip_with_exclude(
+            '192.168.1.0/24', 'default', ['192.168.1.1', '192.168.1.2'], 'ipv4'
+        )
+
+        self.assertEqual(result, '192.168.1.5')
+        wapi.connector.call_func.assert_called_once_with(
+            'next_available_ip',
+            network_ref,
+            {'num': 1, 'exclude': ['192.168.1.1', '192.168.1.2']}
+        )
+
+    def test_allocate_next_ip_with_exclude_string_normalised_to_list(self):
+        """A single IP string passed as exclude is normalised to a list."""
+        network_ref = 'network/ZG5z:192.168.1.0/24/default'
+        wapi = self._get_wapi_with_connector()
+        wapi.connector.get_object.return_value = [{'_ref': network_ref}]
+        wapi.connector.call_func.return_value = {'ips': ['192.168.1.2']}
+
+        result = wapi._allocate_next_ip_with_exclude(
+            '192.168.1.0/24', 'default', '192.168.1.1', 'ipv4'
+        )
+
+        self.assertEqual(result, '192.168.1.2')
+        wapi.connector.call_func.assert_called_once_with(
+            'next_available_ip',
+            network_ref,
+            {'num': 1, 'exclude': ['192.168.1.1']}
+        )
+
+    def test_allocate_next_ip_with_exclude_invalid_type_fails(self):
+        """A non-string, non-list exclude value causes fail_json."""
+        wapi = self._get_wapi_with_connector()
+
+        with self.assertRaises(SystemExit):
+            wapi._allocate_next_ip_with_exclude(
+                '192.168.1.0/24', 'default', 12345, 'ipv4'
+            )
+
+        self.assertTrue(self.module.fail_json.called)
+        self.assertIn('exclude', self.module.fail_json.call_args[1]['msg'])
+
+    def test_allocate_next_ip_network_not_found_fails(self):
+        """fail_json is called when the network does not exist."""
+        wapi = self._get_wapi_with_connector()
+        wapi.connector.get_object.return_value = None
+
+        with self.assertRaises(SystemExit):
+            wapi._allocate_next_ip_with_exclude(
+                '10.0.0.0/24', 'default', ['10.0.0.1'], 'ipv4'
+            )
+
+        self.assertTrue(self.module.fail_json.called)
+        self.assertIn('not found', self.module.fail_json.call_args[1]['msg'])
+
+    def test_check_if_nios_next_ip_exists_with_exclude_replaces_addr(self):
+        """check_if_nios_next_ip_exists replaces nios_next_ip dict with concrete IP
+        when exclude is present."""
+        network_ref = 'network/ZG5z:192.168.10.0/24/default'
+        wapi = self._get_wapi_with_connector()
+        wapi.connector.get_object.return_value = [{'_ref': network_ref}]
+        wapi.connector.call_func.return_value = {'ips': ['192.168.10.6']}
+
+        proposed = {
+            'ipv4addrs': [{
+                'ipv4addr': "{'nios_next_ip': '192.168.10.0/24', 'exclude': ['192.168.10.1']}",
+                'configure_for_dhcp': False,
+            }],
+            'view': 'default',
+        }
+
+        from ansible.module_utils.common.validation import check_type_dict as real_ctd
+        self.mock_check_type_dict_obj.side_effect = real_ctd
+
+        result = wapi.check_if_nios_next_ip_exists(proposed)
+
+        self.assertEqual(result['ipv4addrs'][0]['ipv4addr'], '192.168.10.6')
+
+    def test_check_if_nios_next_ip_exists_without_exclude_uses_func_string(self):
+        """check_if_nios_next_ip_exists keeps func:nextavailableip string path
+        when no exclude is given (backward compatibility)."""
+        wapi = self._get_wapi_with_connector()
+
+        proposed = {
+            'ipv4addrs': [{
+                'ipv4addr': "{'nios_next_ip': '192.168.10.0/24'}",
+                'configure_for_dhcp': False,
+            }],
+            'view': 'default',
+        }
+
+        from ansible.module_utils.common.validation import check_type_dict as real_ctd
+        self.mock_check_type_dict_obj.side_effect = real_ctd
+
+        result = wapi.check_if_nios_next_ip_exists(proposed)
+
+        addr = result['ipv4addrs'][0]['ipv4addr']
+        self.assertTrue(addr.startswith('func:nextavailableip:'),
+                        msg='Expected func:nextavailableip prefix, got: %s' % addr)

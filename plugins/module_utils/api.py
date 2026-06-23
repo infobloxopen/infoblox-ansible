@@ -760,19 +760,19 @@ class WapiModule(WapiBase):
         ''' Check if nios_next_ip argument is passed in ipaddr while creating
             host record, if yes then format proposed object ipv4addrs and pass
             func:nextavailableip and ipaddr range to create hostrecord with next
-             available ip in one call to avoid any race condition.
-            
-            If 'exclude' parameter is also present in the dict, pre-call
-            next_available_ip separately (since func:nextavailableip string
-            format does not support exclude) and replace with the allocated IP.
-        '''
+            available ip.
 
+            When 'exclude' is also present in the dict, a WAPI race condition
+            cannot be avoided because func:nextavailableip does not accept an
+            exclude parameter. In that case, next_available_ip is called first
+            to obtain a concrete IP, then that IP is used in the create call.
+            If 'exclude' is absent the original single-call path is used.
+        '''
         if 'ipv4addrs' in proposed_object:
             if 'nios_next_ip' in proposed_object['ipv4addrs'][0]['ipv4addr']:
                 ipv4addr_dict = check_type_dict(proposed_object['ipv4addrs'][0]['ipv4addr'])
                 ip_range = ipv4addr_dict['nios_next_ip']
                 exclude_ips = ipv4addr_dict.get('exclude', [])
-                
                 if exclude_ips:
                     # exclude parameter present - must pre-call next_available_ip
                     # since func:nextavailableip string format doesn't support exclude
@@ -783,14 +783,12 @@ class WapiModule(WapiBase):
                 else:
                     # no exclude - use standard func:nextavailableip string (current behavior)
                     proposed_object['ipv4addrs'][0]['ipv4addr'] = NIOS_NEXT_AVAILABLE_IP + ':' + ip_range
-                    
         elif 'ipv4addr' in proposed_object:
             if 'nios_next_ip' in proposed_object['ipv4addr']:
                 ipv4addr_dict = check_type_dict(proposed_object['ipv4addr'])
                 ip_range = ipv4addr_dict['nios_next_ip']
                 exclude_ips = ipv4addr_dict.get('exclude', [])
                 net_view = self.get_network_view(proposed_object)
-                
                 if exclude_ips:
                     # exclude parameter present - must pre-call next_available_ip
                     allocated_ip = self._allocate_next_ip_with_exclude(
@@ -799,43 +797,47 @@ class WapiModule(WapiBase):
                 else:
                     # no exclude - use standard func:nextavailableip string (current behavior)
                     proposed_object['ipv4addr'] = NIOS_NEXT_AVAILABLE_IP + ':' + ip_range + ',' + net_view
-
         return proposed_object
 
     def _allocate_next_ip_with_exclude(self, cidr, network_view, exclude_list, ip_type):
         ''' Allocate next available IP with exclusion list by pre-calling
             next_available_ip WAPI function.
-            
+
             :param cidr: Network CIDR (e.g., '192.168.1.0/24')
             :param network_view: Network view name
-            :param exclude_list: List of IPs to exclude
+            :param exclude_list: List of IPs to exclude (a string is treated as
+                a single-element list; any other non-list type raises an error)
             :param ip_type: 'ipv4' or 'ipv6'
             :returns: Allocated IP address string
         '''
-        # Determine object type based on IP version
-        if ip_type == 'ipv6':
-            obj_type = 'ipv6network'
+        # Normalise exclude_list so WAPI always receives a proper list
+        if exclude_list is None:
+            exclude_list = []
+        elif isinstance(exclude_list, (str, bytes)):
+            exclude_list = [exclude_list]
+        elif not isinstance(exclude_list, (list, tuple)):
+            self.module.fail_json(
+                msg="'exclude' must be a list of IP addresses, got %s" % type(exclude_list).__name__
+            )
         else:
-            obj_type = 'network'
-        
+            exclude_list = list(exclude_list)
+        # Determine object type based on IP version
+        obj_type = 'ipv6network' if ip_type == 'ipv6' else 'network'
         # Get network object reference
         try:
             network_obj = self.connector.get_object(
-                obj_type, 
+                obj_type,
                 {'network': cidr, 'network_view': network_view}
             )
         except Exception as exc:
             self.module.fail_json(
                 msg='Failed to find network %s in view %s: %s' % (cidr, network_view, str(exc))
             )
-        
         if not network_obj:
             self.module.fail_json(
                 msg='Network %s not found in network view %s' % (cidr, network_view)
             )
-        
         network_ref = network_obj[0]['_ref']
-        
         # Call next_available_ip with exclude list
         try:
             result = self.connector.call_func(
@@ -845,15 +847,13 @@ class WapiModule(WapiBase):
             )
         except Exception as exc:
             self.module.fail_json(
-                msg='Failed to allocate next available IP from %s (excluding %s): %s' % 
-                (cidr, exclude_list, str(exc))
+                msg='Failed to allocate next available IP from %s (excluding %s): %s' % (
+                    cidr, exclude_list, str(exc))
             )
-        
         if 'ips' not in result or len(result['ips']) == 0:
             self.module.fail_json(
                 msg='No available IPs in network %s after excluding %s' % (cidr, exclude_list)
             )
-        
         return result['ips'][0]
 
     def check_for_new_ipv4addr(self, proposed_object):
