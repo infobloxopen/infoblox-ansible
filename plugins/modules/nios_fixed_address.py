@@ -231,6 +231,11 @@ def options(module):
     # options-router-templates, broadcast-address-offset, dhcp6.name-servers don't have any associated number
     special_num = [3, 6, 15, 28, 51]
     options = list()
+    if module.params.get('options') is None:
+        # options was not provided by the user; return None so WapiModule.run()
+        # omits the field from proposed_object entirely and avoids unintentionally
+        # clearing existing DHCP options on an update.
+        return None
     if not module.params['options']:
         return options
     for item in module.params['options']:
