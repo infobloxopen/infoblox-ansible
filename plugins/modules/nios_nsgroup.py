@@ -86,7 +86,7 @@ options:
           tsig_key_name:
             description:
               - Sets a label for the I(tsig_key) value
-            required: true
+            required: false
             type: str
           tsig_key_alg:
             description:
@@ -154,7 +154,7 @@ options:
           tsig_key_name:
             description:
               - Sets a label for the I(tsig_key) value
-            required: true
+            required: false
             type: str
           tsig_key_alg:
             description:
@@ -202,7 +202,7 @@ options:
       tsig_key_name:
         description:
           - Sets a label for the I(tsig_key) value
-        required: true
+        required: false
         type: str
       tsig_key_alg:
         description:
@@ -238,7 +238,7 @@ options:
       tsig_key_name:
         description:
           - Sets a label for the I(tsig_key) value
-        required: true
+        required: false
         type: str
       tsig_key_alg:
         description:
@@ -401,7 +401,7 @@ def main():
         stealth=dict(type='bool', default=False),
         tsig_key=dict(no_log=True),
         tsig_key_alg=dict(choices=['HMAC-MD5', 'HMAC-SHA256'], default='HMAC-MD5'),
-        tsig_key_name=dict(required=True)
+        tsig_key_name=dict(required=False)
     )
 
     memberserver_spec = dict(

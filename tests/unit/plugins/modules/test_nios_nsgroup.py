@@ -216,3 +216,42 @@ class TestNiosNSGroupModule(TestNiosModule):
         # Must not raise TypeError: 'NoneType' object is not iterable
         res = wapi.run('testobject', test_spec)
         self.assertTrue(res['changed'])
+
+    # ------------------------------------------------------------------
+    # Issue #58: external_secondaries (and external_primaries) must be
+    # accepted without tsig_key_name. The module spec no longer marks
+    # tsig_key_name as required, and the create payload must carry the
+    # server with no TSIG fields.
+    # ------------------------------------------------------------------
+
+    def test_nios_nsgroup_create_external_secondary_without_tsig(self):
+        '''Creating an nsgroup with an external secondary lacking tsig_key_name must succeed (issue #58).'''
+        self.module.params = {
+            'provider': None, 'state': 'present', 'name': 'test-group',
+            'comment': None, 'grid_primary': None, 'grid_secondaries': None,
+            'external_primaries': None,
+            'external_secondaries': [
+                {'address': '192.168.1.1', 'name': 'server.example.com', 'stealth': False},
+            ],
+            'is_grid_default': False, 'use_external_primary': False,
+            'extattrs': None,
+        }
+        test_object = None
+        test_spec = {
+            'name': {'ib_req': True},
+            'comment': {},
+            'external_secondaries': {'type': 'list'},
+        }
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+        self.assertTrue(res['changed'])
+        wapi.create_object.assert_called_once_with(
+            'testobject',
+            {
+                'name': 'test-group',
+                'external_secondaries': [
+                    {'address': '192.168.1.1', 'name': 'server.example.com', 'stealth': False},
+                ],
+            },
+        )
+
