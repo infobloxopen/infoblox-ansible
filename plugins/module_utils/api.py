@@ -1189,6 +1189,27 @@ class WapiModule(WapiBase):
                                  % obj_filter.get('name')))
                     ib_obj = ipam_only or None
 
+            # Fixed-address fallback disambiguation: when the lookup fell back to
+            # a mac-only (IPv4) or duid-only (IPv6) filter because no
+            # ipv4addr/ipv6addr was supplied, multiple fixed addresses can share
+            # the same mac/duid across networks. Rather than implicitly acting on
+            # an arbitrary record (0 matches -> no-op, 1 match -> proceed), fail
+            # explicitly on more than one match so the target is deterministic.
+            if (ib_obj_type == NIOS_IPV4_FIXED_ADDRESS and ib_obj
+                    and 'mac' in test_obj_filter and 'ipv4addr' not in test_obj_filter
+                    and len(ib_obj) > 1):
+                self.module.fail_json(
+                    msg=("Ambiguous fixed address match for mac=%s: found %d objects. "
+                         "Please provide ipv4addr to uniquely identify the target."
+                         % (test_obj_filter['mac'], len(ib_obj))))
+            if (ib_obj_type == NIOS_IPV6_FIXED_ADDRESS and ib_obj
+                    and 'duid' in test_obj_filter and 'ipv6addr' not in test_obj_filter
+                    and len(ib_obj) > 1):
+                self.module.fail_json(
+                    msg=("Ambiguous fixed address match for duid=%s: found %d objects. "
+                         "Please provide ipv6addr to uniquely identify the target."
+                         % (test_obj_filter['duid'], len(ib_obj))))
+
             # prevents creation of a new A record with 'new_ipv4addr' when A record with a particular 'old_ipv4addr' is not found
             if old_ipv4addr_exists and (ib_obj is None or len(ib_obj) == 0):
                 raise Exception("A Record with ipv4addr: '%s' is not found" % (ipaddr))
