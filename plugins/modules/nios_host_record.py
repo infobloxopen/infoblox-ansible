@@ -362,13 +362,20 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+# The inline 'nios_next_ip' syntax maps to the WAPI func:nextavailableip call,
+# which allocates an address atomically but does not support excluding IPs.
+# To allocate the next available IP while excluding specific addresses, use the
+# 'nios_next_ip' lookup plugin (which supports 'exclude') and pass the result to
+# this module.
 - name: Dynamically add host record to next available ip excluding specific IPs
   infoblox.nios_modules.nios_host_record:
     name: host.ansible.com
     ipv4:
-      - address:
-          nios_next_ip: 192.168.10.0/24
-          exclude: ['192.168.10.1', '192.168.10.2', '192.168.10.3', '192.168.10.4', '192.168.10.5']
+      - address: "{{ lookup('infoblox.nios_modules.nios_next_ip',
+                     '192.168.10.0/24',
+                     exclude=['192.168.10.1', '192.168.10.2', '192.168.10.3',
+                              '192.168.10.4', '192.168.10.5'],
+                     provider=provider) }}"
     comment: Skip first 5 IPs (typically reserved for gateway, DNS, etc.)
     state: present
     provider:

@@ -1,0 +1,10 @@
+---
+bugfixes:
+  - |
+    nios_host_record - fail with an actionable error when ``exclude`` is supplied
+    inside the inline ``nios_next_ip`` dictionary. That syntax maps to the WAPI
+    ``func:nextavailableip`` call, which does not accept an ``exclude`` argument,
+    so the option was previously ignored and an excluded address could still be
+    allocated. The module now points users to the ``nios_next_ip`` lookup plugin,
+    which supports ``exclude``
+    (https://github.com/infobloxopen/infoblox-ansible/issues/115).
