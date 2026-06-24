@@ -86,6 +86,7 @@ NIOS_DTC_TOPOLOGY = 'dtc:topology'
 NIOS_EXTENSIBLE_ATTRIBUTE = 'extensibleattributedef'
 NIOS_VLAN = 'vlan'
 NIOS_ADMINUSER = 'adminuser'
+NIOS_ADMINROLE = 'adminrole'
 
 # Object types that intentionally do NOT participate in the post-write
 # re-fetch performed at the end of WapiModule.run() (issue #305).
