@@ -25,20 +25,15 @@ Before using the collection, ensure your control node meets these requirements:
 
 Install ``infoblox-client``:
 
-.. code-block:: yaml
+.. code-block:: bash
 
-    - name: Install Infoblox client dependency
-      ansible.builtin.pip:
-        name: infoblox-client==0.6.2
+    pip install infoblox-client==0.6.2
 
 Install the collection:
 
-.. code-block:: yaml
+.. code-block:: bash
 
-    - name: Install infoblox.nios_modules collection
-      ansible.builtin.command:
-        cmd: ansible-galaxy collection install infoblox.nios_modules
-      changed_when: false
+    ansible-galaxy collection install infoblox.nios_modules
 
 Provider configuration (connecting to NIOS)
 ===========================================
@@ -152,6 +147,17 @@ The collection supports DNS record modules including:
             state: present
             provider: "{{ nios_provider }}"
 
+        - name: Create NAPTR record
+          infoblox.nios_modules.nios_naptr_record:
+            name: "*.subscriber-100.example.com"
+            order: 1000
+            preference: 10
+            replacement: replacement1.example.com
+            services: "SIP+D2U"
+            flags: "U"
+            state: present
+            provider: "{{ nios_provider }}"
+
         - name: Create host record with automatic next available IP
           infoblox.nios_modules.nios_host_record:
             name: host01.example.com
@@ -219,6 +225,11 @@ Use ``infoblox.nios_modules.nios_zone`` for forward or reverse zones.
       hosts: localhost
       connection: local
       gather_facts: false
+      vars:
+        nios_provider:
+          host: 192.0.2.10
+          username: admin
+          password: infoblox
       tasks:
         - name: Create forward zone
           infoblox.nios_modules.nios_zone:
@@ -245,6 +256,11 @@ Use ``infoblox.nios_modules.nios_dns_view`` to create or remove DNS views.
       hosts: localhost
       connection: local
       gather_facts: false
+      vars:
+        nios_provider:
+          host: 192.0.2.10
+          username: admin
+          password: infoblox
       tasks:
         - name: Create DNS view
           infoblox.nios_modules.nios_dns_view:
@@ -268,6 +284,11 @@ Lookup plugins provided by this collection include:
       hosts: localhost
       connection: local
       gather_facts: false
+      vars:
+        nios_provider:
+          host: 192.0.2.10
+          username: admin
+          password: infoblox
       tasks:
         - name: Fetch DNS view objects
           ansible.builtin.set_fact:
@@ -280,6 +301,14 @@ Lookup plugins provided by this collection include:
         - name: Get next network from container
           ansible.builtin.set_fact:
             next_network: "{{ lookup('infoblox.nios_modules.nios_next_network', '10.0.0.0/16', cidr=24, provider=nios_provider)[0] }}"
+
+        - name: Get next available VLAN ID from a VLAN view
+          ansible.builtin.set_fact:
+            next_vlan_id: "{{ lookup('infoblox.nios_modules.nios_next_vlan_id', parent='default', provider=nios_provider)[0] }}"
+
+        - name: Get next two available VLAN IDs, excluding IDs 1-3
+          ansible.builtin.set_fact:
+            next_vlan_ids: "{{ lookup('infoblox.nios_modules.nios_next_vlan_id', parent='default', num=2, exclude=[1, 2, 3], provider=nios_provider) }}"
 
 Advanced topics
 ===============
@@ -295,6 +324,11 @@ Use ``infoblox.nios_modules.nios_extensible_attribute`` to define extensible att
       hosts: localhost
       connection: local
       gather_facts: false
+      vars:
+        nios_provider:
+          host: 192.0.2.10
+          username: admin
+          password: infoblox
       tasks:
         - name: Ensure extensible attribute exists
           infoblox.nios_modules.nios_extensible_attribute:
@@ -323,6 +357,11 @@ Use DTC modules such as ``infoblox.nios_modules.nios_dtc_server``,
       hosts: localhost
       connection: local
       gather_facts: false
+      vars:
+        nios_provider:
+          host: 192.0.2.10
+          username: admin
+          password: infoblox
       tasks:
         - name: Create DTC server
           infoblox.nios_modules.nios_dtc_server:
@@ -347,3 +386,17 @@ Use DTC modules such as ``infoblox.nios_modules.nios_dtc_server``,
               - pool: web-pool
             state: present
             provider: "{{ nios_provider }}"
+
+Dynamic inventory
+=================
+
+.. note::
+
+   The legacy Infoblox dynamic inventory script (``infoblox.py``) that was previously
+   documented in the central Ansible scenario guide is no longer maintained. It was
+   removed from ``community.general`` and is not part of this collection.
+
+   For dynamic inventory with Infoblox NIOS, use the
+   `infoblox.nios_modules inventory plugin <https://github.com/infobloxopen/infoblox-ansible>`_
+   which is included in this collection, or manage inventory through the NIOS REST API
+   directly.
