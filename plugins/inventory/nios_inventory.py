@@ -71,6 +71,7 @@ from ansible.plugins.inventory import BaseInventoryPlugin
 from ..module_utils.api import WapiInventory
 from ..module_utils.api import normalize_extattrs, flatten_extattrs
 from ansible.errors import AnsibleError
+from ansible.module_utils.common.text.converters import to_native
 
 
 class InventoryModule(BaseInventoryPlugin):
@@ -84,13 +85,20 @@ class InventoryModule(BaseInventoryPlugin):
                     'username': self.get_option('username'),
                     'password': self.get_option('password')}
 
-        wapi = WapiInventory(provider)
-
         host_filter = self.get_option('hostfilter')
         extattrs = normalize_extattrs(self.get_option('extattrs'))
         return_fields = ['name', 'view', 'extattrs', 'ipv4addrs']
 
-        hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs, return_fields=return_fields) or []
+        try:
+            wapi = WapiInventory(provider)
+            hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs, return_fields=return_fields) or []
+        except AnsibleError:
+            raise
+        except Exception as exc:
+            raise AnsibleError(
+                "Unable to connect to Infoblox NIOS host '%s': %s"
+                % (provider['host'], to_native(exc))
+            )
 
         if not hosts:
             raise AnsibleError("host record is not present")

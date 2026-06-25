@@ -1,0 +1,9 @@
+---
+bugfixes:
+  - nios_inventory - surface a meaningful error when the Infoblox Grid cannot
+    be queried (for example wrong username or password, unreachable host, or a
+    connection timeout). Previously the ``WapiInventory`` class did not define
+    a ``handle_exception`` method, so the dynamic attribute lookup on
+    ``WapiBase`` dispatched the call to the underlying ``Connector`` and the
+    plugin failed with the confusing ``'Connector' object has no attribute
+    'handle_exception'`` message instead of the actual cause (issue #223).
