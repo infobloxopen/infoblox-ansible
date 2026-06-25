@@ -1,0 +1,30 @@
+---
+minor_changes:
+  - nios_dtc_topology - added a new ``rules[].destination`` option (list of
+    ``destination_link`` + ``priority`` structs) for WAPI 2.14+ / NIOS 9.1.0.
+    This enables configuring multiple prioritized destinations in one rule
+    (NPA-1840).
+  - nios_dtc_topology - ``rules[].destination_link`` is now deprecated and will
+    be removed in collection version ``2.0.0``. Use ``rules[].destination``
+    instead, especially for WAPI 2.14+ environments (NPA-1840).
+
+bugfixes:
+  - nios_dtc_server - the idempotency lookup now matches an existing DTC server
+    by ``name`` only. Previously both ``name`` and ``host`` were used as the
+    search key, so changing a server's ``host`` caused the lookup to miss the
+    existing object and issue a create, which NIOS 9.1.0 rejected with a
+    duplicate-name conflict. A ``host`` change is now correctly treated as an
+    update (NPA-1840).
+  - nios_dtc_topology - on NIOS 9.1.0 (WAPI 2.14) the topology rule schema
+    replaced the top-level ``destination_link`` string with a structured
+    ``destination`` array of ``destination_link`` and ``priority``. The module
+    now emits the payload shape matching the negotiated ``wapi_version`` so
+    writes no longer fail with an unknown-field error and reads no longer raise
+    the ``idns_topology_rule has no member dest_link`` serialization error. The
+    public ``destination_link`` option is unchanged; set ``wapi_version`` to
+    ``2.14`` or later when targeting NIOS 9.1.0 (NPA-1840).
+  - nios_dtc_topology - topology updates are now idempotent. The module reads
+    the topology rule sub-fields and flattens the destination link that NIOS
+    returns as an expanded object to its bare reference before comparison, so
+    re-applying an unchanged topology no longer reports ``changed`` on every
+    run (NPA-1840).

@@ -267,6 +267,74 @@ def convert_ea_list_to_struct(member_spec):
     return member_spec
 
 
+def dtc_topology_uses_structured_destination(wapi_version):
+    ''' Return True when the given WAPI version represents a dtc:topology rule
+    destination as the structured ``destination`` array introduced in WAPI
+    2.14 (NIOS 9.1.0), rather than the legacy top-level ``destination_link``
+    string used up to and including WAPI 2.13.x. A missing patch component is
+    treated as 0 (e.g. ``'2.14'`` -> ``2.14.0``) so a MAJOR.MINOR version is
+    handled correctly. Malformed input falls back to the legacy shape.
+    '''
+    parts = str(wapi_version).split('.')
+    try:
+        major, minor = int(parts[0]), int(parts[1])
+    except (IndexError, ValueError):
+        return False
+    if major != 2:
+        return major > 2
+    return minor >= 14
+
+
+def normalize_dtc_topology_rules(topology_object):
+    ''' Normalize the rules of a fetched dtc:topology so it can be compared
+    against the payload the module builds. NIOS returns each rule destination
+    link as an expanded object ({_ref, name, uuid}) and tags every rule with
+    server-side bookkeeping (_ref, uuid); the module sends a bare object
+    reference string and no bookkeeping. Flatten the read shape to the bare
+    reference and drop the bookkeeping keys so the idempotency comparison
+    matches. Handles both the WAPI 2.14 structured ``destination`` array and
+    the legacy top-level ``destination_link``.
+    '''
+    rules = topology_object.get('rules')
+    if not isinstance(rules, list):
+        return topology_object
+
+    def _link_ref(value):
+        if isinstance(value, dict):
+            return value.get('_ref')
+        return value
+
+    for rule in rules:
+        if not isinstance(rule, dict):
+            continue
+        rule.pop('_ref', None)
+        rule.pop('uuid', None)
+        # WAPI 2.14+ structured destination array. NIOS returns the array
+        # sorted by ascending priority regardless of the order it was sent in,
+        # so sort the flattened list the same way (see the matching sort in the
+        # module's build_topology_rules) to keep the comparison order-stable.
+        if isinstance(rule.get('destination'), list):
+            destinations = [
+                {'destination_link': _link_ref(item.get('destination_link')),
+                 'priority': item.get('priority')}
+                for item in rule['destination']
+                if isinstance(item, dict)
+            ]
+            rule['destination'] = sorted(
+                destinations,
+                key=lambda item: (item['priority'] is None, item['priority'])
+            )
+        # Legacy top-level destination_link (WAPI <= 2.13.x).
+        if 'destination_link' in rule:
+            rule['destination_link'] = _link_ref(rule['destination_link'])
+        # NIOS returns sources=[] for rules without source conditions while
+        # the module omits sources entirely; drop the empty list so the
+        # comparison does not register a spurious difference.
+        if rule.get('sources') == []:
+            rule.pop('sources', None)
+    return topology_object
+
+
 def normalize_ib_spec(ib_spec):
     result = {}
     for arg in ib_spec:
@@ -532,6 +600,12 @@ class WapiModule(WapiBase):
         if ib_obj_type == NIOS_VLAN and ib_obj_ref:
             if 'parent' in current_object:
                 current_object['parent'] = current_object['parent']['_ref']
+
+        # NPA-1840: flatten the fetched dtc:topology rules (expanded
+        # destination links and server-side _ref/uuid bookkeeping) to the
+        # shape the module builds so the idempotency comparison matches.
+        if ib_obj_type == NIOS_DTC_TOPOLOGY and ib_obj_ref:
+            normalize_dtc_topology_rules(current_object)
 
         # checks if the 'text' field has to be updated for the TXT Record
         if (ib_obj_type == NIOS_TXT_RECORD):
@@ -1109,6 +1183,15 @@ class WapiModule(WapiBase):
             elif (ib_obj_type == NIOS_DTC_MONITOR_TCP):
                 test_obj_filter = dict([('name', obj_filter['name'])])
 
+            # NPA-1840: a dtc:server is uniquely identified by name, but the
+            # module marks both name and host as ib_req, so the lookup filter
+            # becomes name+host. When the play updates host, the name+host
+            # search misses and the module wrongly creates a new server, which
+            # NIOS rejects with "Server with name '<name>' already exists".
+            # Search by name only so host changes are treated as updates.
+            elif (ib_obj_type == NIOS_DTC_SERVER):
+                test_obj_filter = dict([('name', obj_filter['name'])])
+
             # check if test_obj_filter is empty copy passed obj_filter
             else:
                 test_obj_filter = obj_filter
@@ -1123,6 +1206,22 @@ class WapiModule(WapiBase):
                 ]
                 return_fields.extend(ipv4addrs_return)
                 return_fields.extend(ipv6addrs_return)
+
+            # NPA-1840: NIOS returns a dtc:topology rules list as bare
+            # references ([{_ref, uuid}]) unless the rule sub-fields are
+            # requested explicitly. Without them the fetched object can never
+            # match the proposed rules and every run reports changed=True.
+            # Request the readable sub-fields, version-gated because WAPI 2.14
+            # (NIOS 9.1.0) replaced the rule's top-level destination_link
+            # string with a structured destination array.
+            if ib_obj_type == NIOS_DTC_TOPOLOGY and 'rules' in return_fields:
+                return_fields.remove('rules')
+                return_fields.extend(['rules.dest_type', 'rules.return_type', 'rules.sources'])
+                provider = self.module.params.get('provider') or {}
+                if dtc_topology_uses_structured_destination(provider.get('wapi_version') or '2.12.3'):
+                    return_fields.append('rules.destination')
+                else:
+                    return_fields.append('rules.destination_link')
 
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=return_fields)
 
