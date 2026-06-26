@@ -21,7 +21,9 @@ __metaclass__ = type
 from ansible_collections.infoblox.nios_modules.plugins.modules import nios_nsgroup
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
+from ansible_collections.infoblox.nios_modules.tests.unit.plugins.modules.utils import AnsibleExitJson
 from .test_nios_module import TestNiosModule, load_fixture
+from .utils import set_module_args
 
 
 class TestNiosNSGroupModule(TestNiosModule):
@@ -165,6 +167,17 @@ class TestNiosNSGroupModule(TestNiosModule):
         wapi = self._get_wapi(test_object)
         res = wapi.run('testobject', test_spec)
         self.assertTrue(res['changed'])
+        # The update payload must carry the shortened external_secondaries
+        # list so the removed server is actually dropped on the grid.
+        wapi.update_object.assert_called_once_with(
+            ref,
+            {
+                'name': 'test-group',
+                'external_secondaries': [
+                    {'address': '1.1.1.1', 'name': 'server1.example.com', 'stealth': False},
+                ],
+            },
+        )
 
     def test_nios_nsgroup_external_secondaries_no_change_not_updated(self):
         '''Identical external_secondaries (different order) must NOT trigger an update (issue #59).'''
@@ -255,3 +268,22 @@ class TestNiosNSGroupModule(TestNiosModule):
             },
         )
 
+    def test_nios_nsgroup_external_secondary_without_tsig_passes_arg_validation(self):
+        '''main() must accept an external secondary without tsig_key_name (issue #58).
+
+        This drives the real AnsibleModule argument validation through
+        set_module_args/main(). If tsig_key_name were still required=True in
+        the suboptions spec, parsing would raise AnsibleFailJson before the
+        (mocked) WapiModule runs; reaching AnsibleExitJson proves it is
+        optional.
+        '''
+        set_module_args({
+            'name': 'test-group',
+            'state': 'present',
+            'external_secondaries': [
+                {'address': '192.168.1.1', 'name': 'server.example.com'},
+            ],
+            'provider': {'host': '192.168.1.1', 'username': 'admin', 'password': 'admin'},
+        })
+        with self.assertRaises(AnsibleExitJson):
+            nios_nsgroup.main()
