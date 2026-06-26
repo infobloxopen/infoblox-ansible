@@ -327,8 +327,8 @@ class WapiInventory(WapiBase):
         '''
         response = getattr(exc, 'response', None) or {}
         if 'text' in response:
-            raise Exception(response['text'])
-        raise Exception(exc)
+            raise Exception(response['text']) from exc
+        raise Exception(exc) from exc
 
 
 class AnsibleError(Exception):

@@ -98,7 +98,7 @@ class InventoryModule(BaseInventoryPlugin):
             raise AnsibleError(
                 "Unable to connect to Infoblox NIOS host '%s': %s"
                 % (provider['host'], to_native(exc))
-            )
+            ) from exc
 
         if not hosts:
             raise AnsibleError("host record is not present")
