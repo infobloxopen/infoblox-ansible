@@ -1,0 +1,6 @@
+---
+bugfixes:
+  - nios_dtc_topology module - ``destination_link`` has been replaced by the
+    new ``destination`` struct array. As of WAPI 2.14 support for the former
+    has been dropped. This change adds support for the new field.
+    (https://github.com/infobloxopen/infoblox-ansible/pull/342)

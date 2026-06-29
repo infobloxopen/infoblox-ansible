@@ -482,6 +482,15 @@ class WapiModule(WapiBase):
                 current_object = ib_obj_ref[0]
             if 'extattrs' in current_object:
                 current_object['extattrs'] = flatten_extattrs(current_object['extattrs'])
+            if ib_obj_type == NIOS_DTC_TOPOLOGY and 'rules' in current_object:
+                for rule in current_object['rules']:
+                    rule.pop('_ref', None)
+                    rule.pop('uuid', None)
+                    if 'destination' in rule:
+                        for dest in rule['destination']:
+                            dl = dest.get('destination_link')
+                            if isinstance(dl, dict):
+                                dest['destination_link'] = dl['_ref']
             if current_object.get('_ref'):
                 ref = current_object.pop('_ref')
         else:
@@ -673,10 +682,12 @@ class WapiModule(WapiBase):
                         # WAPI always reset the use_for_ea_inheritance for each update operation
                         # Handle use_for_ea_inheritance flag changes for IPv4addr in a host record
                         # Fetch the updated reference of host to avoid drift.
-                        host_ref = self.connector.get_object(obj_type=str(res), return_fields=['ipv4addrs'])
+                        res_ref = res['_ref'] if isinstance(res, dict) else res
+                        host_ref = self.connector.get_object(obj_type=str(res_ref), return_fields=['ipv4addrs'])
                         if host_ref and 'ipv4addrs' in host_ref:
-                            # Create a dictionary for quick lookups
-                            ref_dict = {obj['ipv4addr']: obj['_ref'] for obj in host_ref['ipv4addrs']}
+                            # Create a dictionary for quick lookups.
+                            ref_dict = {obj['ipv4addr']: obj['_ref'] for obj in host_ref['ipv4addrs']
+                                        if 'ipv4addr' in obj and '_ref' in obj}
                             sorted_ipv4addrs = sorted(proposed_object['ipv4addrs'], key=lambda x: x.get('use_for_ea_inheritance', False))
                             for proposed in sorted_ipv4addrs:
                                 ipv4addr = proposed['ipv4addr']
@@ -708,7 +719,7 @@ class WapiModule(WapiBase):
                 and result.get('changed')
                 and not self.module.check_mode
                 and ib_obj_type not in NIOS_RETURN_OBJECT_EXCLUDE):
-            target_ref = res if res else ref
+            target_ref = res['_ref'] if isinstance(res, dict) else (res if res else ref)
             if target_ref:
                 return_fields = sorted({
                     k for k in ib_spec.keys()
@@ -1160,6 +1171,11 @@ class WapiModule(WapiBase):
                 ]
                 return_fields.extend(ipv4addrs_return)
                 return_fields.extend(ipv6addrs_return)
+
+            if ib_obj_type == NIOS_DTC_TOPOLOGY:
+                return_fields.extend([
+                    'rules.dest_type', 'rules.destination', 'rules.return_type', 'rules.sources'
+                ])
 
             ib_obj = self.get_object(ib_obj_type, test_obj_filter.copy(), return_fields=return_fields)
 
