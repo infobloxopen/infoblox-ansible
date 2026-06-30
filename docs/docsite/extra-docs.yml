@@ -1,0 +1,5 @@
+---
+sections:
+  - name: Scenario Guide
+    toctree:
+      - scenario_guide
