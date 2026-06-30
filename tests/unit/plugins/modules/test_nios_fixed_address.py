@@ -233,6 +233,86 @@ class TestNiosFixedAddressModule(TestNiosModule):
         self.assertEqual(call_filter.get('mac'), '08:6d:41:e8:fd:e8')
         self.assertNotIn('ipv4addr', call_filter)
 
+    # ------------------------------------------------------------------
+    # Follow-up to issue #114: ambiguous mac-only / duid-only fallback
+    # matches must fail explicitly instead of acting on an arbitrary record.
+    # These exercise get_object_ref directly because the fallback filter is
+    # built inside its `if 'name' in obj_filter` branch.
+    # ------------------------------------------------------------------
+
+    def test_nios_fixed_address_ipv4_mac_only_multiple_matches_fails(self):
+        """When the mac-only fallback returns more than one fixed address,
+        get_object_ref must fail_json asking the user to provide ipv4addr."""
+        test_object = [
+            {"name": "test_fa", "_ref": "fixedaddress/ZG5z:192.168.10.5/default",
+             "mac": "08:6d:41:e8:fd:e8", "network_view": "default"},
+            {"name": "test_fa", "_ref": "fixedaddress/ZG5z:192.168.20.5/other",
+             "mac": "08:6d:41:e8:fd:e8", "network_view": "other"},
+        ]
+        ib_spec = {"name": {}, "mac": {"ib_req": True}, "network": {},
+                   "network_view": {}, "comment": {}, "extattrs": {}}
+        # mac present, no ipv4addr -> mac-only fallback filter
+        obj_filter = {"name": "test_fa", "mac": "08:6d:41:e8:fd:e8"}
+
+        wapi = self._get_wapi(test_object)
+        self.module.fail_json.side_effect = SystemExit(1)
+        self.module.fail_json.reset_mock()
+
+        with self.assertRaises(SystemExit):
+            wapi.get_object_ref(self.module, 'fixedaddress', obj_filter, ib_spec)
+
+        self.assertTrue(self.module.fail_json.called)
+        msg = self.module.fail_json.call_args[1]['msg']
+        self.assertIn('Ambiguous', msg)
+        self.assertIn('mac=08:6d:41:e8:fd:e8', msg)
+        self.assertIn('ipv4addr', msg)
+
+    def test_nios_fixed_address_ipv4_mac_only_single_match_proceeds(self):
+        """A single mac-only fallback match is unambiguous and must not fail."""
+        ref = "fixedaddress/ZG5z:192.168.10.5/default"
+        test_object = [{"name": "test_fa", "_ref": ref,
+                        "mac": "08:6d:41:e8:fd:e8", "network_view": "default"}]
+        ib_spec = {"name": {}, "mac": {"ib_req": True}, "network": {},
+                   "network_view": {}, "comment": {}, "extattrs": {}}
+        obj_filter = {"name": "test_fa", "mac": "08:6d:41:e8:fd:e8"}
+
+        wapi = self._get_wapi(test_object)
+        self.module.fail_json.side_effect = SystemExit(1)
+        self.module.fail_json.reset_mock()
+
+        ib_obj_ref, update, new_name = wapi.get_object_ref(
+            self.module, 'fixedaddress', obj_filter, ib_spec)
+
+        self.assertEqual(ib_obj_ref, test_object)
+        self.assertFalse(self.module.fail_json.called)
+
+    def test_nios_fixed_address_ipv6_duid_only_multiple_matches_fails(self):
+        """When the duid-only fallback returns more than one fixed address,
+        get_object_ref must fail_json asking the user to provide ipv6addr."""
+        test_object = [
+            {"name": "test_fa", "_ref": "ipv6fixedaddress/ZG5z:fe80::5/default",
+             "duid": "00:01:00:01:2a:2b:2c:2d", "network_view": "default"},
+            {"name": "test_fa", "_ref": "ipv6fixedaddress/ZG5z:fe80::6/other",
+             "duid": "00:01:00:01:2a:2b:2c:2d", "network_view": "other"},
+        ]
+        ib_spec = {"name": {}, "duid": {"ib_req": True}, "network": {},
+                   "network_view": {}, "comment": {}, "extattrs": {}}
+        # duid present, no ipv6addr -> duid-only fallback filter
+        obj_filter = {"name": "test_fa", "duid": "00:01:00:01:2a:2b:2c:2d"}
+
+        wapi = self._get_wapi(test_object)
+        self.module.fail_json.side_effect = SystemExit(1)
+        self.module.fail_json.reset_mock()
+
+        with self.assertRaises(SystemExit):
+            wapi.get_object_ref(self.module, 'ipv6fixedaddress', obj_filter, ib_spec)
+
+        self.assertTrue(self.module.fail_json.called)
+        msg = self.module.fail_json.call_args[1]['msg']
+        self.assertIn('Ambiguous', msg)
+        self.assertIn('duid=00:01:00:01:2a:2b:2c:2d', msg)
+        self.assertIn('ipv6addr', msg)
+
     def test_nios_fixed_address_options_none_returns_none(self):
         """options() must return None (not []) when options param is not set,
         so WapiModule.run omits the field from proposed_object entirely and

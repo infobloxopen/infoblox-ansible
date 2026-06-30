@@ -1,0 +1,19 @@
+---
+bugfixes:
+  - |
+    nios_fixed_address - look up the existing fixed address using ``mac`` together
+    with ``ipv4addr`` (and ``duid`` together with ``ipv6addr``) so that
+    ``state=absent`` and updates target the correct record instead of matching by
+    ``mac``/``duid`` alone, which could act on the wrong record or silently no-op
+    (https://github.com/infobloxopen/infoblox-ansible/issues/114).
+  - |
+    nios_fixed_address - preserve ``options`` semantics by returning ``None`` when
+    the parameter is not provided (so existing DHCP options are not unintentionally
+    cleared on update) and ``[]`` only when it is explicitly set to an empty list
+    (https://github.com/infobloxopen/infoblox-ansible/issues/114).
+  - |
+    nios_fixed_address - fail with an actionable error when the ``mac``-only /
+    ``duid``-only fallback lookup matches more than one fixed address, asking the
+    user to supply ``ipv4addr``/``ipv6addr`` to uniquely identify the target rather
+    than acting on an arbitrary record
+    (https://github.com/infobloxopen/infoblox-ansible/issues/114).
