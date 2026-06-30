@@ -6,4 +6,8 @@ bugfixes:
     a ``handle_exception`` method, so the dynamic attribute lookup on
     ``WapiBase`` dispatched the call to the underlying ``Connector`` and the
     plugin failed with the confusing ``'Connector' object has no attribute
-    'handle_exception'`` message instead of the actual cause (issue #223).
+    'handle_exception'`` message instead of the actual cause. Connection level
+    failures now raise an ``Unable to connect to Infoblox NIOS host`` error
+    while other query failures raise a distinct ``Failed to query Infoblox
+    NIOS host`` error so unrelated problems are not mislabeled as connectivity
+    issues (issue #223).
