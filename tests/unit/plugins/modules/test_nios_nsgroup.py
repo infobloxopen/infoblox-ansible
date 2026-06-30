@@ -21,7 +21,9 @@ __metaclass__ = type
 from ansible_collections.infoblox.nios_modules.plugins.modules import nios_nsgroup
 from ansible_collections.infoblox.nios_modules.plugins.module_utils import api
 from ansible_collections.infoblox.nios_modules.tests.unit.compat.mock import patch, MagicMock, Mock
+from ansible_collections.infoblox.nios_modules.tests.unit.plugins.modules.utils import AnsibleExitJson
 from .test_nios_module import TestNiosModule, load_fixture
+from .utils import set_module_args
 
 
 class TestNiosNSGroupModule(TestNiosModule):
@@ -129,3 +131,159 @@ class TestNiosNSGroupModule(TestNiosModule):
         wapi.update_object.assert_called_once_with(
             ref, {'comment': 'updated comment', 'name': 'default'}
         )
+
+    # ------------------------------------------------------------------
+    # Issue #59: removal from external_secondaries / external_primaries /
+    # grid_primary / grid_secondaries must be detected as a change.
+    # Also verifies that grid_primary/grid_secondaries transforms handle None.
+    # ------------------------------------------------------------------
+
+    def test_nios_nsgroup_external_secondaries_removal_detected(self):
+        '''Removing one server from external_secondaries must trigger an update (issue #59).'''
+        ref = "nsgroup/ZG5zLm5ldHdvcmtfdmlldyQw:test-group/false"
+        self.module.params = {
+            'provider': None, 'state': 'present', 'name': 'test-group',
+            'comment': None, 'grid_primary': None, 'grid_secondaries': None,
+            'external_primaries': None,
+            'external_secondaries': [
+                {'address': '1.1.1.1', 'name': 'server1.example.com', 'stealth': False},
+            ],
+            'is_grid_default': False, 'use_external_primary': False,
+            'extattrs': None,
+        }
+        test_object = [{
+            '_ref': ref,
+            'name': 'test-group',
+            'external_secondaries': [
+                {'address': '1.1.1.1', 'name': 'server1.example.com', 'stealth': False},
+                {'address': '9.9.9.9', 'name': 'server2.example.com', 'stealth': False},
+            ],
+        }]
+        test_spec = {
+            'name': {'ib_req': True},
+            'comment': {},
+            'external_secondaries': {'type': 'list'},
+        }
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+        self.assertTrue(res['changed'])
+        # The update payload must carry the shortened external_secondaries
+        # list so the removed server is actually dropped on the grid.
+        wapi.update_object.assert_called_once_with(
+            ref,
+            {
+                'name': 'test-group',
+                'external_secondaries': [
+                    {'address': '1.1.1.1', 'name': 'server1.example.com', 'stealth': False},
+                ],
+            },
+        )
+
+    def test_nios_nsgroup_external_secondaries_no_change_not_updated(self):
+        '''Identical external_secondaries (different order) must NOT trigger an update (issue #59).'''
+        ref = "nsgroup/ZG5zLm5ldHdvcmtfdmlldyQw:test-group/false"
+        self.module.params = {
+            'provider': None, 'state': 'present', 'name': 'test-group',
+            'comment': None, 'grid_primary': None, 'grid_secondaries': None,
+            'external_primaries': None,
+            'external_secondaries': [
+                {'address': '9.9.9.9', 'name': 'server2.example.com', 'stealth': False},
+                {'address': '1.1.1.1', 'name': 'server1.example.com', 'stealth': False},
+            ],
+            'is_grid_default': False, 'use_external_primary': False,
+            'extattrs': None,
+        }
+        test_object = [{
+            '_ref': ref,
+            'name': 'test-group',
+            'external_secondaries': [
+                {'address': '1.1.1.1', 'name': 'server1.example.com', 'stealth': False},
+                {'address': '9.9.9.9', 'name': 'server2.example.com', 'stealth': False},
+            ],
+        }]
+        test_spec = {
+            'name': {'ib_req': True},
+            'comment': {},
+            'external_secondaries': {'type': 'list'},
+        }
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+        self.assertFalse(res['changed'])
+        wapi.update_object.assert_not_called()
+
+    def test_nios_nsgroup_grid_primary_transform_with_none_does_not_crash(self):
+        '''grid_primary_preferred_transform must not crash when grid_primary is None (issue #59).'''
+        self.module.params = {
+            'provider': None, 'state': 'present', 'name': 'test-group',
+            'comment': None, 'grid_primary': None, 'grid_secondaries': None,
+            'external_primaries': None, 'external_secondaries': None,
+            'is_grid_default': False, 'use_external_primary': False,
+            'extattrs': None,
+        }
+        test_object = None
+        test_spec = {
+            'name': {'ib_req': True},
+            'comment': {},
+        }
+        wapi = self._get_wapi(test_object)
+        # Must not raise TypeError: 'NoneType' object is not iterable
+        res = wapi.run('testobject', test_spec)
+        self.assertTrue(res['changed'])
+
+    # ------------------------------------------------------------------
+    # Issue #58: external_secondaries (and external_primaries) must be
+    # accepted without tsig_key_name. The module spec no longer marks
+    # tsig_key_name as required, and the create payload must carry the
+    # server with no TSIG fields.
+    # ------------------------------------------------------------------
+
+    def test_nios_nsgroup_create_external_secondary_without_tsig(self):
+        '''Creating an nsgroup with an external secondary lacking tsig_key_name must succeed (issue #58).'''
+        self.module.params = {
+            'provider': None, 'state': 'present', 'name': 'test-group',
+            'comment': None, 'grid_primary': None, 'grid_secondaries': None,
+            'external_primaries': None,
+            'external_secondaries': [
+                {'address': '192.168.1.1', 'name': 'server.example.com', 'stealth': False},
+            ],
+            'is_grid_default': False, 'use_external_primary': False,
+            'extattrs': None,
+        }
+        test_object = None
+        test_spec = {
+            'name': {'ib_req': True},
+            'comment': {},
+            'external_secondaries': {'type': 'list'},
+        }
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+        self.assertTrue(res['changed'])
+        wapi.create_object.assert_called_once_with(
+            'testobject',
+            {
+                'name': 'test-group',
+                'external_secondaries': [
+                    {'address': '192.168.1.1', 'name': 'server.example.com', 'stealth': False},
+                ],
+            },
+        )
+
+    def test_nios_nsgroup_external_secondary_without_tsig_passes_arg_validation(self):
+        '''main() must accept an external secondary without tsig_key_name (issue #58).
+
+        This drives the real AnsibleModule argument validation through
+        set_module_args/main(). If tsig_key_name were still required=True in
+        the suboptions spec, parsing would raise AnsibleFailJson before the
+        (mocked) WapiModule runs; reaching AnsibleExitJson proves it is
+        optional.
+        '''
+        set_module_args({
+            'name': 'test-group',
+            'state': 'present',
+            'external_secondaries': [
+                {'address': '192.168.1.1', 'name': 'server.example.com'},
+            ],
+            'provider': {'host': '192.168.1.1', 'username': 'admin', 'password': 'admin'},
+        })
+        with self.assertRaises(AnsibleExitJson):
+            nios_nsgroup.main()

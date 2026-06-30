@@ -894,7 +894,8 @@ class WapiModule(WapiBase):
                 # equal, and False will be returned before comparing the list items
                 # this code part will work for members' assignment
 
-                if key in ('monitors', 'members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans', 'auth_zones') \
+                if key in ('monitors', 'members', 'options', 'delegate_to', 'forwarding_servers', 'stub_members', 'ssh_keys', 'vlans', 'auth_zones',
+                           'external_primaries', 'external_secondaries', 'grid_primary', 'grid_secondaries', 'external_servers') \
                         and not self.verify_list_content_equality(proposed_item, current_item):
                     return False
 

@@ -1,0 +1,10 @@
+bugfixes:
+  - nios_nsgroup - fix removal of an entry from a list field
+    (``external_primaries``, ``external_secondaries``, ``grid_primary``,
+    ``grid_secondaries``) not being detected, so the change was silently
+    ignored and never pushed to NIOS. List comparison now verifies content
+    equality (length + members) instead of only a subset check
+    (https://github.com/infobloxopen/infoblox-ansible/issues/59).
+  - nios_nsgroup - fix ``TypeError`` crash in the ``grid_primary`` and
+    ``grid_secondaries`` transforms when those parameters are omitted
+    (https://github.com/infobloxopen/infoblox-ansible/issues/59).

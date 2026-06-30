@@ -1,0 +1,9 @@
+bugfixes:
+  - nios_nsgroup - make ``tsig_key_name`` optional for ``external_primaries``,
+    ``external_secondaries`` and ``preferred_primaries`` servers. NIOS treats
+    TSIG as optional (the server is stored with ``use_tsig_key_name=false``),
+    but the module incorrectly marked ``tsig_key_name`` as required, so adding
+    an external server without TSIG failed with a ``missing required arguments``
+    error for ``tsig_key_name``. The empty or omitted value is already cleaned
+    up by the existing transform
+    (https://github.com/infobloxopen/infoblox-ansible/issues/58).
