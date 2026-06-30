@@ -592,6 +592,60 @@ class TestNiosApi(unittest.TestCase):
         self.assertEqual(str(cm.exception), 'wapi said no')
 
     # ------------------------------------------------------------------
+    # Issue #223 — WapiInventory must surface a meaningful error.
+    #
+    # WapiInventory historically lacked handle_exception. Because
+    # WapiBase.__getattr__ returns a partial for any non-underscore
+    # attribute, hasattr(self, 'handle_exception') in _invoke_method was
+    # always True, so the call got dispatched to the Connector producing the
+    # misleading "'Connector' object has no attribute 'handle_exception'"
+    # error instead of the real cause (bad credentials, unreachable host).
+    # ------------------------------------------------------------------
+    def test_wapi_inventory_has_handle_exception(self):
+        '''WapiInventory must define its own handle_exception (issue #223).'''
+        self.assertIn('handle_exception', api.WapiInventory.__dict__)
+
+    def test_wapi_inventory_handle_exception_text_path(self):
+        '''WapiInventory should raise Exception(text) when response has text.'''
+        inventory = api.WapiInventory({})
+        exc = Exception('original')
+        exc.response = {'text': 'authentication failure'}
+
+        with self.assertRaises(Exception) as cm:
+            inventory.handle_exception('get_object', exc)
+        self.assertNotIsInstance(cm.exception, AttributeError)
+        self.assertEqual(str(cm.exception), 'authentication failure')
+
+    def test_wapi_inventory_handle_exception_no_response_falls_back(self):
+        '''WapiInventory must wrap exc when response is missing/None.'''
+        inventory = api.WapiInventory({})
+        exc = Exception('host unreachable')
+        exc.response = None
+
+        with self.assertRaises(Exception) as cm:
+            inventory.handle_exception('get_object', exc)
+        self.assertNotIsInstance(cm.exception, AttributeError)
+        self.assertIn('host unreachable', str(cm.exception))
+
+    def test_wapi_inventory_invoke_method_uses_handle_exception(self):
+        '''An InfobloxException from a WAPI call must route through
+        WapiInventory.handle_exception, not the Connector (issue #223).'''
+        inventory = api.WapiInventory({})
+
+        exc = api.InfobloxException(response={'text': 'bad credentials'})
+
+        connector = MagicMock(name='Connector')
+        connector.get_object.side_effect = exc
+        inventory.connector = connector
+
+        with self.assertRaises(Exception) as cm:
+            inventory.get_object('record:host', {})
+        # Must be the meaningful WAPI message, NOT the confusing AttributeError
+        # about the Connector lacking handle_exception.
+        self.assertNotIsInstance(cm.exception, AttributeError)
+        self.assertEqual(str(cm.exception), 'bad credentials')
+
+    # ------------------------------------------------------------------
     # convert_vlans_to_struct — direct unit tests for the new helper.
     # ------------------------------------------------------------------
 

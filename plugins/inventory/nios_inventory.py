@@ -71,6 +71,19 @@ from ansible.plugins.inventory import BaseInventoryPlugin
 from ..module_utils.api import WapiInventory
 from ..module_utils.api import normalize_extattrs, flatten_extattrs
 from ansible.errors import AnsibleError
+from ansible.module_utils.common.text.converters import to_native
+
+try:
+    from infoblox_client.exceptions import InfobloxException, InfobloxConnectionError
+except ImportError:
+    # infoblox-client is a runtime requirement of the plugin. Define harmless
+    # placeholders so the module still imports (for example during sanity or
+    # documentation parsing) and the ``except`` clauses below remain valid.
+    class InfobloxException(Exception):
+        pass
+
+    class InfobloxConnectionError(Exception):
+        pass
 
 
 class InventoryModule(BaseInventoryPlugin):
@@ -84,13 +97,32 @@ class InventoryModule(BaseInventoryPlugin):
                     'username': self.get_option('username'),
                     'password': self.get_option('password')}
 
-        wapi = WapiInventory(provider)
-
         host_filter = self.get_option('hostfilter')
         extattrs = normalize_extattrs(self.get_option('extattrs'))
         return_fields = ['name', 'view', 'extattrs', 'ipv4addrs']
 
-        hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs, return_fields=return_fields) or []
+        try:
+            wapi = WapiInventory(provider)
+            hosts = wapi.get_object('record:host', host_filter, extattrs=extattrs, return_fields=return_fields) or []
+        except AnsibleError:
+            raise
+        except (InfobloxConnectionError, InfobloxException) as exc:
+            # Connection/WAPI level failures: host unreachable, refused,
+            # TLS/timeout, or any InfobloxException that was not re-wrapped by
+            # WapiInventory.handle_exception.
+            raise AnsibleError(
+                "Unable to connect to Infoblox NIOS host '%s': %s"
+                % (provider['host'], to_native(exc))
+            ) from exc
+        except Exception as exc:
+            # handle_exception surfaces the real WAPI error text (for example
+            # wrong username or password) as a plain Exception; any other
+            # unexpected failure is reported here without being mislabeled as a
+            # connectivity problem.
+            raise AnsibleError(
+                "Failed to query Infoblox NIOS host '%s': %s"
+                % (provider['host'], to_native(exc))
+            ) from exc
 
         if not hosts:
             raise AnsibleError("host record is not present")

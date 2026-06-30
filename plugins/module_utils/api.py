@@ -313,8 +313,22 @@ class WapiLookup(WapiBase):
 
 
 class WapiInventory(WapiBase):
-    ''' Implements WapiBase for dynamic inventory script '''
-    pass
+    ''' Implements WapiBase for dynamic inventory plugin '''
+    def handle_exception(self, method_name, exc):
+        ''' Surface a meaningful error when a WAPI call fails.
+
+        Without this method the dynamic ``__getattr__`` on :class:`WapiBase`
+        resolves the ``handle_exception`` lookup to a ``partial`` wrapper, so
+        ``hasattr(self, 'handle_exception')`` in ``_invoke_method`` is always
+        True and the call is dispatched to the underlying ``Connector``. That
+        produced the misleading "'Connector' object has no attribute
+        'handle_exception'" error instead of the real cause (wrong username or
+        password, unreachable host, timeout, etc.).
+        '''
+        response = getattr(exc, 'response', None) or {}
+        if 'text' in response:
+            raise Exception(response['text']) from exc
+        raise Exception(exc) from exc
 
 
 class AnsibleError(Exception):
