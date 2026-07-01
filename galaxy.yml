@@ -51,7 +51,7 @@ tags:
 # dependencies: {}
 
 # The URL of the originating SCM repository
-repository: https://github.com/infobloxopen/infoblox-ansible/tree/master
+repository: https://github.com/infobloxopen/infoblox-ansible
 
 # The URL to any online docs
 documentation: https://github.com/infobloxopen/infoblox-ansible/blob/master/README.md
