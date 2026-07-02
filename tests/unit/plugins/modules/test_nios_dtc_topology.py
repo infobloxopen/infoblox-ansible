@@ -65,7 +65,10 @@ class TestNiosDtcTopologyModule(TestNiosModule):
             'name': 'a_topology',
             'rules': [{
                 'dest_type': 'POOL',
-                'destination_link': 'web_pool',
+                'destination': [
+                    {'destination_link': 'web_pool1', 'priority': 1},
+                    {'destination_link': 'web_pool2', 'priority': 2}
+                ],
                 'return_type': 'REGULAR'
             }],
             'comment': None,
@@ -91,7 +94,10 @@ class TestNiosDtcTopologyModule(TestNiosModule):
                 'name': 'a_topology',
                 'rules': [{
                     'dest_type': 'POOL',
-                    'destination_link': 'web_pool',
+                    'destination': [
+                        {'destination_link': 'web_pool1', 'priority': 1},
+                        {'destination_link': 'web_pool2', 'priority': 2}
+                    ],
                     'return_type': 'REGULAR'
                 }]
             }

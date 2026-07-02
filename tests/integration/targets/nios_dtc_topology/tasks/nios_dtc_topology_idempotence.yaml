@@ -55,7 +55,9 @@
     name: a_topology
     rules:
       - dest_type: POOL
-        destination_link: web_pool
+        destination:
+          - destination_link: web_pool
+            priority: 1
         return_type: REGULAR
     state: present
     provider: "{{ nios_provider }}"

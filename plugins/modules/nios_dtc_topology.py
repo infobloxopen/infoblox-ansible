@@ -41,10 +41,20 @@ options:
           - POOL
           - SERVER
         required: true
-      destination_link:
+      destination:
         description:
-          - Configures the name of the destination DTC pool or DTC server.
-        type: str
+          - Configures the set of destinations.
+        type: list
+        elements: dict
+        suboptions:
+          destination_link:
+            description: The name of the destination DTC pool or DTC server.
+            type: str
+            required: true
+          priority:
+            description: Priority of this destination over the others
+            type: int
+            required: true
       return_type:
         description:
           - Configures the type of the DNS response for the rule.
@@ -119,14 +129,22 @@ EXAMPLES = '''
     name: a_topology
     rules:
       - dest_type: POOL
-        destination_link: web_pool1
+        destination:
+          - destination_link: web_pool1
+            priority: 1
+          - destination_link: web_pool2
+            priority: 2
         return_type: REGULAR
         sources:
           - source_op: IS
             source_type: EA0
             source_value: DC1
       - dest_type: POOL
-        destination_link: web_pool2
+        destination:
+          - destination_link: web_pool1
+            priority: 2
+          - destination_link: web_pool2
+            priority: 1
         return_type: REGULAR
         sources:
           - source_op: IS
@@ -182,26 +200,38 @@ def main():
             source_list.append(src)
         return source_list
 
+    def destination_transform(destinations, dest_type, module):
+        dest_list = list()
+        for dest in destinations:
+            if dest_type == 'POOL':
+                dest_obj = wapi.get_object('dtc:pool', {'name': dest['destination_link']})
+            else:
+                dest_obj = wapi.get_object('dtc:server', {'name': dest['destination_link']})
+            if not dest_obj:
+                module.fail_json(msg='destination_link %s does not exist' % dest['destination_link'])
+            dest_list.append({
+                'destination_link': dest_obj[0]['_ref'],
+                'priority': dest['priority']
+            })
+        return dest_list
+
     def rules_transform(module):
         rule_list = list()
-        dest_obj = None
 
         if not module.params['rules']:
             return rule_list
 
         for rule in module.params['rules']:
-            if rule['dest_type'] == 'POOL':
-                dest_obj = wapi.get_object('dtc:pool', {'name': rule['destination_link']})
-            else:
-                dest_obj = wapi.get_object('dtc:server', {'name': rule['destination_link']})
-            if not dest_obj and rule['return_type'] == 'REGULAR':
-                module.fail_json(msg='destination_link %s does not exist' % rule['destination_link'])
-
             tf_rule = dict(
                 dest_type=rule['dest_type'],
-                destination_link=dest_obj[0]['_ref'] if dest_obj else None,
                 return_type=rule['return_type']
             )
+
+            if rule['destination'] and rule['return_type'] == 'REGULAR':
+                tf_rule['destination'] = destination_transform(
+                    rule['destination'], rule['dest_type'], module)
+            elif not rule['destination'] and rule['return_type'] == 'REGULAR':
+                module.fail_json(msg='destination is required when return_type is REGULAR')
 
             if rule['sources']:
                 tf_rule['sources'] = sources_transform(rule['sources'], module)
@@ -215,9 +245,14 @@ def main():
         source_value=dict(required=True, type='str')
     )
 
+    destination_spec = dict(
+        destination_link=dict(required=True, type='str'),
+        priority=dict(required=True, type='int')
+    )
+
     rule_spec = dict(
         dest_type=dict(required=True, choices=['POOL', 'SERVER']),
-        destination_link=dict(type='str'),
+        destination=dict(type='list', elements='dict', options=destination_spec),
         return_type=dict(default='REGULAR', choices=['NOERR', 'NXDOMAIN', 'REGULAR']),
         sources=dict(type='list', elements='dict', options=source_spec)
     )
