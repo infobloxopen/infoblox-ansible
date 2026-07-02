@@ -1,0 +1,3 @@
+---
+- name: Include DTC server idempotence tests
+  ansible.builtin.include_tasks: nios_dtc_server_idempotence.yaml

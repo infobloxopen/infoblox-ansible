@@ -1,4 +1,8 @@
 ---
+- name: Detect whether structured topology destinations are supported
+  ansible.builtin.set_fact:
+    nios_dtc_topology_supports_structured_destination: "{{ (nios_provider.wapi_version | default('2.12.3')) is version('2.14', '>=') }}"
+
 - name: Clean up the parent object
   infoblox.nios_modules.nios_zone:
     name: ansible.com
@@ -20,6 +24,13 @@
 - name: Clean up the DTC pool
   infoblox.nios_modules.nios_dtc_pool:
     name: web_pool
+    lb_preferred_method: ROUND_ROBIN
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Clean up the second DTC pool used for structured destination tests
+  infoblox.nios_modules.nios_dtc_pool:
+    name: web_pool2
     lb_preferred_method: ROUND_ROBIN
     state: absent
     provider: "{{ nios_provider }}"
@@ -50,6 +61,17 @@
     state: present
     provider: "{{ nios_provider }}"
 
+- name: Create second DTC Pool for structured destination tests
+  infoblox.nios_modules.nios_dtc_pool:
+    name: web_pool2
+    lb_preferred_method: ROUND_ROBIN
+    servers:
+      - server: Server1
+        ratio: 1
+    comment: Created with Ansible
+    state: present
+    provider: "{{ nios_provider }}"
+
 - name: Create a DTC Topology
   infoblox.nios_modules.nios_dtc_topology:
     name: a_topology
@@ -67,6 +89,75 @@
     state: present
     provider: "{{ nios_provider }}"
   register: dtc_topology_create2
+
+# NPA-1840: on NIOS 9.1.0 (WAPI 2.14) the topology rule destination schema
+# changed. Re-applying the same rule must round-trip cleanly: the create/read
+# path must not raise the "idns_topology_rule has no member dest_link"
+# serialization error, and an unchanged rule must not report a spurious change.
+- name: Reapply the same DTC Topology rule (idempotent)
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology
+    rules:
+      - dest_type: POOL
+        destination_link: web_pool
+        return_type: REGULAR
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_rule_reapply
+
+- name: Verify mutually exclusive destination and destination_link validation
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology
+    rules:
+      - dest_type: POOL
+        destination_link: web_pool
+        destination:
+          - destination_link: web_pool2
+            priority: 1
+        return_type: REGULAR
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_both_options
+  ignore_errors: true
+
+- name: Clean up structured-destination topology before unsorted-priority test
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology_structured
+    state: absent
+    provider: "{{ nios_provider }}"
+  when: nios_dtc_topology_supports_structured_destination
+
+- name: Create topology with UNSORTED structured destinations (2.14+)
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology_structured
+    rules:
+      - dest_type: POOL
+        return_type: REGULAR
+        destination:
+          - destination_link: web_pool
+            priority: 2
+          - destination_link: web_pool2
+            priority: 1
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_structured_unsorted_create
+  when: nios_dtc_topology_supports_structured_destination
+
+- name: Reapply topology with same UNSORTED structured destinations (2.14+)
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology_structured
+    rules:
+      - dest_type: POOL
+        return_type: REGULAR
+        destination:
+          - destination_link: web_pool
+            priority: 2
+          - destination_link: web_pool2
+            priority: 1
+    state: present
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_structured_unsorted_reapply
+  when: nios_dtc_topology_supports_structured_destination
 
 - name: Add a comment to an existing DTC Topology
   infoblox.nios_modules.nios_dtc_topology:
@@ -91,6 +182,22 @@
     provider: "{{ nios_provider }}"
   register: dtc_topology_delete1
 
+- name: Remove the structured-destination DTC Topology (2.14+)
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology_structured
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_structured_delete1
+  when: nios_dtc_topology_supports_structured_destination
+
+- name: Reremove the structured-destination DTC Topology (2.14+)
+  infoblox.nios_modules.nios_dtc_topology:
+    name: a_topology_structured
+    state: absent
+    provider: "{{ nios_provider }}"
+  register: dtc_topology_structured_delete2
+  when: nios_dtc_topology_supports_structured_destination
+
 - name: Reremove a DTC Topology
   infoblox.nios_modules.nios_dtc_topology:
     name: a_topology
@@ -101,6 +208,13 @@
 - name: Remove the DTC pool
   infoblox.nios_modules.nios_dtc_pool:
     name: web_pool
+    lb_preferred_method: ROUND_ROBIN
+    state: absent
+    provider: "{{ nios_provider }}"
+
+- name: Remove the second DTC pool
+  infoblox.nios_modules.nios_dtc_pool:
+    name: web_pool2
     lb_preferred_method: ROUND_ROBIN
     state: absent
     provider: "{{ nios_provider }}"
@@ -117,7 +231,16 @@
     that:
       - dtc_topology_create1.changed
       - not dtc_topology_create2.changed
+      # NPA-1840: rule round-trip must succeed and be idempotent on 9.1.0.
+      - dtc_topology_rule_reapply.failed is not defined or not dtc_topology_rule_reapply.failed
+      - not dtc_topology_rule_reapply.changed
+      - dtc_topology_both_options.failed
+      - "'mutually exclusive' in (dtc_topology_both_options.msg | default(''))"
+      - dtc_topology_structured_unsorted_create is skipped or dtc_topology_structured_unsorted_create.changed
+      - dtc_topology_structured_unsorted_reapply is skipped or not dtc_topology_structured_unsorted_reapply.changed
       - dtc_topology_update1.changed
       - not dtc_topology_update2.changed
       - dtc_topology_delete1.changed
       - not dtc_topology_delete2.changed
+      - dtc_topology_structured_delete1 is skipped or dtc_topology_structured_delete1.changed
+      - dtc_topology_structured_delete2 is skipped or not dtc_topology_structured_delete2.changed
