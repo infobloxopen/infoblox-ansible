@@ -35,6 +35,78 @@ options:
     extattrs:
       description: A dict object that is used to filter based on extensible attributes.
       type: dict
+    provider:
+      description:
+        - A dict object containing connection details. All keys can also be set
+          via environment variables.
+      type: dict
+      suboptions:
+        host:
+          description:
+            - Specifies the DNS host name or address for connecting to the remote
+              instance of NIOS WAPI over REST.
+            - Value can also be specified using C(INFOBLOX_HOST) environment variable.
+          type: str
+          required: true
+        username:
+          description:
+            - Configures the username to use to authenticate the connection to
+              the remote instance of NIOS.
+            - Value can also be specified using C(INFOBLOX_USERNAME) environment variable.
+          type: str
+        password:
+          description:
+            - Specifies the password to use to authenticate the connection to
+              the remote instance of NIOS.
+            - Value can also be specified using C(INFOBLOX_PASSWORD) environment variable.
+          type: str
+          no_log: true
+        validate_certs:
+          description:
+            - Boolean value to enable or disable verifying SSL certificates.
+            - Value can also be specified using C(INFOBLOX_SSL_VERIFY) environment variable.
+          type: bool
+          default: false
+          aliases: [ssl_verify]
+        http_request_timeout:
+          description:
+            - The amount of time in seconds to wait before receiving a response from NIOS.
+            - Value can also be specified using C(INFOBLOX_HTTP_REQUEST_TIMEOUT) environment variable.
+          type: int
+          default: 10
+        max_results:
+          description:
+            - Specifies the maximum number of objects to be returned. If set to a
+              negative number the appliance will return an error when the number of
+              returned objects would exceed the setting.
+            - Value can also be specified using C(INFOBLOX_MAX_RESULTS) environment variable.
+          type: int
+          default: 1000
+        wapi_version:
+          description:
+            - Specifies the version of WAPI to use.
+            - Value can also be specified using C(INFOBLOX_WAPI_VERSION) environment variable.
+          type: str
+          default: '2.12.3'
+        max_retries:
+          description:
+            - Configures the number of attempted retries before the connection is
+              declared unusable.
+            - Value can also be specified using C(INFOBLOX_MAX_RETRIES) environment variable.
+          type: int
+          default: 3
+        cert:
+          description:
+            - Specifies the client certificate file for extra-layer secure connection
+              to the remote instance of NIOS.
+            - Value can also be specified using C(INFOBLOX_CERT) environment variable.
+          type: str
+        key:
+          description:
+            - Specifies the private key file for encryption with the certificate.
+            - Value can also be specified using C(INFOBLOX_KEY) environment variable.
+          type: str
+          no_log: true
 '''
 
 EXAMPLES = """
@@ -68,6 +140,12 @@ EXAMPLES = """
 - name: get the authoritative zone from a non default dns view
   ansible.builtin.set_fact:
     host: "{{ lookup('infoblox.nios_modules.nios_lookup', 'zone_auth', filter={'fqdn': 'ansible.com', 'view': 'ansible-dns'}) }}"
+
+- name: fetch all A records with increased result limit and timeout
+  ansible.builtin.set_fact:
+    a_records: "{{ lookup('infoblox.nios_modules.nios_lookup', 'record:a',
+                   provider={'host': 'nios01', 'username': 'admin', 'password': 'password',
+                             'max_results': 5000, 'http_request_timeout': 60}) }}"
 """
 
 RETURN = """

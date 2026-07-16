@@ -1,0 +1,8 @@
+---
+minor_changes:
+  - nios_lookup - document the ``provider`` option and all its suboptions
+    (``host``, ``username``, ``password``, ``max_results``,
+    ``http_request_timeout``, ``wapi_version``, ``validate_certs``,
+    ``max_retries``, ``cert``, ``key``) so they appear in ``ansible-doc``
+    output. The parameters were already functional; only the docstring was
+    missing (https://github.com/infobloxopen/infoblox-ansible/issues/93).
