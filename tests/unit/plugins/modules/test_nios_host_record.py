@@ -80,6 +80,18 @@ class TestNiosHostRecordModule(TestNiosModule):
         self.assertTrue(res['changed'])
         wapi.create_object.assert_called_once_with('testobject', {'name': 'ansible'})
 
+    def test_ipv6addrs_transform_passes_mac_through(self):
+        # Since NIOS 9.0.6, an IPv6 host address accepts a MAC as an alternative
+        # to DUID; the module must forward it to WAPI (issue #310).
+        module = MagicMock()
+        module.params = {'ipv6addrs': [{'ipv6addr': '2001:db8::1',
+                                        'mac': '00:11:22:33:44:55',
+                                        'duid': None,
+                                        'configure_for_dhcp': None}]}
+        result = nios_host_record.ipv6addrs(module)
+        self.assertEqual(result, [{'ipv6addr': '2001:db8::1',
+                                   'mac': '00:11:22:33:44:55'}])
+
     def test_nios_host_record_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'ansible',
                               'comment': None, 'extattrs': None}

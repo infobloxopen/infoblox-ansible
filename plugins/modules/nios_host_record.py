@@ -182,6 +182,13 @@ options:
         required: false
         aliases:
           - duid
+      mac:
+        description:
+          - Configures the hardware MAC address for the host record, as an
+            alternative to DUID. Supported by NIOS 9.0.6 and later for IPv6
+            host addresses.
+        type: str
+        required: false
   aliases:
     description:
       - Configures an optional list of additional aliases to add to the host
@@ -529,7 +536,8 @@ def main():
     ipv6addr_spec = dict(
         ipv6addr=dict(required=True, aliases=['address']),
         configure_for_dhcp=dict(type='bool', required=False, aliases=['dhcp']),
-        duid=dict(required=False)
+        duid=dict(required=False),
+        mac=dict(required=False)
     )
 
     ib_spec = dict(
