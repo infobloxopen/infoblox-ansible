@@ -80,6 +80,23 @@ class TestNiosHostRecordModule(TestNiosModule):
         self.assertTrue(res['changed'])
         wapi.create_object.assert_called_once_with('testobject', {'name': 'ansible'})
 
+    def test_ipv4addrs_transform_passes_bootfile_through(self):
+        # A host's IPv4 address can carry the DHCP bootfile option (issue #302);
+        # the module must forward bootfile/use_bootfile to WAPI.
+        module = MagicMock()
+        module.params = {'ipv4addrs': [{'ipv4addr': '192.168.1.10',
+                                        'use_bootfile': True,
+                                        'bootfile': 'pxelinux.0',
+                                        'mac': None, 'nextserver': None,
+                                        'use_nextserver': None,
+                                        'configure_for_dhcp': None,
+                                        'add': None, 'remove': None,
+                                        'use_for_ea_inheritance': None}]}
+        result = nios_host_record.ipv4addrs(module)
+        self.assertEqual(result, [{'ipv4addr': '192.168.1.10',
+                                   'use_bootfile': True,
+                                   'bootfile': 'pxelinux.0'}])
+
     def test_nios_host_record_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'ansible',
                               'comment': None, 'extattrs': None}

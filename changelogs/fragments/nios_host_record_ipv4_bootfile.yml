@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - nios_host_record - add ``bootfile`` and ``use_bootfile`` options to ``ipv4addrs`` so the DHCP bootfile can be set per host (https://github.com/infobloxopen/infoblox-ansible/issues/302).

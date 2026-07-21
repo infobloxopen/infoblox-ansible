@@ -140,6 +140,19 @@ options:
         required: false
         aliases:
           - pxe
+      use_bootfile:
+        version_added: "1.11.0"
+        description:
+          - Enable the use of the bootfile option.
+        type: bool
+        required: false
+      bootfile:
+        version_added: "1.11.0"
+        description:
+          - Configures the bootfile that the host uses when booting via DHCP,
+            served together with I(nextserver). Requires I(use_bootfile) to be true.
+        type: str
+        required: false
       remove:
         version_added: "1.0.0"
         description:
@@ -522,6 +535,8 @@ def main():
         add=dict(type='bool', required=False),
         use_nextserver=dict(type='bool', required=False, aliases=['use_pxe']),
         nextserver=dict(required=False, aliases=['pxe']),
+        use_bootfile=dict(type='bool', required=False),
+        bootfile=dict(required=False),
         use_for_ea_inheritance=dict(type='bool', required=False, default=False),
         remove=dict(type='bool', required=False)
     )
