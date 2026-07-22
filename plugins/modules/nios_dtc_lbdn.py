@@ -288,7 +288,7 @@ def main():
     ib_spec = dict(
         name=dict(required=True, ib_req=True),
         lb_method=dict(required=True, choices=['GLOBAL_AVAILABILITY',
-                                               'RATIO', 'ROUND_ROBIN', 'TOPOLOGY']),
+                                               'RATIO', 'ROUND_ROBIN', 'SOURCE_IP_HASH', 'TOPOLOGY']),
 
         topology=dict(type='str', transform=topology_transform),
         auth_zones=dict(type='list', elements='raw', options=auth_zones_spec,
