@@ -131,12 +131,21 @@ def main():
         del restart_params['members']
     if restart_params['mode'] is None:
         del restart_params['mode']
+    # FORCE_RESTART unconditionally restarts services → always a state change.
+    # RESTART_IF_NEEDED only acts when services need it; WAPI returns {} either
+    # way so we cannot detect whether a restart actually occurred — report
+    # changed=False for that case (no-op semantics when nothing was pending).
+    will_change = (restart_params.get('restart_option', 'RESTART_IF_NEEDED') == 'FORCE_RESTART')
+
     grid_obj = wapi.get_object('grid')
     if grid_obj is None:
         module.fail_json(msg='Failed to get NIOS grid information.')
-    result = wapi.call_func('restartservices', grid_obj[0]['_ref'], restart_params)
 
-    module.exit_json(**result)
+    if module.check_mode:
+        module.exit_json(changed=will_change)
+
+    wapi.call_func('restartservices', grid_obj[0]['_ref'], restart_params)
+    module.exit_json(changed=will_change)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,14 @@
+---
+bugfixes:
+  - nios_restartservices - fix ``changed`` always being reported as ``false``
+    even when services were actually restarted. ``FORCE_RESTART``
+    unconditionally restarts the selected grid services, so the module now
+    reports ``changed=true``. ``RESTART_IF_NEEDED`` continues to report
+    ``changed=false`` because WAPI returns an empty response regardless of
+    whether a restart occurred, so a real change cannot be detected. Previously
+    the module called ``module.exit_json(**result)`` with the empty WAPI
+    response, which never set ``changed``.
+  - nios_restartservices - honor ``check_mode``. The module previously issued
+    the real ``restartservices`` WAPI call even when run with ``--check``; it
+    now exits early without side effects and reports the correct ``changed``
+    value.
