@@ -87,10 +87,24 @@ options:
           - Specifies the maximum number of objects to be returned,
             if set to a negative number the appliance will return an error when the
             number of returned objects would exceed the setting.
+          - When C(use_paging) is C(true) this value is used as the page size
+            rather than an absolute cap, so all matching objects are retrieved
+            regardless of how many there are.
           - Value can also be specified using C(INFOBLOX_MAX_RESULTS) environment
             variable.
         type: int
         default: 1000
+      use_paging:
+        description:
+          - When C(true), enables WAPI result-set paging so that arbitrarily
+            large datasets are fetched in multiple page requests rather than
+            being silently truncated at C(max_results).
+          - C(max_results) controls the page size used for each request;
+            the default of 1000 is a safe starting point for most grids.
+          - Value can also be specified using C(INFOBLOX_USE_PAGING) environment
+            variable.
+        type: bool
+        default: false
       http_pool_maxsize:
         description:
           - Insert description here

@@ -130,7 +130,8 @@ NIOS_PROVIDER_SPEC = {
     'http_pool_maxsize': dict(type='int', default=10),
     'max_retries': dict(type='int', default=3, fallback=(env_fallback, ['INFOBLOX_MAX_RETRIES'])),
     'wapi_version': dict(default='2.12.3', fallback=(env_fallback, ['INFOBLOX_WAPI_VERSION'])),
-    'max_results': dict(type='int', default=1000, fallback=(env_fallback, ['INFOBLOX_MAX_RESULTS']))
+    'max_results': dict(type='int', default=1000, fallback=(env_fallback, ['INFOBLOX_MAX_RESULTS'])),
+    'use_paging': dict(type='bool', default=False, fallback=(env_fallback, ['INFOBLOX_USE_PAGING']))
 }
 
 
@@ -168,6 +169,11 @@ def get_connector(*args, **kwargs):
     if 'validate_certs' in kwargs.keys():
         kwargs['ssl_verify'] = kwargs['validate_certs']
         kwargs.pop('validate_certs', None)
+
+    # The Connector option is 'paging'; the provider spec uses 'use_paging' to
+    # follow Ansible naming conventions.  Rename before passing to Connector.
+    if 'use_paging' in kwargs:
+        kwargs['paging'] = kwargs.pop('use_paging')
 
     return Connector(kwargs)
 

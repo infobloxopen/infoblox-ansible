@@ -1,0 +1,9 @@
+---
+minor_changes:
+  - api - Add ``use_paging`` boolean provider option (default ``false``) that
+    enables WAPI result-set paging, preventing silent truncation of large
+    datasets at ``max_results`` (default 1000 per page). When enabled, all
+    matching objects are fetched across as many pages as needed and returned
+    as a single flat list. The value can also be set via the
+    ``INFOBLOX_USE_PAGING`` environment variable
+    (`#293 <https://github.com/infobloxopen/infoblox-ansible/issues/293>`_).

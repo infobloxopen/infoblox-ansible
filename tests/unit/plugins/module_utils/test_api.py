@@ -36,7 +36,7 @@ class TestNiosApi(unittest.TestCase):
     def test_get_provider_spec(self):
         provider_options = ['host', 'username', 'password', 'cert', 'key', 'validate_certs', 'silent_ssl_warnings',
                             'http_request_timeout', 'http_pool_connections',
-                            'http_pool_maxsize', 'max_retries', 'wapi_version', 'max_results']
+                            'http_pool_maxsize', 'max_retries', 'wapi_version', 'max_results', 'use_paging']
         res = api.WapiBase.provider_spec
         self.assertIsNotNone(res)
         self.assertIn('provider', res)
