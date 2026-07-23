@@ -155,4 +155,11 @@ class LookupModule(LookupBase):
             avail_nets = wapi.call_func('next_available_network', ref, {'cidr': cidr, 'num': num, 'exclude': exclude_ip})
             return [avail_nets['networks']]
         except Exception as exc:
+            # When the supernet is exhausted NIOS returns an error containing
+            # "Can not find requested number of networks".  This is a valid,
+            # non-fatal condition (the container is simply full), so return an
+            # empty list instead of raising a fatal AnsibleError.
+            # All other exceptions are still propagated as AnsibleError.
+            if 'can not find requested number of networks' in to_text(exc).lower():
+                return [[]]
             raise AnsibleError(to_text(exc))

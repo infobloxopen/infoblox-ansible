@@ -135,6 +135,32 @@ class TestNiosNextNetworkLookup(unittest.TestCase):
             self._run(['192.168.10.0/24'], cidr=25, network_view='other')
         self.assertIn('no records found', str(ctx.exception))
 
+    # ---- Issue #132: exhausted supernet should return [] not raise -------
+
+    @patch.object(nios_next_network, 'WapiLookup')
+    def test_exhausted_supernet_returns_empty_list(self, mock_wapi_cls):
+        """NIOS 'Can not find requested number of networks' must return [] not raise."""
+        wapi = MagicMock()
+        wapi.get_object.return_value = [{'_ref': 'ref1', 'network_view': 'default'}]
+        wapi.call_func.side_effect = Exception('Can not find requested number of networks')
+        mock_wapi_cls.return_value = wapi
+
+        result = self._run(['192.168.10.0/24'], cidr=25)
+
+        self.assertEqual(result, [[]])
+
+    @patch.object(nios_next_network, 'WapiLookup')
+    def test_other_wapi_exceptions_still_raise(self, mock_wapi_cls):
+        """Non-exhausted WAPI errors must still surface as AnsibleError."""
+        wapi = MagicMock()
+        wapi.get_object.return_value = [{'_ref': 'ref1', 'network_view': 'default'}]
+        wapi.call_func.side_effect = Exception('Internal server error')
+        mock_wapi_cls.return_value = wapi
+
+        with self.assertRaises(AnsibleError) as ctx:
+            self._run(['192.168.10.0/24'], cidr=25)
+        self.assertIn('Internal server error', str(ctx.exception))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,8 @@
+---
+bugfixes:
+  - nios_next_network - return an empty list instead of raising a fatal
+    ``AnsibleError`` when the requested network-container is exhausted and
+    NIOS reports "Can not find requested number of networks". This allows
+    callers to iterate over a set of supernets without needing
+    ``ignore_errors: true`` workarounds
+    (`#132 <https://github.com/infobloxopen/infoblox-ansible/issues/132>`_).
