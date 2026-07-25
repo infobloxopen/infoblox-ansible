@@ -80,6 +80,52 @@ class TestNiosHostRecordModule(TestNiosModule):
         self.assertTrue(res['changed'])
         wapi.create_object.assert_called_once_with('testobject', {'name': 'ansible'})
 
+    def test_nios_host_record_create_with_ddns_protected(self):
+        # ddns_protected shields the host record from dynamic DNS updates
+        # (issue #197); it must be forwarded to WAPI on create.
+        self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible',
+                              'ddns_protected': True, 'comment': None, 'extattrs': None}
+
+        test_object = None
+        test_spec = {
+            "name": {"ib_req": True},
+            "ddns_protected": {},
+            "comment": {},
+            "extattrs": {}
+        }
+
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'ansible', 'ddns_protected': True})
+
+    def test_nios_host_record_update_ddns_protected(self):
+        self.module.params = {'provider': None, 'state': 'present', 'name': 'ansible',
+                              'ddns_protected': True, 'comment': None, 'extattrs': None}
+
+        ref = "record:host/ZG5zLm5ldHdvcmtfdmlldyQw:ansible/false"
+        test_object = [{
+            "_ref": ref,
+            "name": "ansible",
+            "ddns_protected": False,
+            "extattrs": {}
+        }]
+
+        test_spec = {
+            "name": {"ib_req": True},
+            "ddns_protected": {},
+            "comment": {},
+            "extattrs": {}
+        }
+
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+
+        self.assertTrue(res['changed'])
+        update_arg = wapi.update_object.call_args[0][1]
+        self.assertTrue(update_arg.get('ddns_protected'))
+
     def test_nios_host_record_remove(self):
         self.module.params = {'provider': None, 'state': 'absent', 'name': 'ansible',
                               'comment': None, 'extattrs': None}

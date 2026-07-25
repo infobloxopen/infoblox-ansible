@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - nios_host_record - add ``ddns_protected`` option so host records can be protected from dynamic DNS updates (https://github.com/infobloxopen/infoblox-ansible/issues/197).
