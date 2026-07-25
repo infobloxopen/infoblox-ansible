@@ -313,6 +313,120 @@ class TestNiosFixedAddressModule(TestNiosModule):
         self.assertIn('duid=00:01:00:01:2a:2b:2c:2d', msg)
         self.assertIn('ipv6addr', msg)
 
+    # ------------------------------------------------------------------
+    # Tests for issue #94: bootfile / bootserver / nextserver support
+    # ------------------------------------------------------------------
+
+    def test_nios_fixed_address_ipv4_create_with_bootp_options(self):
+        self.module.params = {'provider': None, 'state': 'present', 'name': 'test_fa', 'ipaddr': '192.168.10.1', 'mac': '08:6d:41:e8:fd:e8',
+                              'network': '192.168.10.0/24', 'network_view': 'default',
+                              'bootfile': 'pxelinux.0', 'bootserver': 'bootsrv.ansible.com', 'nextserver': '192.168.10.10',
+                              'use_bootfile': True, 'use_bootserver': True, 'use_nextserver': True,
+                              'comment': None, 'extattrs': None}
+
+        test_object = None
+        test_spec = {
+            "name": {},
+            "ipaddr": {"ib_req": True},
+            "mac": {"ib_req": True},
+            "network": {"ib_req": True},
+            "network_view": {},
+            "bootfile": {},
+            "bootserver": {},
+            "nextserver": {},
+            "use_bootfile": {},
+            "use_bootserver": {},
+            "use_nextserver": {},
+            "comment": {},
+            "extattrs": {}
+        }
+
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+
+        self.assertTrue(res['changed'])
+        wapi.create_object.assert_called_once_with('testobject', {'name': 'test_fa', 'ipaddr': '192.168.10.1', 'mac': '08:6d:41:e8:fd:e8',
+                                                                  'network': '192.168.10.0/24', 'network_view': 'default',
+                                                                  'bootfile': 'pxelinux.0', 'bootserver': 'bootsrv.ansible.com',
+                                                                  'nextserver': '192.168.10.10', 'use_bootfile': True,
+                                                                  'use_bootserver': True, 'use_nextserver': True})
+
+    def test_nios_fixed_address_ipv4_update_bootfile(self):
+        self.module.params = {'provider': None, 'state': 'present', 'name': 'test_fa', 'ipaddr': '192.168.10.1', 'mac': '08:6d:41:e8:fd:e8',
+                              'network': '192.168.10.0/24', 'network_view': 'default',
+                              'bootfile': 'pxelinux.101', 'use_bootfile': True,
+                              'comment': None, 'extattrs': None}
+
+        ref = "fixedaddress/ZG5z:192.168.10.1/default"
+        test_object = [
+            {
+                "name": "test_fa",
+                "_ref": ref,
+                "ipaddr": "192.168.10.1",
+                "mac": "08:6d:41:e8:fd:e8",
+                "network": "192.168.10.0/24",
+                "network_view": "default",
+                "bootfile": "pxelinux.0",
+                "use_bootfile": True,
+                "extattrs": {}
+            }
+        ]
+
+        test_spec = {
+            "name": {},
+            "ipaddr": {"ib_req": True},
+            "mac": {"ib_req": True},
+            "network": {"ib_req": True},
+            "network_view": {},
+            "bootfile": {},
+            "use_bootfile": {},
+            "comment": {},
+            "extattrs": {}
+        }
+
+        wapi = self._get_wapi(test_object)
+        res = wapi.run('testobject', test_spec)
+
+        self.assertTrue(res['changed'])
+        update_arg = wapi.update_object.call_args[0][1]
+        self.assertEqual(update_arg.get('bootfile'), 'pxelinux.101')
+
+    def test_validate_ip_addr_type_ipv4_keeps_bootp_options(self):
+        """BOOTP/PXE options are valid on the WAPI fixedaddress (IPv4) object
+        and must survive validate_ip_addr_type."""
+        arg_spec = {'ipaddr': {'ib_req': True}, 'mac': {'ib_req': True}, 'duid': {'ib_req': True},
+                    'bootfile': {}, 'bootserver': {}, 'nextserver': {},
+                    'use_bootfile': {}, 'use_bootserver': {}, 'use_nextserver': {}}
+        module = MagicMock()
+        module.params = {'ipaddr': '192.168.10.1', 'mac': '08:6D:41:E8:FD:E8', 'duid': None,
+                         'bootfile': 'pxelinux.0', 'bootserver': None, 'nextserver': '192.168.10.10',
+                         'use_bootfile': True, 'use_bootserver': None, 'use_nextserver': True}
+
+        obj_type, spec, mod = nios_fixed_address.validate_ip_addr_type('192.168.10.1', arg_spec, module)
+
+        self.assertEqual(obj_type, api.NIOS_IPV4_FIXED_ADDRESS)
+        for field in ('bootfile', 'bootserver', 'nextserver', 'use_bootfile', 'use_bootserver', 'use_nextserver'):
+            self.assertIn(field, spec)
+            self.assertIn(field, mod.params)
+
+    def test_validate_ip_addr_type_ipv6_strips_bootp_options(self):
+        """The WAPI ipv6fixedaddress object has no BOOTP/PXE fields, so the
+        IPv6 path must drop them the same way it drops mac."""
+        arg_spec = {'ipaddr': {'ib_req': True}, 'mac': {'ib_req': True}, 'duid': {'ib_req': True},
+                    'bootfile': {}, 'bootserver': {}, 'nextserver': {},
+                    'use_bootfile': {}, 'use_bootserver': {}, 'use_nextserver': {}}
+        module = MagicMock()
+        module.params = {'ipaddr': 'fe80::1/10', 'mac': None, 'duid': '00:01:00:01:2A:2B:2C:2D',
+                         'bootfile': None, 'bootserver': None, 'nextserver': None,
+                         'use_bootfile': None, 'use_bootserver': None, 'use_nextserver': None}
+
+        obj_type, spec, mod = nios_fixed_address.validate_ip_addr_type('fe80::1/10', arg_spec, module)
+
+        self.assertEqual(obj_type, api.NIOS_IPV6_FIXED_ADDRESS)
+        for field in ('bootfile', 'bootserver', 'nextserver', 'use_bootfile', 'use_bootserver', 'use_nextserver'):
+            self.assertNotIn(field, spec)
+            self.assertNotIn(field, mod.params)
+
     def test_nios_fixed_address_options_none_returns_none(self):
         """options() must return None (not []) when options param is not set,
         so WapiModule.run omits the field from proposed_object entirely and
