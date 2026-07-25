@@ -198,6 +198,13 @@ options:
     description:
       - Configures the TTL to be associated with this host record.
     type: int
+  ddns_protected:
+    version_added: "1.11.0"
+    description:
+      - Configures whether the host record is protected from DDNS updates.
+        When set to C(true), dynamic DNS updates cannot modify this record.
+    type: bool
+    required: false
   extattrs:
     description:
       - Allows for the configuration of Extensible Attributes on the
@@ -543,6 +550,7 @@ def main():
         aliases=dict(type='list', elements='str', transform=normalize_aliases),
 
         ttl=dict(type='int'),
+        ddns_protected=dict(type='bool'),
 
         extattrs=dict(type='dict'),
         comment=dict(),
