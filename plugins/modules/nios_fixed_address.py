@@ -27,6 +27,8 @@ notes:
       IPv4 Fixed address.
     - The "duid" field is mandatory for all CRUD operations relating to
       IPv6 Fixed address.
+    - The BOOTP/PXE options (bootfile, bootserver, nextserver) apply to
+      IPv4 Fixed addresses only.
     - This module supports C(check_mode).
 options:
   name:
@@ -61,6 +63,47 @@ options:
         configured instance.
     type: str
     default: default
+  bootfile:
+    version_added: "1.11.0"
+    description:
+      - Configures the bootfile that the fixed address client uses when
+        booting via DHCP, served from I(nextserver). Requires I(use_bootfile)
+        to be true.
+    type: str
+    required: false
+  bootserver:
+    version_added: "1.11.0"
+    description:
+      - Configures the bootserver address for the fixed address, in either
+        FQDN or IP address format. Requires I(use_bootserver) to be true.
+    type: str
+    required: false
+  nextserver:
+    version_added: "1.11.0"
+    description:
+      - Configures the name in FQDN or IP address format of the next server
+        that the fixed address client boots from. Requires I(use_nextserver)
+        to be true.
+    type: str
+    required: false
+  use_bootfile:
+    version_added: "1.11.0"
+    description:
+      - Enable the use of the bootfile option.
+    type: bool
+    required: false
+  use_bootserver:
+    version_added: "1.11.0"
+    description:
+      - Enable the use of the bootserver option.
+    type: bool
+    required: false
+  use_nextserver:
+    version_added: "1.11.0"
+    description:
+      - Enable the use of the nextserver option.
+    type: bool
+    required: false
   options:
     description:
       - Configures the set of DHCP options to be included as part of
@@ -182,6 +225,26 @@ EXAMPLES = '''
       password: admin
   connection: local
 
+- name: Configure PXE boot options for an ipv4 dhcp fixed address
+  infoblox.nios_modules.nios_fixed_address:
+    name: ipv4_fixed
+    ipaddr: 192.168.10.1
+    mac: 08:6d:41:e8:fd:e8
+    network: 192.168.10.0/24
+    network_view: default
+    use_bootfile: true
+    bootfile: pxelinux.0
+    use_bootserver: true
+    bootserver: bootsrv.ansible.com
+    use_nextserver: true
+    nextserver: 192.168.10.10
+    state: present
+    provider:
+      host: "{{ inventory_hostname_short }}"
+      username: admin
+      password: admin
+  connection: local
+
 - name: Remove an ipv4 dhcp fixed address
   infoblox.nios_modules.nios_fixed_address:
     name: ipv4_fixed
@@ -269,6 +332,11 @@ def validate_ip_addr_type(ip, arg_spec, module):
         module.params['ipv6addr'] = module.params.pop('ipaddr')
         del arg_spec['mac']
         del module.params['mac']
+        # BOOTP/PXE fields only exist on the WAPI fixedaddress (IPv4) object
+        for opt in ('bootfile', 'bootserver', 'nextserver', 'use_bootfile', 'use_bootserver', 'use_nextserver'):
+            if opt in arg_spec:
+                del arg_spec[opt]
+                del module.params[opt]
         if module.params["duid"] is None:
             raise ValueError("the 'duid' of the object must be specified")
         module.params['duid'] = module.params['duid'].lower()
@@ -296,6 +364,13 @@ def main():
         duid=dict(ib_req=True, type='str'),
         network=dict(),
         network_view=dict(default='default'),
+
+        bootfile=dict(type='str'),
+        bootserver=dict(type='str'),
+        nextserver=dict(type='str'),
+        use_bootfile=dict(type='bool'),
+        use_bootserver=dict(type='bool'),
+        use_nextserver=dict(type='bool'),
 
         options=dict(type='list', elements='dict', options=option_spec, transform=options),
 
