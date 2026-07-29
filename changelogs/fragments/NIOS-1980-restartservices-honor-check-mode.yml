@@ -1,0 +1,9 @@
+---
+bugfixes:
+  - nios_restartservices - honor ``check_mode``. The module declared
+    ``supports_check_mode=True`` but unconditionally called the
+    ``restartservices`` grid function, so a real service restart fired on the
+    grid even when the playbook was run with ``--check``. The module now exits
+    early in check mode without touching the grid and reports a predicted
+    ``changed`` value (``FORCE_RESTART`` -> ``changed=true``,
+    ``RESTART_IF_NEEDED`` -> ``changed=false``).

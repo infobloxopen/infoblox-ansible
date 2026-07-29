@@ -134,8 +134,16 @@ def main():
     grid_obj = wapi.get_object('grid')
     if grid_obj is None:
         module.fail_json(msg='Failed to get NIOS grid information.')
-    result = wapi.call_func('restartservices', grid_obj[0]['_ref'], restart_params)
 
+    if module.check_mode:
+        # Predict the outcome without touching the grid.
+        # FORCE_RESTART always restarts → changed=True.
+        # RESTART_IF_NEEDED only acts when services need it; we cannot
+        # query that state, so report changed=False (conservative).
+        will_change = (restart_params.get('restart_option', 'RESTART_IF_NEEDED') == 'FORCE_RESTART')
+        module.exit_json(changed=will_change)
+
+    result = wapi.call_func('restartservices', grid_obj[0]['_ref'], restart_params)
     module.exit_json(**result)
 
 
